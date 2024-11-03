@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# VS Code
+.vscode/
+*.code-workspace
+.vscode-test
+
+# Virtual Environment
+venv/
+env/
+.env
+
+# PyCharm
+.idea/
+
+# Django
+*.log
+*.pot
+*.pyc
+db.sqlite3
+db.sqlite3-journal
+media/
+static/
+local_settings.py
