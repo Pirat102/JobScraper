@@ -1,5 +1,8 @@
-from ninja import ModelSchema
+from ninja import Schema, ModelSchema
 from jobs.models import Job
+
+class Error(Schema):
+    message: str
 
 class JobSchema(ModelSchema):
     class Meta:

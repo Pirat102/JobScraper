@@ -2,7 +2,6 @@ from django.core.management.base import BaseCommand
 from jobs.models import Job
 from bs4 import BeautifulSoup
 import requests
-import json
 import time
 
 
@@ -46,13 +45,13 @@ class Command(BaseCommand):
         return jobs
 
 
-    ## Get job req + skills. Return nested job offer
+    ## Get job informations
     def get_job_requirements(self, offers):
         for title, link in offers.items():
-            # Check if job with this URL already exists in the database
+            ## Check if job with this URL already exists in the database
             if Job.objects.filter(url=link).exists() or Job.objects.filter(title=title).exists():
                 self.stdout.write(self.style.WARNING(f"Job already exists in database, skipping: {title}"))
-                continue  # Skip to the next job if this one already exists
+                continue  ## Skip to the next job if this one already exists
             
             res = requests.get(link)
             res.raise_for_status()
@@ -69,10 +68,39 @@ class Command(BaseCommand):
                 if skill and level:
                     skills[skill] = level
                     
+            
+            ## Get company, location, operating mode
+            div_elements = soup.find("div", class_="MuiBox-root css-yd5zxy")
+            company = div_elements.h2.text.strip()
+            location = div_elements.find("span", class_="css-1o4wo1x").text.strip()
+            operating_mode = soup.find_all("div", class_="MuiBox-root css-snbmy4")[3].text.strip()
+            
+            ## Get salary
+            salary_elements = soup.findChildren("span", class_="css-1pavfqb")[0]
+            if salary_elements:
+                lower_bound = salary_elements.find_all('span')[0].text.strip()  # First salary value
+                upper_bound = salary_elements.find_all('span')[1].text.strip()  # Second salary value
+                currency = salary_elements.text.split()[-1]  # Extracting 'PLN' from the text
+                salary = f"{lower_bound} - {upper_bound} {currency}"
+            else:
+                salary = ""
+                
+            ## Get description    
+            target_div = soup.find('div', class_='MuiBox-root css-r1n8l8')
+            if target_div:
+                description = target_div.get_text(separator='\n', strip=True)
+            else:
+                description = ""
+                    
             ## Combine job offer into dictionary    
             offers[title] = {
-                "skills" : skills,
-                "link" : link
+                "company": company,
+                "location": location,
+                "operating_mode": operating_mode,
+                "salary": salary,
+                "description": description,
+                "skills": skills,
+                "link": link
                 }
         return offers
 
@@ -84,9 +112,11 @@ class Command(BaseCommand):
             job, created = Job.objects.get_or_create(
                 title=title,
                 defaults={
-                    "company": "",  
-                    "location": "", 
-                    "description": "", 
+                    "company": job_data.get("company"),  
+                    "location": job_data.get("location"), 
+                    "operating_mode": job_data.get("operating_mode"),
+                    "salary": job_data.get("salary"),
+                    "description": job_data.get("description"), 
                     "skills": job_data.get("skills"),
                     "url": job_data.get("link"),
                     "summary": "",  # for GPT summarize
@@ -99,3 +129,4 @@ class Command(BaseCommand):
 
 
 
+    
