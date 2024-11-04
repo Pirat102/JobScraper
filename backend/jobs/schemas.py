@@ -7,4 +7,4 @@ class Error(Schema):
 class JobSchema(ModelSchema):
     class Meta:
         model = Job
-        fields = ('title', 'company', 'location', 'description', 'skills', 'url', 'scraped_date', 'summary')
+        fields = ('title', 'company', 'location', 'operating_mode', 'salary', 'skills', 'url', 'scraped_date', 'summary')

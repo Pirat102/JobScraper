@@ -3,6 +3,7 @@ from jobs.models import Job
 from bs4 import BeautifulSoup
 import requests
 import time
+from jobs.summarizer import summarize_text
 
 
 BASIC_URL = "https://justjoin.it"
@@ -41,19 +42,21 @@ class Command(BaseCommand):
         for job_offer in job_offers:
             job_title = job_offer.find("h3").text.strip()
             job_offer_link = f"{BASIC_URL}{job_offer.a['href']}"
-            jobs[job_title] = job_offer_link
+            jobs[job_title] = {"link": job_offer_link}
         return jobs
 
 
     ## Get job informations
     def get_job_requirements(self, offers):
-        for title, link in offers.items():
+        for title, job_data in offers.items():
+            link = job_data["link"]
             ## Check if job with this URL already exists in the database
             if Job.objects.filter(url=link).exists() or Job.objects.filter(title=title).exists():
                 self.stdout.write(self.style.WARNING(f"Job already exists in database, skipping: {title}"))
                 continue  ## Skip to the next job if this one already exists
             
             res = requests.get(link)
+            self.stdout.write(self.style.SUCCESS(f"Requested"))
             res.raise_for_status()
             time.sleep(5)
             soup = BeautifulSoup(res.text, "html.parser")
@@ -76,12 +79,10 @@ class Command(BaseCommand):
             operating_mode = soup.find_all("div", class_="MuiBox-root css-snbmy4")[3].text.strip()
             
             ## Get salary
-            salary_elements = soup.findChildren("span", class_="css-1pavfqb")[0]
+            salary_elements = soup.findChildren("span", class_="css-1pavfqb")
+            
             if salary_elements:
-                lower_bound = salary_elements.find_all('span')[0].text.strip()  # First salary value
-                upper_bound = salary_elements.find_all('span')[1].text.strip()  # Second salary value
-                currency = salary_elements.text.split()[-1]  # Extracting 'PLN' from the text
-                salary = f"{lower_bound} - {upper_bound} {currency}"
+                salary = salary_elements[0].text.strip()
             else:
                 salary = ""
                 
@@ -91,7 +92,8 @@ class Command(BaseCommand):
                 description = target_div.get_text(separator='\n', strip=True)
             else:
                 description = ""
-                    
+            
+            
             ## Combine job offer into dictionary    
             offers[title] = {
                 "company": company,
@@ -108,6 +110,14 @@ class Command(BaseCommand):
         
     def save_jobs_to_model(self, jobs):
         for title, job_data in jobs.items():
+            description = job_data.get("description")
+            
+            # Use GPT to summarize the job description
+            if description:
+                summary = summarize_text(description)
+            else:
+                summary = ""
+            
             # Check for an existing job to avoid duplicates
             job, created = Job.objects.get_or_create(
                 title=title,
@@ -119,7 +129,7 @@ class Command(BaseCommand):
                     "description": job_data.get("description"), 
                     "skills": job_data.get("skills"),
                     "url": job_data.get("link"),
-                    "summary": "",  # for GPT summarize
+                    "summary": summary,  # for GPT summarize
                 },
             )
             if created:
