@@ -51,12 +51,12 @@ class Command(BaseCommand):
         for title, job_data in offers.items():
             link = job_data["link"]
             ## Check if job with this URL already exists in the database
-            if Job.objects.filter(url=link).exists() or Job.objects.filter(title=title).exists():
+            if Job.objects.filter(url=link).exists():
                 self.stdout.write(self.style.WARNING(f"Job already exists in database, skipping: {title}"))
                 continue  ## Skip to the next job if this one already exists
             
             res = requests.get(link)
-            self.stdout.write(self.style.SUCCESS(f"Requested"))
+            self.stdout.write(self.style.SUCCESS(f"Requested: {title}"))
             res.raise_for_status()
             time.sleep(5)
             soup = BeautifulSoup(res.text, "html.parser")
@@ -129,7 +129,7 @@ class Command(BaseCommand):
                     "description": job_data.get("description"), 
                     "skills": job_data.get("skills"),
                     "url": job_data.get("link"),
-                    "summary": summary,  # for GPT summarize
+                    "summary": summary,  
                 },
             )
             if created:

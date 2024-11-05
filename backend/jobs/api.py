@@ -1,6 +1,7 @@
-from ninja import NinjaAPI
+from ninja import NinjaAPI, Query
 from jobs.models import Job
-from jobs.schemas import JobSchema
+from jobs.schemas import JobSchema, JobFilterSchema
+
 
 api = NinjaAPI()
 
@@ -11,5 +12,10 @@ def get_jobs(request):
 @api.get("job/{id}", response=JobSchema)
 def get_job(request, id: int):
     return Job.objects.filter(pk=id).first()
+
+
+    
+
+                
 
 
