@@ -1,6 +1,8 @@
 from ninja import Schema, ModelSchema, FilterSchema
 from jobs.models import Job
+from pydantic import Field
 from typing import Optional
+from datetime import datetime
 
 class Error(Schema):
     message: str
@@ -9,6 +11,7 @@ class JobSchema(ModelSchema):
     class Meta:
         model = Job
         fields = ('title', 'company', 'location', 'operating_mode', 'salary', 'skills', 'url', 'scraped_date', 'summary')
+
         
 class JobFilterSchema(FilterSchema):
     title: Optional[str] = None

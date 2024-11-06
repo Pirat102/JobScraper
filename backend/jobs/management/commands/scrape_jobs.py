@@ -48,10 +48,12 @@ class Command(BaseCommand):
 
     ## Get job informations
     def get_job_requirements(self, offers):
-        for title, job_data in offers.items():
+        loop_offers = dict(offers)
+        for title, job_data in loop_offers.items():
             link = job_data["link"]
             ## Check if job with this URL already exists in the database
             if Job.objects.filter(url=link).exists():
+                offers.pop(title)
                 self.stdout.write(self.style.WARNING(f"Job already exists in database, skipping: {title}"))
                 continue  ## Skip to the next job if this one already exists
             
@@ -120,21 +122,22 @@ class Command(BaseCommand):
             
             # Check for an existing job to avoid duplicates
             job, created = Job.objects.get_or_create(
-                title=title,
+                url=job_data.get("link"),
                 defaults={
+                    "title": title,
                     "company": job_data.get("company"),  
                     "location": job_data.get("location"), 
                     "operating_mode": job_data.get("operating_mode"),
                     "salary": job_data.get("salary"),
                     "description": job_data.get("description"), 
                     "skills": job_data.get("skills"),
-                    "url": job_data.get("link"),
                     "summary": summary,  
                 },
             )
             if created:
                 self.stdout.write(self.style.SUCCESS(f"Created job: {title}"))
             else:
+                
                 self.stdout.write(self.style.WARNING(f"Job already exists: {title}"))
 
 
