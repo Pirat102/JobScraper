@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Job(models.Model):
     title = models.CharField(max_length=255)
     company = models.CharField(max_length=255, null=True, blank=True)
@@ -11,6 +12,9 @@ class Job(models.Model):
     url = models.URLField()
     scraped_date = models.DateTimeField(auto_now_add=True)
     summary = models.TextField(null=True, blank=True)
+    
+
+
 
     def __str__(self):
         return f"ID: {self.id} - Title: {self.title}"

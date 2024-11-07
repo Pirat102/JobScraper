@@ -1,14 +1,14 @@
 from ninja import NinjaAPI, Query
 from jobs.models import Job
 from jobs.schemas import JobSchema, JobFilterSchema
-from typing import Optional
+
 
 
 api = NinjaAPI()
 
 @api.get("jobs/", response=list[JobSchema])
 def get_jobs(request):
-    return Job.objects.all()
+    return Job.objects.all().order_by("-scraped_date")
 
 @api.get("job/{id}", response=JobSchema)
 def get_job(request, id: int):
@@ -18,10 +18,7 @@ def get_job(request, id: int):
 def list_jobs(request, filters: JobFilterSchema=Query(...)):
     jobs = Job.objects.all()
     jobs = filters.filter(jobs)
-    return jobs
+    return jobs.order_by("-scraped_date")
     
     
-
-                
-
 

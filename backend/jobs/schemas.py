@@ -2,22 +2,33 @@ from ninja import Schema, ModelSchema, FilterSchema
 from jobs.models import Job
 from pydantic import Field
 from typing import Optional
-from datetime import datetime
 
 class Error(Schema):
     message: str
 
-class JobSchema(ModelSchema):
-    class Meta:
-        model = Job
-        fields = ('title', 'company', 'location', 'operating_mode', 'salary', 'skills', 'url', 'scraped_date', 'summary')
+class JobSchema(Schema):
+    title: str
+    company: Optional[str]
+    location: Optional[str]
+    operating_mode: Optional[str]
+    salary: Optional[str]
+    skills: dict  
+    url: str
+    scraped_date: str
+    summary: Optional[str]
+    
+    @staticmethod
+    def resolve_scraped_date(obj):
+        if obj.scraped_date:
+            return obj.scraped_date.strftime("%Y-%m-%d %H:%M")
+        return None
+    
 
-        
 class JobFilterSchema(FilterSchema):
-    title: Optional[str] = None
-    company: Optional[str] = None
-    location: Optional[str] = None
-    operating_mode: Optional[str] = None
-    salary: Optional[str] = None
-    skills: Optional[str] = None
-    scraped_date: Optional[str] = None
+    title: Optional[str] = Field(None, q='title__icontains')
+    company: Optional[str] = Field(None, q='company__icontains')
+    location: Optional[str] = Field(None, q='location__icontains')
+    operating_mode: Optional[str] = Field(None, q='operating_mode__icontains')
+    salary: Optional[str] = Field(None, q='salary__icontains')
+    skills: Optional[str] = Field(None, q='skills__icontains')
+    
