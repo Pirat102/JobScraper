@@ -6,7 +6,7 @@ from typing import Optional
 class ErrorSchema(Schema):
     message: str
     
-class UserSchema(Schema):
+class UserRegistrationSchema(Schema):
     username: str
     password: str
     email: Optional[str]
