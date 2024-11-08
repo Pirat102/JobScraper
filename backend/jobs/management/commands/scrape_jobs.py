@@ -54,7 +54,6 @@ class Command(BaseCommand):
             ## Check if job with this URL already exists in the database
             if Job.objects.filter(url=link).exists():
                 offers.pop(title)
-                self.stdout.write(self.style.WARNING(f"Job already exists in database, skipping: {title}"))
                 continue  ## Skip to the next job if this one already exists
             
             res = requests.get(link)
@@ -89,11 +88,12 @@ class Command(BaseCommand):
                 salary = ""
                 
             ## Get description    
-            target_div = soup.find('div', class_='MuiBox-root css-r1n8l8')
+            target_div = soup.find('div', class_='MuiBox-root css-tbycqp')
             if target_div:
                 description = target_div.get_text(separator='\n', strip=True)
             else:
                 description = ""
+                self.stdout.write(self.style.WARNING(f"Requested: {title}. Description not avaible"))
             
             
             ## Combine job offer into dictionary    
@@ -119,6 +119,7 @@ class Command(BaseCommand):
                 summary = summarize_text(description)
             else:
                 summary = ""
+                
             
             # Check for an existing job to avoid duplicates
             job, created = Job.objects.get_or_create(

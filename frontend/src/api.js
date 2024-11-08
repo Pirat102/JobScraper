@@ -1,3 +1,5 @@
+// This file creates an Axios instance to make HTTP requests to backend, with automatic handling of the JWT token.
+
 import axios from "axios"
 import { ACCESS_TOKEN } from "./constants"
 

@@ -3,8 +3,13 @@ from jobs.models import Job
 from pydantic import Field
 from typing import Optional
 
-class Error(Schema):
+class ErrorSchema(Schema):
     message: str
+    
+class UserSchema(Schema):
+    username: str
+    password: str
+    email: Optional[str]
 
 class JobSchema(Schema):
     title: str

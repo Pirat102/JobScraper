@@ -17,7 +17,7 @@ def summarize_text(text: str) -> str:
                     "content": text
                 }
             ],
-            max_tokens=1500,
+            max_tokens=3500,
             temperature=0.7,
         )
         summary = completion.choices[0].message.content

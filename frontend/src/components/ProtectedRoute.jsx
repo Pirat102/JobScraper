@@ -1,3 +1,5 @@
+// React component that restricts access to routes based on whether the user has a valid JWT token.
+
 import {Navigate} from "react-router-dom"
 import {jwtDecode} from "jwt-decode"
 import api from "../api"
@@ -29,7 +31,6 @@ function ProtectedRoute({children}) {
         }
     }
 
-    // Look at axis token, check if expired and refresh it, else...
     const auth = async () => {
         const token = localStorage.getItem(ACCESS_TOKEN)
         if (!token) {
