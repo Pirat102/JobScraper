@@ -1,12 +1,11 @@
 import { useState } from "react";
-import "../styles/Skills.css";
-import '../styles/Job.css';
+import "../styles/Job.css";
+import { Calendar } from 'lucide-react';
 import DOMPurify from 'dompurify';
 
 function Job({ job }) {
-  const [showSkills, setShowSkills] = useState(true);
+  const [showSummary, setShowSummary] = useState(false);
 
-  // Format date to be more readable
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const options = {
@@ -16,6 +15,7 @@ function Job({ job }) {
     };
     return date.toLocaleDateString('en-US', options);
   };
+
   return (
     <div className="job-container">
       <div className="job-header">
@@ -25,7 +25,10 @@ function Job({ job }) {
           </a>
           <span className="company-name">{job.company}</span>
         </div>
-        <span className="post-date">Posted: {formatDate(job.scraped_date)}</span>
+        <span className="post-date">
+          <Calendar size={16} className="date-icon" />
+          {formatDate(job.scraped_date)}
+        </span>
       </div>
 
       <div className="job-details">
@@ -46,7 +49,14 @@ function Job({ job }) {
         )}
       </div>
 
-      {job.summary && (
+      <button
+        onClick={() => setShowSummary(!showSummary)}
+        className="toggle-button"
+      >
+        {showSummary ? "Hide summary" : "Show summary"}
+      </button>
+
+      {showSummary && job.summary && (
         <div 
           className="job-summary"
           dangerouslySetInnerHTML={{ 
@@ -59,23 +69,14 @@ function Job({ job }) {
       )}
 
       <div className="skills-section">
-        <button
-          onClick={() => setShowSkills(!showSkills)}
-          className="toggle-button"
-        >
-          {showSkills ? "Hide skills" : `Show skills (${Object.keys(job.skills).length})`}
-        </button>
-        
-        {showSkills && (
-          <div className="skills">
-            {Object.entries(job.skills).map(([skill, level]) => (
-              <div key={skill} className={`skill-item ${level.toLowerCase()}`}>
-                {skill}
-                <span className="skill-level">{level}</span>
-              </div>
-            ))}
-          </div>
-        )}
+        <div className="skills">
+          {Object.entries(job.skills).map(([skill, level]) => (
+            <div key={skill} className={`skill-item ${level.toLowerCase()}`}>
+              {skill}
+              <span className="skill-level">{level}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
