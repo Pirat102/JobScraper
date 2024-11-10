@@ -1,0 +1,32 @@
+.jobs-page {
+  max-width: 1280px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.jobs-header {
+  margin-bottom: 2rem;
+}
+
+.jobs-header h2 {
+  font-size: 1.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.jobs-count {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.jobs-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .jobs-layout {
+    grid-template-columns: 1fr;
+  }
+}

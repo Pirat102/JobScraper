@@ -1,0 +1,92 @@
+.filter-panel {
+  background: var(--card-background);
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 1rem;
+}
+
+.filter-section {
+  margin-bottom: 1.5rem;
+}
+
+.filter-section label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.filter-section input,
+.filter-section select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  transition: border-color 0.2s;
+}
+
+.filter-section input:focus,
+.filter-section select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.clear-filters {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clear-filters:hover {
+  background-color: var(--background-color);
+}
+
+.skill-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.skill-option:hover {
+  background-color: var(--background-color);
+}
+
+.popular-tag {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 12px;
+  margin-left: 8px;
+}
+
+.skills-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.no-results {
+  padding: 8px 12px;
+  color: var(--text-secondary);
+  text-align: center;
+}
