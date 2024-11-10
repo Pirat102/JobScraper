@@ -51,7 +51,7 @@ function FilterPanel({ onFilterChange }) {
         });
 
         setAvailableLocations(Array.from(locationsSet).sort());
-        
+
         // Get all unique skills
         const allSkills = Array.from(Object.keys(skillsFrequency));
         setAvailableSkills(allSkills.sort());
@@ -93,7 +93,7 @@ function FilterPanel({ onFilterChange }) {
     if (skillSearch) {
       // If user is searching, filter through all available skills
       return availableSkills.filter(
-        (skill) => 
+        (skill) =>
           skill.toLowerCase().includes(skillSearch.toLowerCase()) &&
           !filters.skills.includes(skill)
       );
@@ -183,8 +183,8 @@ function FilterPanel({ onFilterChange }) {
                 ))
               ) : (
                 <div className="no-results">
-                  {skillSearch 
-                    ? "No matching skills found" 
+                  {skillSearch
+                    ? "No matching skills found"
                     : "No more top skills available"}
                 </div>
               )}

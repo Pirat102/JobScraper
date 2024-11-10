@@ -32,11 +32,7 @@ class JobController:
     def get_jobs(self, request):
         return Job.objects.all().order_by("-scraped_date")
 
-    @route.get("job/{id}", response=JobSchema)
-    def get_job(self, request, id: int):
-        return Job.objects.filter(pk=id).first()
-
-    @route.get("jobs/filter/", response=list[JobSchema], auth=JWTAuth())
+    @route.get("jobs/filter/", response=list[JobSchema])
     def list_jobs(self, request, filters: JobFilterSchema=Query(...)):
         jobs = Job.objects.all()
         jobs = filters.filter_queryset(jobs)

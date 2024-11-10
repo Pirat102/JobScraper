@@ -13,7 +13,7 @@ function Logout() {
   return <Navigate to="/login" />;
 }
 
-function RegisterAndLogout() {
+function RegisterUser() {
   localStorage.clear();
   return <Register />;
 }
@@ -34,7 +34,7 @@ function App() {
           />
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
-          <Route path="/register" element={<RegisterAndLogout />} />
+          <Route path="/register" element={<RegisterUser />} />
           <Route path="*" element={<NotFound />} />
           <Route path="/jobs" element={<JobsPage />} />
         </Routes>

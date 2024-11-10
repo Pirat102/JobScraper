@@ -3,7 +3,7 @@ import '../styles/Navbar.css';
 
 function Navbar() {
   const navigate = useNavigate();
-  const isAuthenticated = !!localStorage.getItem('token');
+  const isAuthenticated = !!localStorage.getItem('access');
 
   const handleLogout = () => {
     localStorage.clear();
@@ -20,9 +20,9 @@ function Navbar() {
           <Link to="/" className="nav-link">Home</Link>
           <Link to="/jobs" className="nav-link">Jobs</Link>
           {isAuthenticated ? (
-            <button onClick={handleLogout} className="nav-link logout-btn">
+            <Link onClick={handleLogout} className="nav-link">
               Logout
-            </button>
+            </Link>
           ) : (
             <>
               <Link to="/login" className="nav-link">Login</Link>
