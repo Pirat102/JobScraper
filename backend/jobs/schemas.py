@@ -1,8 +1,7 @@
 from ninja import Schema, FilterSchema, Field
-from jobs.models import Job
-from pydantic import Field
 from typing import Optional, List
 from django.db.models import Q
+from datetime import datetime
 
 class ErrorSchema(Schema):
     message: str
@@ -21,14 +20,8 @@ class JobSchema(Schema):
     salary: Optional[str]
     skills: dict  
     url: str
-    scraped_date: str
+    scraped_date: datetime
     summary: Optional[str]
-    
-    @staticmethod
-    def resolve_scraped_date(obj):
-        if obj.scraped_date:
-            return obj.scraped_date.strftime("%H:%M %d-%m")
-        return None
     
 
 class JobFilterSchema(FilterSchema):
