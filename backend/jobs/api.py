@@ -8,7 +8,7 @@ from ninja_jwt.controller import NinjaJWTDefaultController
 from ninja_extra import NinjaExtraAPI, api_controller, route
 from ninja_jwt.authentication import JWTAuth
 
-api = NinjaExtraAPI(csrf=True)
+api = NinjaExtraAPI()
 
 
 @api_controller('/auth', tags=['Authentication'], permissions=[AllowAny])
@@ -39,7 +39,7 @@ class JobController:
     @route.get("jobs/filter/", response=list[JobSchema], auth=JWTAuth())
     def list_jobs(self, request, filters: JobFilterSchema=Query(...)):
         jobs = Job.objects.all()
-        jobs = filters.filter(jobs)
+        jobs = filters.filter_queryset(jobs)
         return jobs.order_by("-scraped_date")
     
     
