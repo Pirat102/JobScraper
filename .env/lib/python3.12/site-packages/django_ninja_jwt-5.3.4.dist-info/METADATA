@@ -1,0 +1,188 @@
+Metadata-Version: 2.1
+Name: django-ninja-jwt
+Version: 5.3.4
+Summary: Django Ninja JWT - JSON Web Token for Django-Ninja
+Author-email: Ezeudoh Tochukwu <tochukwu.ezeudoh@gmail.com>
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+Classifier: Intended Audience :: Information Technology
+Classifier: Intended Audience :: System Administrators
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Internet
+Classifier: Topic :: Software Development :: Libraries :: Application Frameworks
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Topic :: Software Development
+Classifier: Typing :: Typed
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Framework :: Django
+Classifier: Framework :: Django :: 3.1
+Classifier: Framework :: Django :: 3.2
+Classifier: Framework :: Django :: 4.0
+Classifier: Framework :: Django :: 4.1
+Classifier: Framework :: AsyncIO
+Classifier: Topic :: Internet :: WWW/HTTP :: HTTP Servers
+Classifier: Topic :: Internet :: WWW/HTTP
+Requires-Dist: Django >= 2.1
+Requires-Dist: pyjwt>=1.7.1,<3
+Requires-Dist: pyjwt[crypto]
+Requires-Dist: django-ninja-extra >= 0.20.0
+Requires-Dist: cryptography>=3.3.1 ; extra == "crypto"
+Requires-Dist: pre-commit ; extra == "dev"
+Requires-Dist: mkdocs >=1.1.2,<2.0.0 ; extra == "doc"
+Requires-Dist: mkdocs-material ; extra == "doc"
+Requires-Dist: markdown-include ; extra == "doc"
+Requires-Dist: mdx-include >=1.4.1,<2.0.0 ; extra == "doc"
+Requires-Dist: mkdocs-markdownextradata-plugin >=0.1.7,<0.3.0 ; extra == "doc"
+Requires-Dist: mkdocstrings ; extra == "doc"
+Requires-Dist: cryptography ; extra == "test"
+Requires-Dist: pytest ; extra == "test"
+Requires-Dist: pytest-cov ; extra == "test"
+Requires-Dist: pytest-django ; extra == "test"
+Requires-Dist: pytest-asyncio ; extra == "test"
+Requires-Dist: ruff ==0.6.3 ; extra == "test"
+Requires-Dist: django-stubs ; extra == "test"
+Requires-Dist: python-jose==3.3.0 ; extra == "test"
+Requires-Dist: click==8.1.7 ; extra == "test"
+Requires-Dist: freezegun ; extra == "test"
+Project-URL: Documentation, https://github.com/eadwinCode/django-ninja-jwt
+Project-URL: Source, https://github.com/eadwinCode/django-ninja-jwt
+Provides-Extra: crypto
+Provides-Extra: dev
+Provides-Extra: doc
+Provides-Extra: test
+
+# Ninja JWT
+![Test](https://github.com/eadwinCode/django-ninja-jwt/workflows/Test/badge.svg)
+[![PyPI version](https://badge.fury.io/py/django-ninja-jwt.svg)](https://badge.fury.io/py/django-ninja-jwt)
+[![PyPI version](https://img.shields.io/pypi/v/django-ninja-jwt.svg)](https://pypi.python.org/pypi/django-ninja-jwt)
+[![PyPI version](https://img.shields.io/pypi/pyversions/django-ninja-jwt.svg)](https://pypi.python.org/pypi/django-ninja-jwt)
+[![PyPI version](https://img.shields.io/pypi/djversions/django-ninja-jwt.svg)](https://pypi.python.org/pypi/django-ninja-jwt)
+[![Codecov](https://img.shields.io/codecov/c/gh/eadwinCode/django-ninja-jwt)](https://codecov.io/gh/eadwinCode/django-ninja-jwt)
+[![Downloads](https://static.pepy.tech/badge/django-ninja-jwt)](https://pepy.tech/project/django-ninja-jwt)
+
+
+## Abstract
+
+Ninja JWT is a JSON Web Token (JWT) plugin for Django-Ninja.
+This library is a fork of [Simple JWT](https://github.com/jazzband/djangorestframework-simplejwt) by Jazzband,
+a widely-used JWT plugin for the [Django REST Framework](http://www.django-rest-framework.org).
+
+#### Notice
+
+This library does not address any issues present in the original SIMPLE JWT.
+It only adds support for Django-Ninja and removes dependencies on DRF.
+Subsequent updates from SIMPLE JWT will be reflected here over time.
+
+For full documentation, [visit this page](https://eadwincode.github.io/django-ninja-jwt/).
+#### Requirements
+- Python >= 3.6
+- Django >= 2.1
+- Django-Ninja >= 0.16.1
+- Django-Ninja-Extra >= 0.14.2
+
+## Example
+Checkout this sample project: https://github.com/eadwinCode/bookstoreapi
+
+
+## Installation
+
+Ninja JWT can be installed with pip:
+
+```shell
+pip install django-ninja-jwt
+```
+
+You also need to register the `NinjaJWTDefaultController` controller to your Django-Ninja API:
+
+```python
+from ninja_jwt.controller import NinjaJWTDefaultController
+from ninja_extra import NinjaExtraAPI
+
+api = NinjaExtraAPI()
+api.register_controllers(NinjaJWTDefaultController)
+```
+
+The `NinjaJWTDefaultController` includes three routes: `obtain_token`, `refresh_token`, and `verify_token`.
+It combines two subclasses, `TokenVerificationController` and `TokenObtainPairController`.
+If you want to customize these routes, you can inherit from these controllers and modify their implementation:
+
+```python
+from ninja_extra import api_controller
+from ninja_jwt.controller import TokenObtainPairController
+
+@api_controller('token', tags=['Auth'])
+class MyCustomController(TokenObtainPairController):
+    """obtain_token and refresh_token only"""
+    ...
+api.register_controllers(MyCustomController)
+```
+
+To use localizations/translations, add `ninja_jwt` to your `INSTALLED_APPS`:
+
+```python
+INSTALLED_APPS = [
+    ...
+    'ninja_jwt',
+    ...
+]
+```
+
+## Using Ninja Router
+
+If you prefer not to follow the NinjaExtra methodology,
+refer to this [documentation](https://eadwincode.github.io/django-ninja-jwt/customizing_token_claims/#use-django-ninja-router)
+on how to use `Ninja-JWT` with `Django-Ninja Router`.
+
+## Usage
+
+To verify that Ninja JWT is working, you can use curl to issue a couple
+of test requests:
+
+``` {.sourceCode .bash}
+curl \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"username": "davidattenborough", "password": "boatymcboatface"}' \
+  http://localhost:8000/api/token/pair
+
+...
+{
+  "access":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX3BrIjoxLCJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiY29sZF9zdHVmZiI6IuKYgyIsImV4cCI6MTIzNDU2LCJqdGkiOiJmZDJmOWQ1ZTFhN2M0MmU4OTQ5MzVlMzYyYmNhOGJjYSJ9.NHlztMGER7UADHZJlxNG0WSi22a2KaYSfd1S-AuT7lU",
+  "refresh":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX3BrIjoxLCJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImNvbGRfc3R1ZmYiOiLimIMiLCJleHAiOjIzNDU2NywianRpIjoiZGUxMmY0ZTY3MDY4NDI3ODg5ZjE1YWMyNzcwZGEwNTEifQ.aEoAYkSJjoWH1boshQAaTkf8G3yn0kapko6HFRt7Rh4"
+}
+```
+
+You can use the returned access token to prove authentication for a
+protected view:
+
+``` {.sourceCode .bash}
+curl \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX3BrIjoxLCJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiY29sZF9zdHVmZiI6IuKYgyIsImV4cCI6MTIzNDU2LCJqdGkiOiJmZDJmOWQ1ZTFhN2M0MmU4OTQ5MzVlMzYyYmNhOGJjYSJ9.NHlztMGER7UADHZJlxNG0WSi22a2KaYSfd1S-AuT7lU" \
+  http://localhost:8000/api/some-protected-view/
+```
+
+When this short-lived access token expires, you can use the longer-lived
+refresh token to obtain another access token:
+
+``` {.sourceCode .bash}
+curl \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"refresh":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX3BrIjoxLCJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImNvbGRfc3R1ZmYiOiLimIMiLCJleHAiOjIzNDU2NywianRpIjoiZGUxMmY0ZTY3MDY4NDI3ODg5ZjE1YWMyNzcwZGEwNTEifQ.aEoAYkSJjoWH1boshQAaTkf8G3yn0kapko6HFRt7Rh4"}' \
+  http://localhost:8000/api/token/refresh/
+
+...
+{"access":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX3BrIjoxLCJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiY29sZF9zdHVmZiI6IuKYgyIsImV4cCI6MTIzNTY3LCJqdGkiOiJjNzE4ZTVkNjgzZWQ0NTQyYTU0NWJkM2VmMGI0ZGQ0ZSJ9.ekxRxgb9OKmHkfy-zs1Ro_xs1eMLXiR17dIDBVxeT-w"}
+```
+

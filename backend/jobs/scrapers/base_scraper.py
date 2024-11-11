@@ -171,193 +171,193 @@ class WebScraper(ABC):
 
         return jobs_created
 
-# Abstract Methods That Need Implementation
-# -----------------------------------------------
-@abstractmethod
-def get_jobs_container_selector(self) -> Dict[str, Any]:
-    """
-    Define how to find the main container that holds all job listings.
-    Returns:
-    {
-        'name': 'div',
-        'attrs': {'class': 'jobs-container'}  # Example
-    }
-    """
-    pass
+    # Abstract Methods That Need Implementation
+    # -----------------------------------------------
+    @abstractmethod
+    def get_jobs_container_selector(self) -> Dict[str, Any]:
+        """
+        Define how to find the main container that holds all job listings.
+        Returns:
+        {
+            'name': 'div',
+            'attrs': {'class': 'jobs-container'}  # Example
+        }
+        """
+        pass
 
-@abstractmethod
-def get_listings_selector(self) -> Dict[str, Any]:
-    """
-    Define how to find individual job listings within the container.
-    Returns:
-    {
-        'name': 'div',
-        'attrs': {'class': 'job-card'}  # Example with attributes
-    }
-    or
-    {
-        'name': 'a',
-        'attrs': {}  # Empty if no attributes needed
-    }
-    """
-    pass
+    @abstractmethod
+    def get_listings_selector(self) -> Dict[str, Any]:
+        """
+        Define how to find individual job listings within the container.
+        Returns:
+        {
+            'name': 'div',
+            'attrs': {'class': 'job-card'}  # Example with attributes
+        }
+        or
+        {
+            'name': 'a',
+            'attrs': {}  # Empty if no attributes needed
+        }
+        """
+        pass
 
-@abstractmethod
-def get_listing_title_selector(self) -> Dict[str, Any]:
-    """
-    Define how to find the title element within a job listing.
-    Returns:
-    {
-        'name': 'h3',
-        'attrs': {'class': 'job-title'}  # Optional attributes
-    }
-    """
-    pass
+    @abstractmethod
+    def get_listing_title_selector(self) -> Dict[str, Any]:
+        """
+        Define how to find the title element within a job listing.
+        Returns:
+        {
+            'name': 'h3',
+            'attrs': {'class': 'job-title'}  # Optional attributes
+        }
+        """
+        pass
 
-@abstractmethod
-def extract_job_link(self, job_listing: BeautifulSoup) -> str:
-    """
-    Extract job URL from the listing element.
-    Args:
-        job_listing: BeautifulSoup element containing the job listing
-    Returns:
-        Complete URL string (e.g., "https://example.com/jobs/123")
-    """
-    pass
+    @abstractmethod
+    def extract_job_link(self, job_listing: BeautifulSoup) -> str:
+        """
+        Extract job URL from the listing element.
+        Args:
+            job_listing: BeautifulSoup element containing the job listing
+        Returns:
+            Complete URL string (e.g., "https://example.com/jobs/123")
+        """
+        pass
 
-@abstractmethod
-def extract_company(self, soup: BeautifulSoup) -> str:
-    """
-    Extract company name from job details page.
-    Args:
-        soup: BeautifulSoup object of the job details page
-    Returns:
-        Company name as string
-    """
-    pass
+    @abstractmethod
+    def extract_company(self, soup: BeautifulSoup) -> str:
+        """
+        Extract company name from job details page.
+        Args:
+            soup: BeautifulSoup object of the job details page
+        Returns:
+            Company name as string
+        """
+        pass
 
-@abstractmethod
-def extract_location(self, soup: BeautifulSoup) -> str:
-    """
-    Extract job location from job details page.
-    Args:
-        soup: BeautifulSoup object of the job details page
-    Returns:
-        Location as string (e.g., "New York, Remote")
-    """
-    pass
+    @abstractmethod
+    def extract_location(self, soup: BeautifulSoup) -> str:
+        """
+        Extract job location from job details page.
+        Args:
+            soup: BeautifulSoup object of the job details page
+        Returns:
+            Location as string (e.g., "New York, Remote")
+        """
+        pass
 
-@abstractmethod
-def extract_operating_mode(self, soup: BeautifulSoup) -> str:
-    """
-    Extract job's operating mode from job details page.
-    Args:
-        soup: BeautifulSoup object of the job details page
-    Returns:
-        Operating mode as string (e.g., "Remote", "Hybrid", "Office")
-    """
-    pass
+    @abstractmethod
+    def extract_operating_mode(self, soup: BeautifulSoup) -> str:
+        """
+        Extract job's operating mode from job details page.
+        Args:
+            soup: BeautifulSoup object of the job details page
+        Returns:
+            Operating mode as string (e.g., "Remote", "Hybrid", "Office")
+        """
+        pass
 
-@abstractmethod
-def extract_salary(self, soup: BeautifulSoup) -> str:
-    """
-    Extract salary information from job details page.
-    Args:
-        soup: BeautifulSoup object of the job details page
-    Returns:
-        Salary as string (e.g., "$80,000 - $100,000")
-    """
-    pass
+    @abstractmethod
+    def extract_salary(self, soup: BeautifulSoup) -> str:
+        """
+        Extract salary information from job details page.
+        Args:
+            soup: BeautifulSoup object of the job details page
+        Returns:
+            Salary as string (e.g., "$80,000 - $100,000")
+        """
+        pass
 
-@abstractmethod
-def extract_description(self, soup: BeautifulSoup) -> str:
-    """
-    Extract job description from job details page.
-    Args:
-        soup: BeautifulSoup object of the job details page
-    Returns:
-        Full job description as string
-    """
-    pass
+    @abstractmethod
+    def extract_description(self, soup: BeautifulSoup) -> str:
+        """
+        Extract job description from job details page.
+        Args:
+            soup: BeautifulSoup object of the job details page
+        Returns:
+            Full job description as string
+        """
+        pass
 
-@abstractmethod
-def get_skills_container_selector(self) -> Dict:
-    """
-    Define how to find the container that holds all skills.
-    Returns:
-    {
-        'name': 'div',
-        'attrs': {'id': 'skills-section'}  # Example
-    }
-    """
-    pass
+    @abstractmethod
+    def get_skills_container_selector(self) -> Dict:
+        """
+        Define how to find the container that holds all skills.
+        Returns:
+        {
+            'name': 'div',
+            'attrs': {'id': 'skills-section'}  # Example
+        }
+        """
+        pass
 
-@abstractmethod
-def has_skill_sections(self) -> bool:
-    """
-    Indicate if the website separates skills into required/nice-to-have sections.
-    Returns:
-        True if site has separate sections (like NoFluffJobs)
-        False if site has single skills list (like JustJoinIT)
-    """
-    pass
+    @abstractmethod
+    def has_skill_sections(self) -> bool:
+        """
+        Indicate if the website separates skills into required/nice-to-have sections.
+        Returns:
+            True if site has separate sections (like NoFluffJobs)
+            False if site has single skills list (like JustJoinIT)
+        """
+        pass
 
-@abstractmethod
-def get_required_skills_selector(self) -> Dict:
-    """
-    Define how to find the required skills section.
-    Only needed if has_skill_sections() returns True.
-    Returns:
-    {
-        'name': 'section',
-        'attrs': {'class': 'required-skills'}  # Example
-    }
-    """
-    pass
+    @abstractmethod
+    def get_required_skills_selector(self) -> Dict:
+        """
+        Define how to find the required skills section.
+        Only needed if has_skill_sections() returns True.
+        Returns:
+        {
+            'name': 'section',
+            'attrs': {'class': 'required-skills'}  # Example
+        }
+        """
+        pass
 
-@abstractmethod
-def get_nice_skills_selector(self) -> Dict:
-    """
-    Define how to find the nice-to-have skills section.
-    Only needed if has_skill_sections() returns True.
-    Returns:
-    {
-        'name': 'section',
-        'attrs': {'class': 'optional-skills'}  # Example
-    }
-    """
-    pass
+    @abstractmethod
+    def get_nice_skills_selector(self) -> Dict:
+        """
+        Define how to find the nice-to-have skills section.
+        Only needed if has_skill_sections() returns True.
+        Returns:
+        {
+            'name': 'section',
+            'attrs': {'class': 'optional-skills'}  # Example
+        }
+        """
+        pass
 
-@abstractmethod
-def get_skill_item_selector(self) -> Dict:
-    """
-    Define how to find individual skill items within skills container.
-    Returns:
-    {
-        'name': 'div',
-        'attrs': {'class': 'skill-item'}  # Example
-    }
-    """
-    pass
+    @abstractmethod
+    def get_skill_item_selector(self) -> Dict:
+        """
+        Define how to find individual skill items within skills container.
+        Returns:
+        {
+            'name': 'div',
+            'attrs': {'class': 'skill-item'}  # Example
+        }
+        """
+        pass
 
-@abstractmethod
-def extract_skill_name(self, element: BeautifulSoup) -> str:
-    """
-    Extract skill name from a skill element.
-    Args:
-        element: BeautifulSoup element containing a single skill
-    Returns:
-        Skill name as string (e.g., "Python", "Docker")
-    """
-    pass
+    @abstractmethod
+    def extract_skill_name(self, element: BeautifulSoup) -> str:
+        """
+        Extract skill name from a skill element.
+        Args:
+            element: BeautifulSoup element containing a single skill
+        Returns:
+            Skill name as string (e.g., "Python", "Docker")
+        """
+        pass
 
-@abstractmethod
-def extract_skill_level(self, element: BeautifulSoup) -> str:
-    """
-    Extract skill level from a skill element.
-    Args:
-        element: BeautifulSoup element containing a single skill
-    Returns:
-        Skill level as string (e.g., "junior", "regular", "senior")
-    """
-    pass
+    @abstractmethod
+    def extract_skill_level(self, element: BeautifulSoup) -> str:
+        """
+        Extract skill level from a skill element.
+        Args:
+            element: BeautifulSoup element containing a single skill
+        Returns:
+            Skill level as string (e.g., "junior", "regular", "senior")
+        """
+        pass
