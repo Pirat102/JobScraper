@@ -1,0 +1,12 @@
+{
+	"Selector Dict": {
+	  "prefix": "selector",
+	  "body": [
+		"return {",
+		"    'name': '$1',",
+		"    'attrs': {$2}",
+		"}"
+	  ],
+	  "description": "Create selector dictionary with name and attrs"
+	}
+  }

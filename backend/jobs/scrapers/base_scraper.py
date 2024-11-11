@@ -120,7 +120,7 @@ class WebScraper(ABC):
             for skill in required.find_all(**self.get_skill_item_selector()):
                 skill_name = skill.find("span")
                 if skill_name:
-                    skills[skill_name.text.strip()] = "regular"
+                    skills[skill_name.text.strip()] = "junior"
 
     def _process_nice_to_have_skills(self, container: BeautifulSoup, skills: Dict[str, str]):
         nice = container.find(**self.get_nice_skills_selector())
@@ -128,7 +128,7 @@ class WebScraper(ABC):
             for skill in nice.find_all(**self.get_skill_item_selector()):
                 skill_name = skill.find("span")
                 if skill_name:
-                    skills[skill_name.text.strip()] = "junior"
+                    skills[skill_name.text.strip()] = "nice to have"
 
     def extract_single_container_skills(self, soup: BeautifulSoup) -> Dict[str, str]:
         skills = {}
@@ -302,7 +302,6 @@ class WebScraper(ABC):
         """
         pass
 
-    @abstractmethod
     def get_required_skills_selector(self) -> Dict:
         """
         Define how to find the required skills section.
@@ -315,7 +314,6 @@ class WebScraper(ABC):
         """
         pass
 
-    @abstractmethod
     def get_nice_skills_selector(self) -> Dict:
         """
         Define how to find the nice-to-have skills section.
