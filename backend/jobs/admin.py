@@ -3,3 +3,4 @@ from jobs.models import *
 
 # Register your models here.
 admin.site.register(Job)
+admin.site.register(Requested)

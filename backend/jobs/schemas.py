@@ -18,6 +18,7 @@ class JobSchema(Schema):
     location: Optional[str]
     operating_mode: Optional[str]
     salary: Optional[str]
+    experience: Optional[str]
     skills: dict  
     url: str
     scraped_date: datetime

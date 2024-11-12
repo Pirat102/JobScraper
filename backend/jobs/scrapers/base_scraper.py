@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import requests
 from bs4 import BeautifulSoup
-from jobs.models import Job
+from jobs.models import Job, Requested
 import time
 import logging
 from typing import Dict, Any
@@ -51,7 +51,7 @@ class WebScraper(ABC):
             job_listings = container.find_all(**self.get_listings_selector())
             for job_listing in job_listings:
                 try:
-                    title = job_listing.find(**self.get_listing_title_selector()).text.strip()
+                    title = job_listing.find(**self.get_listing_title_selector()).find(text=True, recursive=False).strip()
                     link = self.extract_job_link(job_listing)
                     jobs[title] = {"link": link}
                 except AttributeError as e:
@@ -63,14 +63,21 @@ class WebScraper(ABC):
     # Detailed Job Data Processing
     # -----------------------------------------------
     def get_job_data(self, postings: Dict) -> Dict:
+        process = 0
         result = {}
         for title, job_data in dict(postings).items():
+            if process >= 3:
+                continue
             try:
                 link = job_data["link"]
                 if Job.objects.filter(url=link).exists():
                     continue
 
                 soup = self.get_job_page_html(link, title)
+                if soup is None:
+                    continue
+                
+                process +=1
                 job_details = self._extract_job_details(soup, link)
                 result[title] = job_details
 
@@ -84,6 +91,7 @@ class WebScraper(ABC):
             "company": self.extract_company(soup),
             "location": self.extract_location(soup),
             "operating_mode": self.extract_operating_mode(soup),
+            "experience": self.extract_experience_level(soup),
             "salary": self.extract_salary(soup),
             "description": self.extract_description(soup),
             "skills": self.extract_skills(soup),
@@ -91,11 +99,26 @@ class WebScraper(ABC):
         }
 
     def get_job_page_html(self, link: str, title: str) -> BeautifulSoup:
-        res = requests.get(link)
-        self.logger.info(f"Requested: {title}")
-        res.raise_for_status()
-        time.sleep(5)
-        return BeautifulSoup(res.text, "html.parser")
+        headers = {
+    'User-Agent': "Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0",
+	
+}
+        
+        if Requested.objects.filter(url=link).exists():
+            self.logger.info(f"Already requested URL for job: {title}")
+            return None
+        try:
+            res = requests.get(link, headers=headers)
+            
+            # Only create Requested object if request was successful
+            Requested.objects.create(url=link, title=title)
+            self.logger.info(f"Requested: {title}")
+            
+            return BeautifulSoup(res.text, "html.parser")
+            
+        except requests.RequestException as e:
+            self.logger.error(f"Failed to request {title} ({link}): {str(e)}")
+            return None
 
     # Skills Processing
     # -----------------------------------------------
@@ -148,27 +171,50 @@ class WebScraper(ABC):
     @transaction.atomic
     def save_jobs_to_model(self, jobs_data: Dict) -> int:
         jobs_created = 0
+        
         for title, job_data in jobs_data.items():
-            description = job_data.get("description")
-            summary = summarize_text(description) if description else ""
-
-            job, created = Job.objects.get_or_create(
-                url=job_data.get("link"),
-                defaults={
-                    "title": title,
-                    "company": job_data.get("company"),
-                    "location": job_data.get("location"),
-                    "operating_mode": job_data.get("operating_mode"),
-                    "salary": job_data.get("salary"),
-                    "description": description,
-                    "skills": job_data.get("skills"),
-                    "summary": summary,
-                }
-            )
-            if created:
+            try:
+                # Get description and create summary
+                description = job_data.get("description")
+                summary = summarize_text(description) if description else ""
+                company = job_data.get("company")
+                
+                # Check for duplicates by URL or title/company combination
+                existing_job = Job.objects.filter(
+                    url=job_data.get("link")
+                ).first() or Job.objects.filter(
+                    title__iexact=title,
+                    company__iexact=company
+                ).first()
+                
+                if existing_job:
+                    if existing_job.url == job_data.get("link"):
+                        self.logger.warning(f"Job already exists with URL: {title}")
+                    else:
+                        self.logger.warning(f"Similar job already exists: {title} at {company}")
+                    continue
+                    
+                # Create new job if no duplicates found
+                Job.objects.create(
+                    title=title,
+                    company=company,
+                    location=job_data.get("location"),
+                    operating_mode=job_data.get("operating_mode"),
+                    experience=job_data.get("experience"),
+                    salary=job_data.get("salary"),
+                    description=description,
+                    skills=job_data.get("skills"),
+                    summary=summary,
+                    url=job_data.get("link")
+                )
+                
                 jobs_created += 1
                 self.logger.info(f"Created job: {title}")
-
+                
+            except Exception as e:
+                self.logger.error(f"Error saving job {title}: {str(e)}")
+                continue
+                
         return jobs_created
 
     # Abstract Methods That Need Implementation
@@ -258,6 +304,16 @@ class WebScraper(ABC):
         """
         pass
 
+    @abstractmethod
+    def extract_experience_level(self, soup: BeautifulSoup) -> str:
+        """
+        Extract job's experience from job details page.
+        Args:
+            soup: BeautifulSoup object of the job details page
+        Returns:
+            Experience as string (e.g., "Junior", "Mid", "Senior")
+        """
+    
     @abstractmethod
     def extract_salary(self, soup: BeautifulSoup) -> str:
         """
