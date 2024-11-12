@@ -63,11 +63,8 @@ class WebScraper(ABC):
     # Detailed Job Data Processing
     # -----------------------------------------------
     def get_job_data(self, postings: Dict) -> Dict:
-        process = 0
         result = {}
         for title, job_data in dict(postings).items():
-            if process >= 3:
-                continue
             try:
                 link = job_data["link"]
                 if Job.objects.filter(url=link).exists():
@@ -77,7 +74,6 @@ class WebScraper(ABC):
                 if soup is None:
                     continue
                 
-                process +=1
                 job_details = self._extract_job_details(soup, link)
                 result[title] = job_details
 
@@ -109,6 +105,7 @@ class WebScraper(ABC):
             return None
         try:
             res = requests.get(link, headers=headers)
+            time.sleep(1)
             
             # Only create Requested object if request was successful
             Requested.objects.create(url=link, title=title)
@@ -357,7 +354,7 @@ class WebScraper(ABC):
             False if site has single skills list (like JustJoinIT)
         """
         pass
-
+    @abstractmethod
     def get_required_skills_selector(self) -> Dict:
         """
         Define how to find the required skills section.
@@ -369,7 +366,7 @@ class WebScraper(ABC):
         }
         """
         pass
-
+    @abstractmethod
     def get_nice_skills_selector(self) -> Dict:
         """
         Define how to find the nice-to-have skills section.

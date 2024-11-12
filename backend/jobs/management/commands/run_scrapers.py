@@ -6,7 +6,7 @@ class Command(BaseCommand):
     help = 'Run JustJoinIT scraper'
 
     def handle(self, *args, **options):
-        scraper = NoFluffScraper()
+        scraper = JustJoinScraper()
         try:
             jobs_created = scraper.run()
             self.stdout.write(

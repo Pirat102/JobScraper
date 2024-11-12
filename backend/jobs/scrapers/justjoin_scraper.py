@@ -44,7 +44,11 @@ class JustJoinScraper(WebScraper):
     def extract_operating_mode(self, soup: BeautifulSoup) -> str:
         mode_divs = soup.find_all("div", {"class": "MuiBox-root css-snbmy4"})
         return mode_divs[3].text.strip() if len(mode_divs) > 3 else ""
-
+    
+    def extract_experience_level(self, soup: BeautifulSoup) -> str:
+        mode_divs = soup.find_all("div", {"class": "MuiBox-root css-snbmy4"})
+        return mode_divs[1].text.strip() if mode_divs else ""
+    
     def extract_salary(self, soup: BeautifulSoup) -> str:
         salary_elements = soup.findChildren("span", {"class": "css-1pavfqb"})
         return salary_elements[0].text.strip() if salary_elements else ""
@@ -68,12 +72,20 @@ class JustJoinScraper(WebScraper):
             'name': 'div',
             'attrs': {'class': 'MuiBox-root css-jfr3nf'}
         }
-
+    
     def extract_skill_name(self, element: BeautifulSoup) -> str:
-        return element.h4.text.strip() if element.h4 else ""
+        return element.h4.text.strip()
 
     def extract_skill_level(self, element: BeautifulSoup) -> str:
-        return element.span.text.strip() if element.span else ""
+        return element.span.text.strip()
+
+
+    def get_required_skills_selector(self) -> Dict:
+        pass
+
+    def get_nice_skills_selector(self) -> Dict:
+        pass
+
 
     
     

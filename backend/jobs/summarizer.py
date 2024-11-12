@@ -40,7 +40,7 @@ def summarize_text(text: str) -> str:
                     - Focus on technical and professional requirements
                     - If input is primarily in English (>50 percent of words): Keep response in English
                     - If input is primarily in Polish (>50 percent of words): Keep response in Polish
-                    - For content primarily in any other language: Translate input and response to English
+                    - If input is neither Polish or English, translate to English
 
                         Note: Language dominance is determined by word count. For example:
                         - "Poszukujemy Senior Software Developer z minimum 5 lat doświadczenia w Java. Wymagana znajomość Spring Boot i REST API. Praca w zespole scrumowym."
