@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from jobs.models import Job, Requested
 import time
 import logging
+import sys
 from typing import Dict, Any
 from django.db import transaction
 from jobs.summarizer import summarize_text
@@ -12,7 +13,18 @@ class WebScraper(ABC):
     def __init__(self, base_url: str, filter_url: str):
         self.base_url = base_url
         self.filter_url = filter_url
-        self.logger = logging.getLogger(self.__class__.__name__)
+        
+        # Set up logger with the class name
+        self.logger = logging.getLogger(f'scraper.{self.__class__.__name__}')
+        self.logger.setLevel(logging.INFO)
+        
+        # Create console handler if it doesn't exist
+        if not self.logger.handlers:
+            console_handler = logging.StreamHandler(sys.stdout)
+            console_handler.setLevel(logging.INFO)
+            formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            console_handler.setFormatter(formatter)
+            self.logger.addHandler(console_handler)
 
     # Core Methods
     # -----------------------------------------------
