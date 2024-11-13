@@ -16,15 +16,6 @@ class WebScraper(ABC):
         
         # Set up logger with the class name
         self.logger = logging.getLogger(f'scraper.{self.__class__.__name__}')
-        self.logger.setLevel(logging.INFO)
-        
-        # Create console handler if it doesn't exist
-        if not self.logger.handlers:
-            console_handler = logging.StreamHandler(sys.stdout)
-            console_handler.setLevel(logging.INFO)
-            formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-            console_handler.setFormatter(formatter)
-            self.logger.addHandler(console_handler)
 
     # Core Methods
     # -----------------------------------------------
@@ -81,11 +72,10 @@ class WebScraper(ABC):
                 link = job_data["link"]
                 if Job.objects.filter(url=link).exists():
                     continue
-
+                
                 soup = self.get_job_page_html(link, title)
                 if soup is None:
                     continue
-                
                 job_details = self._extract_job_details(soup, link)
                 result[title] = job_details
 
@@ -149,18 +139,24 @@ class WebScraper(ABC):
     def _process_required_skills(self, container: BeautifulSoup, skills: Dict[str, str]):
         required = container.find(**self.get_required_skills_selector())
         if required:
-            for skill in required.find_all(**self.get_skill_item_selector()):
-                skill_name = skill.find("span")
-                if skill_name:
-                    skills[skill_name.text.strip()] = "junior"
+            try:
+                for skill in required.find_all(**self.get_skill_item_selector()):
+                    skill_name = skill.find("span")
+                    if skill_name:
+                        skills[skill_name.text.strip()] = "junior"
+            except Exception as e:
+                self.logger.error(f"Error processing required skills {e}")
 
     def _process_nice_to_have_skills(self, container: BeautifulSoup, skills: Dict[str, str]):
         nice = container.find(**self.get_nice_skills_selector())
         if nice:
-            for skill in nice.find_all(**self.get_skill_item_selector()):
-                skill_name = skill.find("span")
-                if skill_name:
-                    skills[skill_name.text.strip()] = "nice to have"
+            try:
+                for skill in nice.find_all(**self.get_skill_item_selector()):
+                    skill_name = skill.find("span")
+                    if skill_name:
+                        skills[skill_name.text.strip()] = "nice to have"
+            except Exception as e:
+                self.logger.error(f"Error processing nice to have skills {e}")
 
     def extract_single_container_skills(self, soup: BeautifulSoup) -> Dict[str, str]:
         skills = {}

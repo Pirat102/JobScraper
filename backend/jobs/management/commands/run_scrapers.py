@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from jobs.scrapers.justjoin_scraper import JustJoinScraper
 from jobs.scrapers.nofluffjobs import NoFluffScraper
+from jobs.scrapers.pracuj_scraper import PracujScraper
 import logging
 import sys
 
@@ -37,7 +38,8 @@ class Command(BaseCommand):
         
         available_scrapers = {
             'jjit': JustJoinScraper,
-            'nofluff': NoFluffScraper
+            'nofluff': NoFluffScraper,
+            'pracuj': PracujScraper
         }
 
         if 'all' in scrapers_to_run:
