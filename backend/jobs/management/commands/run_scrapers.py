@@ -16,6 +16,12 @@ class Command(BaseCommand):
             default=['all'],
             help='Specify which scrapers to run (jjit, nofluff, or all)'
         )
+        parser.add_argument(
+            '--limit',
+            type=int,
+            default=200,
+            help='Limit number of requests per scraper'
+        )
 
     def setup_logging(self):
         # Create logger
@@ -35,6 +41,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         logger = self.setup_logging()
         scrapers_to_run = options['scrapers']
+        request_limit = options['limit']
         
         available_scrapers = {
             'jjit': JustJoinScraper,
@@ -55,7 +62,7 @@ class Command(BaseCommand):
                 continue
 
             logger.info(f"Starting {scraper_name} scraper...")
-            scraper = available_scrapers[scraper_name]()
+            scraper = available_scrapers[scraper_name](request_limit=request_limit)
             
             try:
                 jobs_created = scraper.run()

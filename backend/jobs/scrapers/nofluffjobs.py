@@ -3,10 +3,11 @@ from bs4 import BeautifulSoup
 from .base_scraper import WebScraper
 
 class NoFluffScraper(WebScraper):
-    def __init__(self):
+    def __init__(self, request_limit: int):
         super().__init__(
             base_url= "https://nofluffjobs.com",
-            filter_url="https://nofluffjobs.com/pl/Python?criteria=seniority%3Djunior"
+            filter_url="https://nofluffjobs.com/pl/Python",
+            request_limit=request_limit
         )
 
     def get_jobs_container_selector(self) -> Dict[str, Any]:
@@ -47,7 +48,7 @@ class NoFluffScraper(WebScraper):
             
             if "Hybrydowo" in text or "Praca zdalna" in text:
                 return ""
-            return text
+            return text if text else ""
         except Exception as e:
             self.logger.error(f"Error extracting location: {e}")
 

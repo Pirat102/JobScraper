@@ -4,10 +4,11 @@ from .base_scraper import WebScraper
 
 class JustJoinScraper(WebScraper):
     
-    def __init__(self):
+    def __init__(self, request_limit: int):
         super().__init__(
             base_url="https://justjoin.it",
-            filter_url="https://justjoin.it/job-offers/all-locations/python?experience-level=junior"
+            filter_url="https://justjoin.it/job-offers/all-locations/python",
+            request_limit=request_limit
         )
 
     def get_jobs_container_selector(self) -> Dict[str, Any]:

@@ -3,10 +3,11 @@ from bs4 import BeautifulSoup
 from .base_scraper import WebScraper
 
 class PracujScraper(WebScraper):
-    def __init__(self):
+    def __init__(self, request_limit: int):
         super().__init__(
             base_url="",
-            filter_url="https://it.pracuj.pl/praca?itth=37"
+            filter_url="https://it.pracuj.pl/praca?itth=37",
+            request_limit=request_limit
         )
         
     def get_jobs_container_selector(self) -> Dict[str, Any]:

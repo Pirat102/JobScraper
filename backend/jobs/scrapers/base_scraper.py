@@ -4,233 +4,219 @@ from bs4 import BeautifulSoup
 from jobs.models import Job, Requested
 import time
 import logging
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from django.db import transaction
 from jobs.summarizer import summarize_text
 
 class WebScraper(ABC):
-    def __init__(self, base_url: str, filter_url: str):
+    """Base scraper class for job websites."""
+    
+    def __init__(self, base_url: str, filter_url: str, request_limit: int):
         self.base_url = base_url
         self.filter_url = filter_url
-        # Set up logger with the class name
         self.logger = logging.getLogger(f'scraper.{self.__class__.__name__}')
+        self.request_limit = request_limit
+        self.request_count = 0
 
-    # Core Methods
-    # -----------------------------------------------
+    # Main Flow Methods
+    # --------------------------------------------------
     def run(self) -> int:
+        """Main entry point for the scraper."""
         try:
-            main_html = self.get_main_html()
-            postings = self.get_each_job_title_link(main_html)
-            jobs_data = self.get_job_data(postings)
-            return self.save_jobs_to_model(jobs_data)
+            html = self.get_main_html()
+            job_listings = self.get_job_listings(html)
+            jobs_data = self.process_job_listings(job_listings)
+            return self.save_jobs(jobs_data)
         except Exception as e:
             self.logger.error(f"Error in scraping process: {e}")
+            return 0
 
     def get_main_html(self) -> str:
+        """Fetches HTML from the main job listings page."""
         res = requests.get(self.filter_url)
         res.raise_for_status()
         return res.text
 
-    # Job Listings Processing
-    # -----------------------------------------------
-    def get_each_job_title_link(self, main_html: str) -> Dict[str, Dict[str, str]]:
-        jobs = {}
-        soup = BeautifulSoup(main_html, 'html.parser')
+    def get_job_listings(self, html: str) -> Dict[str, Dict[str, str]]:
+        """Extracts basic job information (title, link) from the main listings page."""
+        soup = BeautifulSoup(html, 'html.parser')
         containers = soup.find_all(**self.get_jobs_container_selector())
         
         if not containers:
             self.logger.warning("No job listings found on the page")
-            return jobs
+            return {}
         
+        return self._extract_listings_from_containers(containers)
+
+    def _extract_listings_from_containers(self, containers) -> Dict[str, Dict[str, str]]:
+        """Processes each container to extract job listings."""
+        all_listings = {}
         for container in containers:
-            jobs.update(self._process_container(container))
-        return jobs
-
-    def _process_container(self, container) -> Dict[str, Dict[str, str]]:
-        jobs = {}
-        try:
-            job_listings = container.find_all(**self.get_listings_selector())
-            for job_listing in job_listings:
-                try:
-                    title = job_listing.find(**self.get_listing_title_selector()).find(text=True, recursive=False).strip()
-                    link = self.extract_job_link(job_listing)
-                    jobs[title] = {"link": link}
-                except AttributeError as e:
-                    self.logger.error(f"Error processing job listing: {e}")
-        except Exception as e:
-            self.logger.error(f"Error processing container: {e}")
-        return jobs
-
-    # Detailed Job Data Processing
-    # -----------------------------------------------
-    def get_job_data(self, postings: Dict) -> Dict:
-        result = {}
-        for title, job_data in postings.items():
             try:
-                link = job_data["link"]
-                if Job.objects.filter(url=link).exists():
-                    
-                    continue
-                
-                soup = self.get_job_page_html(link, title)
-                if soup is None:
-                    continue
-                job_details = self._extract_job_details(soup, link)
-                result[title] = job_details
-
+                for listing in container.find_all(**self.get_listings_selector()):
+                    title_element = listing.find(**self.get_listing_title_selector())
+                    if title_element and (title := title_element.find(text=True, recursive=False)):
+                        link = self.extract_job_link(listing)
+                        all_listings[title.strip()] = {"link": link}
             except Exception as e:
-                self.logger.error(f"Error processing {title}: {e}")
-                continue
-        return result
+                self.logger.error(f"Error processing container: {e}")
+        return all_listings
 
-    def _extract_job_details(self, soup: BeautifulSoup, link: str) -> Dict[str, Any]:
-        return {
-            "company": self.extract_company(soup),
-            "location": self.extract_location(soup),
-            "operating_mode": self.extract_operating_mode(soup),
-            "experience": self.extract_experience_level(soup),
-            "salary": self.extract_salary(soup),
-            "description": self.extract_description(soup),
-            "skills": self.extract_skills(soup, self.extract_experience_level(soup)),
-            "link": link
-        }
+    # Job Details Processing
+    # --------------------------------------------------
+    def process_job_listings(self, listings: Dict) -> Dict:
+        """Processes each job listing to get detailed information."""
+        detailed_jobs = {}
+        for title, data in listings.items():
+            if job_details := self._process_single_job(title, data["link"]):
+                detailed_jobs[title] = job_details
+        return detailed_jobs
 
-    def get_job_page_html(self, link: str, title: str) -> BeautifulSoup:
-        headers = {
-    'User-Agent': "Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0",
-	
-}
+    def _process_single_job(self, title: str, link: str) -> Optional[Dict]:
+        """Processes a single job listing."""
+        try:
+            if Job.objects.filter(url=link).exists():
+                return None
+            
+            if soup := self._get_job_page(link, title):
+                experience = self.extract_experience_level(soup)
+                return {
+                    "company": self.extract_company(soup),
+                    "location": self.extract_location(soup),
+                    "operating_mode": self.extract_operating_mode(soup),
+                    "experience": experience,
+                    "salary": self.extract_salary(soup),
+                    "description": self.extract_description(soup),
+                    "skills": self.process_skills(soup, experience),
+                    "link": link
+                }
+        except Exception as e:
+            self.logger.error(f"Error processing job {title}: {e}")
+        return None
+
+    def _get_job_page(self, link: str, title: str) -> Optional[BeautifulSoup]:
+        """Fetches and parses individual job posting page with request limit."""
+        if self.request_count >= self.request_limit:
+            return None
+        
         if Requested.objects.filter(url=link).exists():
-            self.logger.info(f"Already requested URL for job: {title}")
             return None
         
         try:
-            
-            res = requests.get(link, headers=headers)
+            headers = {
+                'User-Agent': "Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0"
+            }
+            response = requests.get(link, headers=headers)
+            self.request_count += 1
             time.sleep(1)
-            
             
             Requested.objects.create(url=link, title=title)
             self.logger.info(f"Requested: {title}")
             
-            return BeautifulSoup(res.text, "html.parser")
-            
+            return BeautifulSoup(response.text, "html.parser")
         except requests.RequestException as e:
-            self.logger.error(f"Failed to request {title} ({link}): {e}")
+            self.logger.error(f"Failed to request {title}: {e}")
             return None
 
     # Skills Processing
-    # -----------------------------------------------
-    def extract_skills(self, soup: BeautifulSoup, experience: str) -> Dict[str, str]:
+    # --------------------------------------------------
+    def process_skills(self, soup: BeautifulSoup, experience: str) -> Dict[str, str]:
+        """Main method for processing skills based on job type."""
         if self.has_skill_sections():
-            return self.extract_sectioned_skills(soup, experience)
-        return self.extract_single_container_skills(soup)
+            return self._process_sectioned_skills(soup, experience)
+        return self._process_single_container_skills(soup)
 
-    def extract_sectioned_skills(self, soup: BeautifulSoup, experience: str) -> Dict[str, str]:
+    def _process_sectioned_skills(self, soup: BeautifulSoup, experience: str) -> Dict[str, str]:
+        """Processes skills that are divided into required and nice-to-have sections."""
         skills = {}
-        container = soup.find(**self.get_skills_container_selector())
-        if not container:
-            return skills
-
-        self._process_required_skills(container, skills, experience)
-        self._process_nice_to_have_skills(container, skills)
+        if container := soup.find(**self.get_skills_container_selector()):
+            self._extract_required_skills(container, skills, experience)
+            self._extract_nice_to_have_skills(container, skills)
         return skills
 
-    def _process_required_skills(self, container: BeautifulSoup, skills: Dict[str, str], experience: str):
-        required = container.find(**self.get_required_skills_selector())
-        if required:
+    def _extract_required_skills(self, container: BeautifulSoup, skills: Dict[str, str], experience: str):
+        """Extracts required skills with experience-based levels."""
+        if required := container.find(**self.get_required_skills_selector()):
             try:
                 for skill in required.find_all(**self.get_skill_item_selector()):
-                    skill_name = skill.find("span")
-                    if skill_name:
-                        # Set skill level based on experience
-                        if 'senior' in experience.lower():
-                            skill_level = 'senior'
-                        elif 'mid' in experience.lower():
-                            skill_level = 'regular'
-                        elif 'junior' in experience.lower():
-                            skill_level = 'junior'
-                        else:
-                            skill_level = 'regular'  # default case
-                        
-                        skills[skill_name.text.strip()] = skill_level
+                    if skill_name := skill.find("span"):
+                        skills[skill_name.text.strip()] = self.get_standardized_skill_level(experience)
             except Exception as e:
-                self.logger.error(f"Error processing required skills {e}")
+                self.logger.error(f"Error processing required skills: {e}")
 
-    def _process_nice_to_have_skills(self, container: BeautifulSoup, skills: Dict[str, str]):
-        nice = container.find(**self.get_nice_skills_selector())
-        if nice:
+    def _extract_nice_to_have_skills(self, container: BeautifulSoup, skills: Dict[str, str]):
+        """Extracts nice-to-have skills."""
+        if nice := container.find(**self.get_nice_skills_selector()):
             try:
                 for skill in nice.find_all(**self.get_skill_item_selector()):
-                    skill_name = skill.find("span")
-                    if skill_name:
+                    if skill_name := skill.find("span"):
                         skills[skill_name.text.strip()] = "nice to have"
             except Exception as e:
-                self.logger.error(f"Error processing nice to have skills {e}")
+                self.logger.error(f"Error processing nice-to-have skills: {e}")
 
-    def extract_single_container_skills(self, soup: BeautifulSoup) -> Dict[str, str]:
+    def _process_single_container_skills(self, soup: BeautifulSoup) -> Dict[str, str]:
+        """Processes skills from a single container (no sections)."""
         skills = {}
-        container = soup.find(**self.get_skills_container_selector())
-        if not container:
-            return skills
-
-        for element in container.find_all(**self.get_skill_item_selector()):
-            skill_name = self.extract_skill_name(element)
-            skill_level = self.extract_skill_level(element)
-            if skill_name and skill_level:
-                skills[skill_name] = skill_level
+        if container := soup.find(**self.get_skills_container_selector()):
+            for element in container.find_all(**self.get_skill_item_selector()):
+                if (name := self.extract_skill_name(element)) and (level := self.extract_skill_level(element)):
+                    skills[name] = level
         return skills
 
-    # Database Operations
-    # -----------------------------------------------
-    @transaction.atomic
-    def save_jobs_to_model(self, jobs_data: Dict) -> int:
-        jobs_created = 0
+    def get_standardized_skill_level(self, experience: str) -> str:
+        """Standardizes skill levels based on experience."""
+        experience = experience.lower()
+        if not experience:
+            return 'regular'
         
-        for title, job_data in jobs_data.items():
+        if any(level in experience for level in ['senior', 'lead', 'expert', 'principal']):
+            return 'senior'
+        elif any(level in experience for level in ['mid', 'regular', 'intermediate']):
+            return 'regular'
+        elif any(level in experience for level in ['junior', 'intern', 'trainee', 'entry']):
+            return 'junior'
+        return 'regular'
+
+    # Database Operations
+    # --------------------------------------------------
+    @transaction.atomic
+    def save_jobs(self, jobs_data: Dict) -> int:
+        """Saves processed jobs to the database."""
+        saved_count = 0
+        for title, data in jobs_data.items():
             try:
-                # Get description and create summary
-                description = job_data.get("description")
+                description = data.get("description", "")
                 summary = summarize_text(description) if description else ""
-                company = job_data.get("company")
                 
-                # Check for duplicates by URL or title/company combination
-                existing_job = Job.objects.filter(
-                    url=job_data.get("link")
-                ).first() or Job.objects.filter(
-                    title__iexact=title,
-                    company__iexact=company
-                ).first()
-                
-                if existing_job:
-                    if existing_job.url == job_data.get("link"):
-                        self.logger.warning(f"Job already exists with URL: {title}")
-                    else:
-                        self.logger.warning(f"Similar job already exists: {title} at {company}")
-                    continue
-                    
-                # Create new job if no duplicates found
-                Job.objects.create(
-                    title=title,
-                    company=company,
-                    location=job_data.get("location"),
-                    operating_mode=job_data.get("operating_mode"),
-                    experience=job_data.get("experience"),
-                    salary=job_data.get("salary"),
-                    description=description,
-                    skills=job_data.get("skills"),
-                    summary=summary,
-                    url=job_data.get("link")
-                )
-                
-                jobs_created += 1
-                self.logger.info(f"Created job: {title}")
-                
+                if not self._is_duplicate_job(title, data):
+                    Job.objects.create(
+                        title=title,
+                        company=data.get("company"),
+                        location=data.get("location"),
+                        operating_mode=data.get("operating_mode"),
+                        experience=data.get("experience"),
+                        salary=data.get("salary"),
+                        description=description,
+                        skills=data.get("skills"),
+                        summary=summary,
+                        url=data.get("link")
+                    )
+                    saved_count += 1
+                    self.logger.info(f"Created job: {title}")
             except Exception as e:
                 self.logger.error(f"Error saving job {title}: {e}")
-                continue
-                
-        return jobs_created
+        return saved_count
+
+    def _is_duplicate_job(self, title: str, data: Dict) -> bool:
+        """Checks if a job already exists in the database."""
+        return (
+            Job.objects.filter(url=data.get("link")).exists() or
+            Job.objects.filter(
+                title__iexact=title,
+                company__iexact=data.get("company")
+            ).exists()
+        )
+
 
     # Abstract Methods That Need Implementation
     # -----------------------------------------------
