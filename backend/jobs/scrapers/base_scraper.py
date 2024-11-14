@@ -12,7 +12,6 @@ class WebScraper(ABC):
     def __init__(self, base_url: str, filter_url: str):
         self.base_url = base_url
         self.filter_url = filter_url
-        
         # Set up logger with the class name
         self.logger = logging.getLogger(f'scraper.{self.__class__.__name__}')
 
@@ -92,7 +91,7 @@ class WebScraper(ABC):
             "experience": self.extract_experience_level(soup),
             "salary": self.extract_salary(soup),
             "description": self.extract_description(soup),
-            "skills": self.extract_skills(soup),
+            "skills": self.extract_skills(soup, self.extract_experience_level(soup)),
             "link": link
         }
 
@@ -101,13 +100,15 @@ class WebScraper(ABC):
     'User-Agent': "Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0",
 	
 }
-        
         if Requested.objects.filter(url=link).exists():
             self.logger.info(f"Already requested URL for job: {title}")
             return None
+        
         try:
+            
             res = requests.get(link, headers=headers)
             time.sleep(1)
+            
             
             Requested.objects.create(url=link, title=title)
             self.logger.info(f"Requested: {title}")
@@ -120,29 +121,39 @@ class WebScraper(ABC):
 
     # Skills Processing
     # -----------------------------------------------
-    def extract_skills(self, soup: BeautifulSoup) -> Dict[str, str]:
+    def extract_skills(self, soup: BeautifulSoup, experience: str) -> Dict[str, str]:
         if self.has_skill_sections():
-            return self.extract_sectioned_skills(soup)
+            return self.extract_sectioned_skills(soup, experience)
         return self.extract_single_container_skills(soup)
 
-    def extract_sectioned_skills(self, soup: BeautifulSoup) -> Dict[str, str]:
+    def extract_sectioned_skills(self, soup: BeautifulSoup, experience: str) -> Dict[str, str]:
         skills = {}
         container = soup.find(**self.get_skills_container_selector())
         if not container:
             return skills
 
-        self._process_required_skills(container, skills)
+        self._process_required_skills(container, skills, experience)
         self._process_nice_to_have_skills(container, skills)
         return skills
 
-    def _process_required_skills(self, container: BeautifulSoup, skills: Dict[str, str]):
+    def _process_required_skills(self, container: BeautifulSoup, skills: Dict[str, str], experience: str):
         required = container.find(**self.get_required_skills_selector())
         if required:
             try:
                 for skill in required.find_all(**self.get_skill_item_selector()):
                     skill_name = skill.find("span")
                     if skill_name:
-                        skills[skill_name.text.strip()] = "junior"
+                        # Set skill level based on experience
+                        if 'senior' in experience.lower():
+                            skill_level = 'senior'
+                        elif 'mid' in experience.lower():
+                            skill_level = 'regular'
+                        elif 'junior' in experience.lower():
+                            skill_level = 'junior'
+                        else:
+                            skill_level = 'regular'  # default case
+                        
+                        skills[skill_name.text.strip()] = skill_level
             except Exception as e:
                 self.logger.error(f"Error processing required skills {e}")
 

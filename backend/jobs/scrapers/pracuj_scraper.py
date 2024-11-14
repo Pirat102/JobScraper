@@ -36,8 +36,8 @@ class PracujScraper(WebScraper):
         company= soup.find('h2', {'data-test': 'text-employerName'})
         if company:
             try:
-                text = company.get_text(strip=True)
-                return text.split('Sp.')[0].strip()
+                text = company.contents[0].strip()
+                return text
             except Exception as e:
                 self.logger.error(f"Error extracting company: {e}")
         
@@ -94,7 +94,7 @@ class PracujScraper(WebScraper):
         div = soup.find('div', {'data-test': 'text-earningAmount'})
         if div:
             try:
-                text = div.text.strip().split("zł")[0]
+                text = div.text.strip().replace(",00", '').split("zł")[0]
                 formated = text.split("–")
                 return f"{formated[0]} - {formated[1]} PLN" if formated else ""
             except Exception as e:
