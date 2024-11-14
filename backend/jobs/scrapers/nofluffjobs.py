@@ -34,7 +34,7 @@ class NoFluffScraper(WebScraper):
         element = soup.find('p', {'class': 'd-flex align-items-center mb-0'})
         if not element:
             element = soup.find('a', {'id': 'postingCompanyUrl'})
-        return element.text.strip() if element else ""
+        return element.text.strip()
 
     def extract_location(self, soup: BeautifulSoup) -> str:
         try:
@@ -49,7 +49,7 @@ class NoFluffScraper(WebScraper):
                 return ""
             return text
         except Exception as e:
-            print(f"Extracting location error {e}")
+            self.logger.error(f"Error extracting location: {e}")
 
     def extract_operating_mode(self, soup: BeautifulSoup) -> str:
         try:       
@@ -70,7 +70,7 @@ class NoFluffScraper(WebScraper):
             else:
                 return ""
         except Exception as e:
-            print(f"Extracting operating mode error {e}")
+            self.logger.error(f"Error extracting operating mode: {e}")
 
         
     def extract_experience_level(self, soup: BeautifulSoup) -> str:

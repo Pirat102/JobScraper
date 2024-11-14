@@ -6,7 +6,7 @@ class PracujScraper(WebScraper):
     def __init__(self):
         super().__init__(
             base_url="",
-            filter_url="https://it.pracuj.pl/praca?et=17&itth=37"
+            filter_url="https://it.pracuj.pl/praca?itth=37"
         )
         
     def get_jobs_container_selector(self) -> Dict[str, Any]:
@@ -28,12 +28,8 @@ class PracujScraper(WebScraper):
         }
 
     def extract_job_link(self, job_listing: BeautifulSoup) -> str:
-        try:
             link = job_listing.find('a', {'data-test': 'link-offer'})
             return link['href']
-        except Exception as e:
-            self.logger.error(f"Error extracting link: {e}")
-            return ""
         
 
     def extract_company(self, soup: BeautifulSoup) -> str:
@@ -44,7 +40,6 @@ class PracujScraper(WebScraper):
                 return text.split('Sp.')[0].strip()
             except Exception as e:
                 self.logger.error(f"Error extracting company: {e}")
-                return ""
         
 
     def extract_location(self, soup: BeautifulSoup) -> str:
@@ -56,7 +51,6 @@ class PracujScraper(WebScraper):
                 return text.split(',')[0].strip() if text else ""
             except Exception as e:
                 self.logger.error(f"Error extracting location: {e}")
-                return ""
 
         
 
@@ -76,7 +70,6 @@ class PracujScraper(WebScraper):
                     return ""
             except Exception as e:
                 self.logger.error(f"Error extracting operating mode: {e}")
-                return ""
 
     def extract_experience_level(self, soup: BeautifulSoup) -> str:
         li = soup.find('li', {'data-scroll-id': 'position-levels'})
@@ -96,7 +89,6 @@ class PracujScraper(WebScraper):
                     return ""
             except Exception as e:
                 self.logger.error(f"Error extracting experience level: {e}")
-                return ""
 
     def extract_salary(self, soup: BeautifulSoup) -> str:
         div = soup.find('div', {'data-test': 'text-earningAmount'})
@@ -107,7 +99,6 @@ class PracujScraper(WebScraper):
                 return f"{formated[0]} - {formated[1]} PLN" if formated else ""
             except Exception as e:
                 self.logger.error(f"Error extracting salary: {e}")
-                return ""
 
     def extract_description(self, soup: BeautifulSoup) -> str:
         try:
@@ -123,7 +114,6 @@ class PracujScraper(WebScraper):
             return '\n'.join(text_elements) + '\n' + '\n'.join(li_texts)
         except Exception as e:
             self.logger.error(f"Error extracting description: {e}")
-            return ""
         
 
     def get_skills_container_selector(self) -> Dict:

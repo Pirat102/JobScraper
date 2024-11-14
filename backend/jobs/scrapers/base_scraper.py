@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 from jobs.models import Job, Requested
 import time
 import logging
-import sys
 from typing import Dict, Any
 from django.db import transaction
 from jobs.summarizer import summarize_text
@@ -67,10 +66,11 @@ class WebScraper(ABC):
     # -----------------------------------------------
     def get_job_data(self, postings: Dict) -> Dict:
         result = {}
-        for title, job_data in dict(postings).items():
+        for title, job_data in postings.items():
             try:
                 link = job_data["link"]
                 if Job.objects.filter(url=link).exists():
+                    
                     continue
                 
                 soup = self.get_job_page_html(link, title)
@@ -109,14 +109,13 @@ class WebScraper(ABC):
             res = requests.get(link, headers=headers)
             time.sleep(1)
             
-            # Only create Requested object if request was successful
             Requested.objects.create(url=link, title=title)
             self.logger.info(f"Requested: {title}")
             
             return BeautifulSoup(res.text, "html.parser")
             
         except requests.RequestException as e:
-            self.logger.error(f"Failed to request {title} ({link}): {str(e)}")
+            self.logger.error(f"Failed to request {title} ({link}): {e}")
             return None
 
     # Skills Processing
@@ -217,7 +216,7 @@ class WebScraper(ABC):
                 self.logger.info(f"Created job: {title}")
                 
             except Exception as e:
-                self.logger.error(f"Error saving job {title}: {str(e)}")
+                self.logger.error(f"Error saving job {title}: {e}")
                 continue
                 
         return jobs_created
@@ -225,7 +224,7 @@ class WebScraper(ABC):
     # Abstract Methods That Need Implementation
     # -----------------------------------------------
     @abstractmethod
-    def get_jobs_container_selector(self) -> Dict[str, Any]:
+    def get_jobs_container_selector(self) -> Dict:
         """
         Define how to find the main container that holds all job listings.
         Returns:
@@ -237,32 +236,13 @@ class WebScraper(ABC):
         pass
 
     @abstractmethod
-    def get_listings_selector(self) -> Dict[str, Any]:
-        """
-        Define how to find individual job listings within the container.
-        Returns:
-        {
-            'name': 'div',
-            'attrs': {'class': 'job-card'}  # Example with attributes
-        }
-        or
-        {
-            'name': 'a',
-            'attrs': {}  # Empty if no attributes needed
-        }
-        """
+    def get_listings_selector(self) -> Dict:
+        """ Define how to find individual job listings within the container. """ 
         pass
 
     @abstractmethod
-    def get_listing_title_selector(self) -> Dict[str, Any]:
-        """
-        Define how to find the title element within a job listing.
-        Returns:
-        {
-            'name': 'h3',
-            'attrs': {'class': 'job-title'}  # Optional attributes
-        }
-        """
+    def get_listing_title_selector(self) -> Dict:
+        """ Define how to find the title element within a job listing. """
         pass
 
     @abstractmethod
@@ -278,67 +258,32 @@ class WebScraper(ABC):
 
     @abstractmethod
     def extract_company(self, soup: BeautifulSoup) -> str:
-        """
-        Extract company name from job details page.
-        Args:
-            soup: BeautifulSoup object of the job details page
-        Returns:
-            Company name as string
-        """
+        """Extract company name from job details page."""
         pass
 
     @abstractmethod
     def extract_location(self, soup: BeautifulSoup) -> str:
-        """
-        Extract job location from job details page.
-        Args:
-            soup: BeautifulSoup object of the job details page
-        Returns:
-            Location as string (e.g., "New York, Remote")
-        """
+        """Extract job location from job details page."""
         pass
 
     @abstractmethod
     def extract_operating_mode(self, soup: BeautifulSoup) -> str:
-        """
-        Extract job's operating mode from job details page.
-        Args:
-            soup: BeautifulSoup object of the job details page
-        Returns:
-            Operating mode as string (e.g., "Remote", "Hybrid", "Office")
-        """
+        """Extract job's operating mode from job details page."""
         pass
 
     @abstractmethod
     def extract_experience_level(self, soup: BeautifulSoup) -> str:
-        """
-        Extract job's experience from job details page.
-        Args:
-            soup: BeautifulSoup object of the job details page
-        Returns:
-            Experience as string (e.g., "Junior", "Mid", "Senior")
-        """
+        """Extract job's experience from job details page."""
+        
     
     @abstractmethod
     def extract_salary(self, soup: BeautifulSoup) -> str:
-        """
-        Extract salary information from job details page.
-        Args:
-            soup: BeautifulSoup object of the job details page
-        Returns:
-            Salary as string (e.g., "$80,000 - $100,000")
-        """
+        """Extract salary information from job details page."""
         pass
 
     @abstractmethod
     def extract_description(self, soup: BeautifulSoup) -> str:
-        """
-        Extract job description from job details page.
-        Args:
-            soup: BeautifulSoup object of the job details page
-        Returns:
-            Full job description as string
-        """
+        """Extract job description from job details page."""
         pass
 
     @abstractmethod
@@ -367,11 +312,6 @@ class WebScraper(ABC):
         """
         Define how to find the required skills section.
         Only needed if has_skill_sections() returns True.
-        Returns:
-        {
-            'name': 'section',
-            'attrs': {'class': 'required-skills'}  # Example
-        }
         """
         pass
     @abstractmethod
@@ -379,30 +319,19 @@ class WebScraper(ABC):
         """
         Define how to find the nice-to-have skills section.
         Only needed if has_skill_sections() returns True.
-        Returns:
-        {
-            'name': 'section',
-            'attrs': {'class': 'optional-skills'}  # Example
-        }
         """
         pass
 
     @abstractmethod
     def get_skill_item_selector(self) -> Dict:
-        """
-        Define how to find individual skill items within skills container.
-        Returns:
-        {
-            'name': 'div',
-            'attrs': {'class': 'skill-item'}  # Example
-        }
-        """
+        """Define how to find individual skill items within skills container."""
         pass
 
     @abstractmethod
     def extract_skill_name(self, element: BeautifulSoup) -> str:
         """
         Extract skill name from a skill element.
+        Only needed if has_skill_sections() returns False.
         Args:
             element: BeautifulSoup element containing a single skill
         Returns:
@@ -414,6 +343,7 @@ class WebScraper(ABC):
     def extract_skill_level(self, element: BeautifulSoup) -> str:
         """
         Extract skill level from a skill element.
+        Only needed if has_skill_sections() returns False.
         Args:
             element: BeautifulSoup element containing a single skill
         Returns:
