@@ -7,6 +7,7 @@ function FilterPanel({ onFilterChange }) {
   const [filters, setFilters] = useState({
     title: "",
     location: "",
+    experience: "",
     operating_mode: "",
     skills: [],
   });
@@ -118,6 +119,23 @@ function FilterPanel({ onFilterChange }) {
           onChange={handleInputChange}
           placeholder="Search job titles..."
         />
+      </div>
+
+      {/* Experience dropdown */}
+      <div className="filter-section">
+        <label htmlFor="experience">Experience</label>
+        <select
+          id="experience"
+          name="experience"
+          value={filters.experience}
+          onChange={handleInputChange}
+        >
+          <option value="">All Types</option>
+          <option value="Junior">Junior</option>
+          <option value="Mid">Mid</option>
+          <option value="Senior">Senior</option>
+          <option value="C-Level">C-Level</option>
+        </select>
       </div>
 
       {/* Location dropdown */}

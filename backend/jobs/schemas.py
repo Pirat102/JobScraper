@@ -29,6 +29,7 @@ class JobFilterSchema(FilterSchema):
     title: Optional[str] = None
     company: Optional[str] = None
     location: Optional[str] = None
+    experience: Optional[str] = None
     operating_mode: Optional[str] = None
     salary: Optional[str] = None
     skills: Optional[List[str]] = None
@@ -41,6 +42,8 @@ class JobFilterSchema(FilterSchema):
             queryset = queryset.filter(company__icontains=self.company)
         if self.location:
             queryset = queryset.filter(location__icontains=self.location)
+        if self.experience:
+            queryset = queryset.filter(experience__icontains=self.experience)
         if self.operating_mode:
             queryset = queryset.filter(operating_mode__icontains=self.operating_mode)
         if self.salary:
