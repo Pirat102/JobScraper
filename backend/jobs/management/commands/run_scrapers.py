@@ -26,6 +26,7 @@ class Command(BaseCommand):
     def setup_logging(self):
         # Create logger
         logger = logging.getLogger('scraper')
+        logger.propagate = False
         logger.setLevel(logging.INFO)
 
         # Create console handler with formatting

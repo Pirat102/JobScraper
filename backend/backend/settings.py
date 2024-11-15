@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "jobs",
     "ninja_extra",
     "corsheaders",
+    "django_celery_beat"
 ]
 
 MIDDLEWARE = [
@@ -117,7 +118,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Etc/GMT+1'
+TIME_ZONE = 'Europe/Warsaw'
 
 USE_I18N = True
 
@@ -145,3 +146,9 @@ NINJA_JWT = {
 # ]
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+# Celery
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
