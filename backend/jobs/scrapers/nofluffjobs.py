@@ -42,9 +42,10 @@ class NoFluffScraper(WebScraper):
             span = soup.find('span', {'data-cy': 'location_mobile_pin'})
             if not span:
                 span = soup.find('span', {'data-cy': 'location_pin'})
-                
-            text = span.get_text(strip=True)
-            text = text.split('+')[0].strip()
+            
+            if span:
+                text = span.get_text(strip=True)
+                text = text.split('+')[0].strip()
             
             if "Hybrydowo" in text or "Praca zdalna" in text:
                 return ""
