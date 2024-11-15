@@ -9,6 +9,8 @@ function Job({ job }) {
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const options = {
+      minute: "numeric",
+      hour: "numeric",
       day: "numeric",
       month: "short",
       year: "numeric",

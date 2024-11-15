@@ -1,7 +1,8 @@
-from ninja import Schema, FilterSchema, Field
+from ninja import Schema, FilterSchema
 from typing import Optional, List
 from django.db.models import Q
-from datetime import datetime
+from datetime import datetime, date
+
 
 class ErrorSchema(Schema):
     message: str
@@ -29,6 +30,7 @@ class JobFilterSchema(FilterSchema):
     title: Optional[str] = None
     company: Optional[str] = None
     location: Optional[str] = None
+    scraped_date: Optional[date] = None
     experience: Optional[str] = None
     operating_mode: Optional[str] = None
     salary: Optional[str] = None
@@ -42,6 +44,8 @@ class JobFilterSchema(FilterSchema):
             queryset = queryset.filter(company__icontains=self.company)
         if self.location:
             queryset = queryset.filter(location__icontains=self.location)
+        if self.scraped_date:
+            queryset= queryset.filter(scraped_date__gt=self.scraped_date)
         if self.experience:
             queryset = queryset.filter(experience__icontains=self.experience)
         if self.operating_mode:

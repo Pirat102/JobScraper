@@ -7,13 +7,20 @@ function FilterPanel({ onFilterChange }) {
   const [filters, setFilters] = useState({
     title: "",
     location: "",
+    scraped_date: "",
     experience: "",
     operating_mode: "",
     skills: [],
   });
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-GB");
+  };
+
   // State for available options
   const [availableLocations, setAvailableLocations] = useState([]);
+  const [availableDates, setAvailableDates] = useState([]);
   const [availableSkills, setAvailableSkills] = useState([]);
   const [skillSearch, setSkillSearch] = useState("");
   const [isSkillsDropdownOpen, setIsSkillsDropdownOpen] = useState(false);
@@ -31,6 +38,9 @@ function FilterPanel({ onFilterChange }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  
+
+
   // Fetch locations and skills when component mounts
   useEffect(() => {
     api
@@ -40,11 +50,14 @@ function FilterPanel({ onFilterChange }) {
         const locationsSet = new Set();
         // Get skills with their frequency
         const skillsFrequency = {};
+        // Get dates
+        const datesSet = new Set();
 
         res.data.forEach((job) => {
           if (job.location) {
             locationsSet.add(job.location);
           }
+          datesSet.add(formatDate(job.scraped_date))
           // Count skills frequency
           Object.keys(job.skills).forEach((skill) => {
             skillsFrequency[skill] = (skillsFrequency[skill] || 0) + 1;
@@ -52,6 +65,8 @@ function FilterPanel({ onFilterChange }) {
         });
 
         setAvailableLocations(Array.from(locationsSet).sort());
+
+        setAvailableDates(Array.from(datesSet).sort().reverse().slice(0,31))
 
         // Get all unique skills
         const allSkills = Array.from(Object.keys(skillsFrequency));
@@ -131,10 +146,11 @@ function FilterPanel({ onFilterChange }) {
           onChange={handleInputChange}
         >
           <option value="">All Types</option>
-          <option value="Junior">Junior</option>
-          <option value="Mid">Mid</option>
-          <option value="Senior">Senior</option>
-          <option value="C-Level">C-Level</option>
+          <option value="junior">Junior</option>
+          <option value="mid">Mid</option>
+          <option value="senior">Senior</option>
+          <option value="c-Level">C-Level</option>
+          <option value="manager">Manager</option>
         </select>
       </div>
 
@@ -155,6 +171,23 @@ function FilterPanel({ onFilterChange }) {
           ))}
         </select>
       </div>
+
+      {/* Date dropdown */}
+      <div className="filter-section">
+        <label htmlFor="date">Date</label>
+        <select
+          id="scraped_date"
+          name="scraped_date"
+          value={filters.scraped_date}
+          onChange={handleInputChange}
+        >
+          <option value="">All Dates</option>
+          {availableDates.map((date) => (
+            <option key={date} value={date.split('/').reverse().join('-')}>{date}</option>
+          ))}
+        </select>
+      </div>
+
 
       {/* Operating Mode dropdown */}
       <div className="filter-section">
