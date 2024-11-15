@@ -5,8 +5,8 @@ from .base_scraper import WebScraper
 class PracujScraper(WebScraper):
     def __init__(self, request_limit: int):
         super().__init__(
-            base_url="",
-            filter_url="https://it.pracuj.pl/praca?itth=37",
+            base_url="https://it.pracuj.pl/praca",
+            filter_url="https://it.pracuj.pl/praca?et=1%2C17%2C4%2C18%2C19%2C5%2C20&itth=37",
             request_limit=request_limit
         )
         
@@ -78,7 +78,9 @@ class PracujScraper(WebScraper):
         if div:
             try:
                 text = div.get_text(strip=True)
-                if 'Junior' in text:
+                if 'praktykant' in text or 'trainee' in text:
+                    return 'Trainee'
+                elif 'Junior' in text:
                     return 'Junior'
                 elif 'Mid' in text:
                     return 'Mid'
@@ -86,6 +88,8 @@ class PracujScraper(WebScraper):
                     return 'Senior'
                 elif 'expert' in text:
                     return 'Expert'
+                elif 'manager' in text:
+                    return 'Manager'
                 else:
                     return ""
             except Exception as e:
