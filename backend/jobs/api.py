@@ -7,6 +7,7 @@ from ninja_extra.permissions import AllowAny
 from ninja_jwt.controller import NinjaJWTDefaultController
 from ninja_extra import NinjaExtraAPI, api_controller, route
 from ninja_jwt.authentication import JWTAuth
+from ninja_extra.pagination import paginate, PageNumberPaginationExtra, PaginatedResponseSchema
 
 api = NinjaExtraAPI()
 
@@ -25,18 +26,21 @@ class AuthController:
         )
         return 201, {"success": True, "message": "Registration successful"}
 
-@api_controller
+@api_controller("/jobs")
 class JobController:
-    
-    @route.get("jobs/", response=list[JobSchema])
-    def get_jobs(self, request):
+    @route.get("", response=PaginatedResponseSchema[JobSchema])
+    @paginate(PageNumberPaginationExtra, page_size=50)
+    def get_jobs(self):
         return Job.objects.all().order_by("-scraped_date")
 
-    @route.get("jobs/filter/", response=list[JobSchema])
-    def list_jobs(self, request, filters: JobFilterSchema=Query(...)):
+    @route.get("/filter", response=PaginatedResponseSchema[JobSchema])
+    @paginate(PageNumberPaginationExtra, page_size=50)
+    def list_jobs(self, filters: JobFilterSchema=Query(...)):
         jobs = Job.objects.all()
         jobs = filters.filter_queryset(jobs)
         return jobs.order_by("-scraped_date")
+    
+
     
     
     

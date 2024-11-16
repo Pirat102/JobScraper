@@ -3,10 +3,13 @@ import { useState, useEffect } from "react";
 import api from "../api";
 import Job from "../components/Job";
 import FilterPanel from "../components/FilterPanel";
-import '../styles/JobsPage.css';  // Make sure to create this CSS file
+import Pagination from "../components/Pagination";
+import "../styles/JobsPage.css"; // Make sure to create this CSS file
 
 function JobsPage() {
   const [jobs, setJobs] = useState([]);
+  const [nextUrl, setNextUrl] = useState(null);
+  const [previousUrl, setPreviousUrl] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -16,15 +19,23 @@ function JobsPage() {
   }, []);
 
   // Function to fetch jobs (with or without filters)
-  const fetchJobs = async (params = '') => {
+  const fetchJobs = async (params = "") => {
     setLoading(true);
     try {
-      const response = await api.get(`api/jobs/filter/${params}`);
+      const response = await api.get(`api/jobs/filter${params}`);
       setJobs(response.data);
+      setNextUrl(
+        response.data.next ? `?${response.data.next.split("?")[1]}` : null
+      );
+      setPreviousUrl(
+        response.data.previous
+          ? `?${response.data.previous.split("?")[1]}`
+          : null
+      );
       setError(null);
     } catch (err) {
-      setError('Failed to fetch jobs. Please try again later.');
-      console.error('Error fetching jobs:', err);
+      setError("Failed to fetch jobs. Please try again later.");
+      console.error("Error fetching jobs:", err);
     } finally {
       setLoading(false);
     }
@@ -33,23 +44,28 @@ function JobsPage() {
   // Handle filter changes from FilterPanel
   const handleFilterChange = (filters) => {
     const params = new URLSearchParams();
-    
+
     // First add non-skill filters
+    console.log(Object.entries(filters));
     Object.entries(filters).forEach(([key, value]) => {
-      if (key !== 'skills' && value) {
+      if (key !== "skills" && value) {
         params.append(key, value);
       }
     });
-  
+
     // Then add skills in a specific order
-    if (filters.skills && Array.isArray(filters.skills) && filters.skills.length > 0) {
+    if (
+      filters.skills &&
+      Array.isArray(filters.skills) &&
+      filters.skills.length > 0
+    ) {
       // Sort skills alphabetically to ensure consistent order
-      filters.skills.forEach(skill => {
-        params.append('skills', skill);
+      filters.skills.forEach((skill) => {
+        params.append("skills", skill);
       });
     }
-    console.log('Filters being applied:', filters); // For debugging
-    console.log('URL params:', params.toString()); // For debugging
+    console.log("Filters being applied:", filters); // For debugging
+    console.log("URL params:", params.toString()); // For debugging
 
     fetchJobs(`?${params}`);
   };
@@ -61,7 +77,7 @@ function JobsPage() {
         <h2>Available Jobs</h2>
         {!loading && !error && (
           <p className="jobs-count">
-            Found {jobs.length} job{jobs.length !== 1 ? 's' : ''}
+            Found {jobs.count} job{jobs.count !== 1 ? "s" : ""}
           </p>
         )}
       </div>
@@ -86,22 +102,30 @@ function JobsPage() {
               <p>{error}</p>
               <button onClick={() => fetchJobs()}>Try Again</button>
             </div>
-          ) : jobs.length === 0 ? (
+          ) : jobs.count === 0 ? (
             // No jobs found state
             <div className="no-jobs-state">
               <p>No jobs found matching your criteria.</p>
-              <p>Try adjusting your filters or clearing them to see more results.</p>
+              <p>
+                Try adjusting your filters or clearing them to see more results.
+              </p>
             </div>
           ) : (
-            // Jobs list
-            <div className="jobs-list">
-              {jobs.map((job) => (
-                <Job 
-                  key={job.id || job.url} // Fallback to url if id is not available
-                  job={job} 
-                />
-              ))}
-            </div>
+            <>
+              <div className="jobs-list">
+                {jobs.results.map((job) => (
+                  <Job
+                    key={job.id || job.url} // Fallback to url if id is not available
+                    job={job}
+                  />
+                ))}
+              </div>
+              <Pagination
+                next={nextUrl}
+                previous={previousUrl}
+                onPageChange={fetchJobs}
+              />
+            </>
           )}
         </main>
       </div>

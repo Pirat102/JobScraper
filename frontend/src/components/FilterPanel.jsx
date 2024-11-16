@@ -13,14 +13,10 @@ function FilterPanel({ onFilterChange }) {
     skills: [],
   });
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB");
-  };
+ 
 
   // State for available options
   const [availableLocations, setAvailableLocations] = useState([]);
-  const [availableDates, setAvailableDates] = useState([]);
   const [availableSkills, setAvailableSkills] = useState([]);
   const [skillSearch, setSkillSearch] = useState("");
   const [isSkillsDropdownOpen, setIsSkillsDropdownOpen] = useState(false);
@@ -39,25 +35,20 @@ function FilterPanel({ onFilterChange }) {
   }, []);
 
   
-
-
   // Fetch locations and skills when component mounts
   useEffect(() => {
     api
-      .get("api/jobs/")
+      .get("api/jobs")
       .then((res) => {
         // Get unique locations
         const locationsSet = new Set();
         // Get skills with their frequency
         const skillsFrequency = {};
-        // Get dates
-        const datesSet = new Set();
 
-        res.data.forEach((job) => {
+        res.data.results.forEach((job) => {
           if (job.location) {
             locationsSet.add(job.location);
           }
-          datesSet.add(formatDate(job.scraped_date))
           // Count skills frequency
           Object.keys(job.skills).forEach((skill) => {
             skillsFrequency[skill] = (skillsFrequency[skill] || 0) + 1;
@@ -65,8 +56,6 @@ function FilterPanel({ onFilterChange }) {
         });
 
         setAvailableLocations(Array.from(locationsSet).sort());
-
-        setAvailableDates(Array.from(datesSet).sort().reverse().slice(0,31))
 
         // Get all unique skills
         const allSkills = Array.from(Object.keys(skillsFrequency));
@@ -182,9 +171,6 @@ function FilterPanel({ onFilterChange }) {
           onChange={handleInputChange}
         >
           <option value="">All Dates</option>
-          {availableDates.map((date) => (
-            <option key={date} value={date.split('/').reverse().join('-')}>{date}</option>
-          ))}
         </select>
       </div>
 

@@ -33,5 +33,5 @@
 .jobs-list {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem; /* Increased from previous value */
+  gap: 0.5rem; 
 }

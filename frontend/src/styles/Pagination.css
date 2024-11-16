@@ -1,0 +1,30 @@
+.pagination-nav {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+  }
+  
+  .pagination-button {
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    font-weight: 500;
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  
+  .pagination-button:hover:not(:disabled) {
+    background-color: var(--background-color);
+  }
+  
+  .pagination-button:disabled {
+    color: var(--text-secondary);
+    cursor: not-allowed;
+    opacity: 0.5;
+  }

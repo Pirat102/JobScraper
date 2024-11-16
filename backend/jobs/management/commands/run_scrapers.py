@@ -36,7 +36,8 @@ class Command(BaseCommand):
         console_handler.setFormatter(formatter)
 
         # Add console handler to logger
-        logger.addHandler(console_handler)
+        if not logger.hasHandlers():
+            logger.addHandler(console_handler)
         return logger
 
     def handle(self, *args, **options):
