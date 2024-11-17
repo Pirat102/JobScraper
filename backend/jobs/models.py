@@ -13,6 +13,7 @@ class Job(models.Model):
     url = models.URLField()
     scraped_date = models.DateTimeField(auto_now_add=True)
     summary = models.TextField(null=True, blank=True)
+    source = models.CharField(max_length=20, null=True)
     
 
     def __str__(self):
@@ -26,4 +27,4 @@ class Requested(models.Model):
     
     
     def __str__(self):
-        return f"ID: {self.id} - Title: {self.title}"
+        return f"ID: {self.id} - Title: {self.title} - {self.created_at.strftime('%d/%m/%Y %H:%M')}"
