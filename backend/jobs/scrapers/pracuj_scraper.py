@@ -6,7 +6,7 @@ class PracujScraper(WebScraper):
     def __init__(self, request_limit: int):
         super().__init__(
             base_url="https://it.pracuj.pl/praca",
-            filter_url="https://it.pracuj.pl/praca?et=1%2C17%2C4%2C18%2C19%2C5%2C20&itth=37",
+            filter_url="https://it.pracuj.pl/praca?et=1%2C17%2C4%2C18%2C19%2C20&itth=37",
             request_limit=request_limit
         )
         

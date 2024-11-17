@@ -23,25 +23,10 @@ class Command(BaseCommand):
             help='Limit number of requests per scraper'
         )
 
-    def setup_logging(self):
-        # Create logger
-        logger = logging.getLogger('scraper')
-        logger.propagate = False
-        logger.setLevel(logging.INFO)
-
-        # Create console handler with formatting
-        console_handler = logging.StreamHandler(sys.stdout)
-        console_handler.setLevel(logging.INFO)
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        console_handler.setFormatter(formatter)
-
-        # Add console handler to logger
-        if not logger.hasHandlers():
-            logger.addHandler(console_handler)
-        return logger
+    
 
     def handle(self, *args, **options):
-        logger = self.setup_logging()
+        logger = logging.getLogger('scraper')
         scrapers_to_run = options['scrapers']
         request_limit = options['limit']
         
@@ -58,9 +43,7 @@ class Command(BaseCommand):
         
         for scraper_name in scrapers_to_run:
             if scraper_name not in available_scrapers:
-                self.stderr.write(
-                    self.style.ERROR(f"Unknown scraper: {scraper_name}")
-                )
+                logger.error(f"Unknown scraper: {scraper_name}")
                 continue
 
             logger.info(f"Starting {scraper_name} scraper...")
@@ -76,6 +59,5 @@ class Command(BaseCommand):
             except Exception as e:
                 logger.error(f"Error running {scraper_name} scraper: {str(e)}", exc_info=True)
 
-        self.stdout.write(
-            self.style.SUCCESS(f"Scraping completed. Total new jobs created: {total_jobs_created}")
-        )
+        logger.info(f"Scraping completed. Total new jobs created: {total_jobs_created}")
+        return str(total_jobs_created)

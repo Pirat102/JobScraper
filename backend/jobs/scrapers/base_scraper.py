@@ -4,9 +4,10 @@ from bs4 import BeautifulSoup
 from jobs.models import Job, Requested
 import time
 import logging
-from typing import Dict, Any, Optional
+from typing import Dict, Optional
 from django.db import transaction
 from jobs.summarizer import summarize_text
+from random import randint
 
 class WebScraper(ABC):
     """Base scraper class for job websites."""
@@ -33,8 +34,10 @@ class WebScraper(ABC):
 
     def get_main_html(self) -> str:
         """Fetches HTML from the main job listings page."""
+        self.logger.debug(f"Fetching main page from: {self.filter_url}")
         res = requests.get(self.filter_url)
         res.raise_for_status()
+        self.logger.debug("Successfully fetched main page")
         return res.text
 
     def get_job_listings(self, html: str) -> Dict[str, Dict[str, str]]:
@@ -67,15 +70,22 @@ class WebScraper(ABC):
     def process_job_listings(self, listings: Dict) -> Dict:
         """Processes each job listing to get detailed information."""
         detailed_jobs = {}
+        self.logger.info(f"Starting to process {len(listings)} job listings")
+        
         for title, data in listings.items():
+            self.logger.debug(f"Processing job: {title}")
             if job_details := self._process_single_job(title, data["link"]):
                 detailed_jobs[title] = job_details
+                self.logger.debug(f"Successfully processed job: {title}")
+            
+        self.logger.info(f"Completed processing. Successfully processed {len(detailed_jobs)} out of requested {(self.request_count)} jobs")
         return detailed_jobs
 
     def _process_single_job(self, title: str, link: str) -> Optional[Dict]:
         """Processes a single job listing."""
         try:
             if Job.objects.filter(url=link).exists():
+                self.logger.debug(f"Job already exists in database: {title}")
                 return None
             
             if soup := self._get_job_page(link, title):
@@ -108,7 +118,7 @@ class WebScraper(ABC):
             }
             response = requests.get(link, headers=headers)
             self.request_count += 1
-            time.sleep(1)
+            time.sleep(randint(1, 5))
             
             Requested.objects.create(url=link, title=title)
             self.logger.info(f"Requested: {title}")
@@ -123,7 +133,9 @@ class WebScraper(ABC):
     def process_skills(self, soup: BeautifulSoup, experience: str) -> Dict[str, str]:
         """Main method for processing skills based on job type."""
         if self.has_skill_sections():
+            self.logger.debug("Using sectioned skills processing")
             return self._process_sectioned_skills(soup, experience)
+        self.logger.debug("Using single container skills processing")
         return self._process_single_container_skills(soup)
 
     def _process_sectioned_skills(self, soup: BeautifulSoup, experience: str) -> Dict[str, str]:
@@ -137,6 +149,7 @@ class WebScraper(ABC):
     def _extract_required_skills(self, container: BeautifulSoup, skills: Dict[str, str], experience: str):
         """Extracts required skills with experience-based levels."""
         if required := container.find(**self.get_required_skills_selector()):
+            self.logger.debug("Found required skills section")
             try:
                 for skill in required.find_all(**self.get_skill_item_selector()):
                     if skill_name := skill.find("span"):
@@ -147,6 +160,7 @@ class WebScraper(ABC):
     def _extract_nice_to_have_skills(self, container: BeautifulSoup, skills: Dict[str, str]):
         """Extracts nice-to-have skills."""
         if nice := container.find(**self.get_nice_skills_selector()):
+            self.logger.debug("Found nice skills section")
             try:
                 for skill in nice.find_all(**self.get_skill_item_selector()):
                     if skill_name := skill.find("span"):
@@ -158,6 +172,7 @@ class WebScraper(ABC):
         """Processes skills from a single container (no sections)."""
         skills = {}
         if container := soup.find(**self.get_skills_container_selector()):
+            self.logger.debug("Found single container skills")
             for element in container.find_all(**self.get_skill_item_selector()):
                 if (name := self.extract_skill_name(element)) and (level := self.extract_skill_level(element)):
                     skills[name] = level
