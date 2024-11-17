@@ -202,8 +202,17 @@ class WebScraper(ABC):
             try:
                 description = data.get("description", "")
                 summary = summarize_text(description) if description else ""
+ 
                 
                 if not self._is_duplicate_job(title, data):
+                    url = data.get("link")
+                    if 'pracuj.pl' in url:
+                        source = "Pracuj.pl"
+                    elif 'nofluffjobs.com' in url:
+                        source = "NoFluffJobs"
+                    elif 'justjoin.it' in url:
+                        source = "JustJoinIt"
+                    
                     Job.objects.create(
                         title=title,
                         company=data.get("company"),
@@ -214,10 +223,13 @@ class WebScraper(ABC):
                         description=description,
                         skills=data.get("skills"),
                         summary=summary,
-                        url=data.get("link")
+                        url=url,
+                        source=source
                     )
                     saved_count += 1
                     self.logger.info(f"Created job: {title}")
+                else:
+                    self.logger.info(f"Skipping {title} already exists in database")
             except Exception as e:
                 self.logger.error(f"Error saving job {title}: {e}")
         return saved_count
