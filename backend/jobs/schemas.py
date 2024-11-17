@@ -35,6 +35,7 @@ class JobFilterSchema(FilterSchema):
     operating_mode: Optional[str] = None
     salary: Optional[str] = None
     skills: Optional[List[str]] = None
+    source: Optional[str] = None
 
     def filter_queryset(self, queryset):
         # Standard filters based on schema fields
@@ -52,6 +53,8 @@ class JobFilterSchema(FilterSchema):
             queryset = queryset.filter(operating_mode__icontains=self.operating_mode)
         if self.salary:
             queryset = queryset.filter(salary__icontains=self.salary)
+        if self.source:
+            queryset = queryset.filter(source__exact=self.source)
 
         # Custom filter logic for skills (AND logic)
         if self.skills:

@@ -1,4 +1,3 @@
-// components/FilterPanel.jsx
 import { useState, useEffect } from "react";
 import "../styles/FilterPanel.css";
 import api from "../api";
@@ -11,6 +10,7 @@ function FilterPanel({ onFilterChange }) {
     experience: "",
     operating_mode: "",
     skills: [],
+    source: "",
   });
 
  
@@ -44,7 +44,7 @@ function FilterPanel({ onFilterChange }) {
         const locationsSet = new Set();
         // Get skills with their frequency
         const skillsFrequency = {};
-
+        
         res.data.results.forEach((job) => {
           if (job.location) {
             locationsSet.add(job.location);
@@ -123,6 +123,22 @@ function FilterPanel({ onFilterChange }) {
           onChange={handleInputChange}
           placeholder="Search job titles..."
         />
+      </div>
+      {/* Search by source */}
+      <div className="filter-section">
+        <label htmlFor="source">Source</label>
+        <select
+          id="source"
+          name="source"
+          value={filters.source}
+          onChange={handleInputChange}
+        >
+          <option value="">All Types</option>
+          <option value="Pracuj.pl">Pracuj.pl</option>
+          <option value="NoFluffJobs">NoFluffJobs</option>
+          <option value="JustJoinIt">JustJoinIt</option>
+
+        </select>
       </div>
 
       {/* Experience dropdown */}
