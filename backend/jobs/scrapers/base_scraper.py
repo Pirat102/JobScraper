@@ -34,8 +34,11 @@ class WebScraper(ABC):
 
     def get_main_html(self) -> str:
         """Fetches HTML from the main job listings page."""
+        headers = {
+                'User-Agent': "Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0"
+            }
         self.logger.debug(f"Fetching main page from: {self.filter_url}")
-        res = requests.get(self.filter_url)
+        res = requests.get(self.filter_url, headers=headers)
         res.raise_for_status()
         self.logger.debug("Successfully fetched main page")
         return res.text
@@ -212,6 +215,8 @@ class WebScraper(ABC):
                         source = "NoFluffJobs"
                     elif 'justjoin.it' in url:
                         source = "JustJoinIt"
+                    elif 'theprotocol.it' in url:
+                        source = "TheProtocol"
                     
                     Job.objects.create(
                         title=title,
@@ -231,6 +236,7 @@ class WebScraper(ABC):
                 else:
                     self.logger.info(f"Skipping {title} already exists in database")
             except Exception as e:
+                self.logger.info(f" {data.get("salary")}/n{data.get("experience")} ")
                 self.logger.error(f"Error saving job {title}: {e}")
         return saved_count
 
@@ -248,7 +254,7 @@ class WebScraper(ABC):
     # Abstract Methods That Need Implementation
     # -----------------------------------------------
     @abstractmethod
-    def get_jobs_container_selector(self) -> Dict:
+    def get_jobs_container_selector(self) -> Dict[str, Dict[str, str]]:
         """
         Define how to find the main container that holds all job listings.
         Returns:
@@ -260,12 +266,12 @@ class WebScraper(ABC):
         pass
 
     @abstractmethod
-    def get_listings_selector(self) -> Dict:
+    def get_listings_selector(self) -> Dict[str, Dict[str, str]]:
         """ Define how to find individual job listings within the container. """ 
         pass
 
     @abstractmethod
-    def get_listing_title_selector(self) -> Dict:
+    def get_listing_title_selector(self) -> Dict[str, Dict[str, str]]:
         """ Define how to find the title element within a job listing. """
         pass
 
@@ -311,7 +317,7 @@ class WebScraper(ABC):
         pass
 
     @abstractmethod
-    def get_skills_container_selector(self) -> Dict:
+    def get_skills_container_selector(self) -> Dict[str, Dict[str, str]]:
         """
         Define how to find the container that holds all skills.
         Returns:
@@ -332,14 +338,14 @@ class WebScraper(ABC):
         """
         pass
     @abstractmethod
-    def get_required_skills_selector(self) -> Dict:
+    def get_required_skills_selector(self) -> Dict[str, Dict[str, str]]:
         """
         Define how to find the required skills section.
         Only needed if has_skill_sections() returns True.
         """
         pass
     @abstractmethod
-    def get_nice_skills_selector(self) -> Dict:
+    def get_nice_skills_selector(self) -> Dict[str, Dict[str, str]]:
         """
         Define how to find the nice-to-have skills section.
         Only needed if has_skill_sections() returns True.
@@ -347,7 +353,7 @@ class WebScraper(ABC):
         pass
 
     @abstractmethod
-    def get_skill_item_selector(self) -> Dict:
+    def get_skill_item_selector(self) -> Dict[str, Dict[str, str]]:
         """Define how to find individual skill items within skills container."""
         pass
 
