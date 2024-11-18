@@ -6,7 +6,7 @@ class NoFluffScraper(WebScraper):
     def __init__(self, request_limit: int):
         super().__init__(
             base_url= "https://nofluffjobs.com",
-            filter_url="https://nofluffjobs.com/pl/Python",
+            filter_url="https://nofluffjobs.com/pl/Python?sort=newest",
             request_limit=request_limit
         )
 
@@ -81,7 +81,10 @@ class NoFluffScraper(WebScraper):
 
     def extract_salary(self, soup: BeautifulSoup) -> str:
         h4 = soup.select_one('div.salary > h4.tw-mb-0')
-        return h4.text.strip().replace('–', '-') if h4 else ""
+        if h4:
+            return h4.text.strip().replace('–', '-')
+        else:
+            return ""
 
     def extract_description(self, soup: BeautifulSoup) -> str:
         section_data = ['JobOffer_Requirements', 'JobOffer_Project', 'JobOffer_DailyTasks']

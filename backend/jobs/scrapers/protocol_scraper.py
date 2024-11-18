@@ -9,7 +9,7 @@ class TheProtocolScraper(WebScraper):
     def __init__(self, request_limit: int):
         super().__init__(
             base_url= "https://theprotocol.it",
-            filter_url="https://theprotocol.it/filtry/python;t",
+            filter_url="https://theprotocol.it/filtry/python;t?sort=date",
             request_limit=request_limit
         )
 
@@ -134,6 +134,7 @@ class TheProtocolScraper(WebScraper):
                 
                 header_text = header.text.strip().lower()
                 is_required = 'expected' in header_text or 'wymagane' in header_text
+                is_optional = 'optional' in header_text or 'mile widziane' in header_text
                 
                 # Process skills in this section
                 for skill in section.find_all(**self.get_skill_item_selector()):
@@ -141,8 +142,10 @@ class TheProtocolScraper(WebScraper):
                         skill_name = skill_span.text.strip()
                         if is_required:
                             skills[skill_name] = self.get_standardized_skill_level(experience)
-                        else:
+                        elif is_optional:
                             skills[skill_name] = 'nice to have'
+                        else:
+                            continue
         
         return skills
 
