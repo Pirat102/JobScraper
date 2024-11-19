@@ -24,6 +24,7 @@ class JobSchema(Schema):
     url: str
     scraped_date: datetime
     summary: Optional[str]
+    source: Optional[str]
     
 
 class JobFilterSchema(FilterSchema):
@@ -38,23 +39,17 @@ class JobFilterSchema(FilterSchema):
     source: Optional[str] = None
 
     def filter_queryset(self, queryset):
-        # Standard filters based on schema fields
-        if self.title:
-            queryset = queryset.filter(title__icontains=self.title)
-        if self.company:
-            queryset = queryset.filter(company__icontains=self.company)
-        if self.location:
-            queryset = queryset.filter(location__icontains=self.location)
-        if self.scraped_date:
-            queryset= queryset.filter(scraped_date__gt=self.scraped_date)
-        if self.experience:
-            queryset = queryset.filter(experience__icontains=self.experience)
-        if self.operating_mode:
-            queryset = queryset.filter(operating_mode__icontains=self.operating_mode)
-        if self.salary:
-            queryset = queryset.filter(salary__icontains=self.salary)
-        if self.source:
-            queryset = queryset.filter(source__exact=self.source)
+        filters = {
+            'title__icontains': self.title,
+            'location__icontains': self.location,
+            'scraped_date__gt': self.scraped_date,
+            'experience__icontains': self.experience,
+            'operating_mode__icontains': self.operating_mode,
+            'source__exact': self.source
+        }
+        # Remove None values
+        filters = {k: v for k, v in filters.items() if v is not None}
+        queryset = queryset.filter(**filters)
 
         # Custom filter logic for skills (AND logic)
         if self.skills:

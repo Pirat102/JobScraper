@@ -1,5 +1,7 @@
+from collections import Counter
+from datetime import datetime, timedelta
 from ninja import Query
-from typing import Dict
+from typing import Dict, Any
 from jobs.models import Job
 from jobs.schemas import *
 from django.contrib.auth.models import User
@@ -28,10 +30,50 @@ class AuthController:
 
 @api_controller("/jobs")
 class JobController:
-    @route.get("", response=PaginatedResponseSchema[JobSchema])
-    @paginate(PageNumberPaginationExtra, page_size=50)
+    @route.get("", response=List[JobSchema])
     def get_jobs(self):
         return Job.objects.all().order_by("-scraped_date")
+    
+    @route.get("stats", response=Dict[str, Any])
+    def stats(self):
+        today = datetime.now()
+        last_week = today - timedelta(days=7)
+        last_month = today - timedelta(days=30)
+        jobs = Job.objects.all()
+        skill_freq = {}
+        exp_stats = Counter()
+        source_stats = Counter()
+        work_mode = Counter()
+        
+        for job in jobs:
+            # Process all stats in single loop
+            exp_stats[job.experience] += 1
+            source_stats[job.source] += 1
+            work_mode[job.operating_mode] += 1
+            
+            # Skills counting
+            for skill in job.skills.keys():
+                skill_freq[skill] = skill_freq.get(skill, 0) + 1
+        
+        def sort_dict(d):
+            return dict(sorted(d.items(), key=lambda x: x[1], reverse=True))
+    
+        return {
+            "top_skills": sort_dict(skill_freq),
+            "exp_stats": sort_dict(exp_stats),
+            "source_stats": sort_dict(source_stats), 
+            "operating_mode_stats": sort_dict(work_mode),
+            "trends": {
+            "last_7_days": Job.objects.filter(scraped_date__gte=last_week).count(),
+            "last_30_days": Job.objects.filter(scraped_date__gte=last_month).count(),
+        },
+        }
+    
+    @route.get("dates", response=List[date])
+    def available_dates(self):
+        dates = Job.objects.dates('scraped_date', 'day').order_by("-scraped_date")
+        return set(dates)
+                
 
     @route.get("/filter", response=PaginatedResponseSchema[JobSchema])
     @paginate(PageNumberPaginationExtra, page_size=50)
