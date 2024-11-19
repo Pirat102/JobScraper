@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     "jobs",
     "ninja_extra",
     "corsheaders",
-    "django_celery_beat"
+    "django_celery_beat",
+    "django_celery_results"
 ]
 
 MIDDLEWARE = [
@@ -148,10 +149,9 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 # Celery
 CELERY_BROKER_URL = 'redis://redis:6379/0'
-CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_EXTEND = True
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
-CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
-
 # Logging
 LOG_DIR = os.path.join(BASE_DIR, 'logs')
 os.makedirs(LOG_DIR, exist_ok=True)

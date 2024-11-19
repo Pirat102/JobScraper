@@ -20,8 +20,3 @@ logs/
 
 # IDE
 .vscode/
-
-# React/Frontend
-frontend/node_modules/
-frontend/build/
-frontend/.npm/

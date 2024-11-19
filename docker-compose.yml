@@ -61,6 +61,18 @@ services:
       - django
     restart: unless-stopped
 
+  flower:
+    image: app-image
+    container_name: flower-container
+    command: celery -A backend flower 
+    env_file:
+    - ./backend/.env
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+    restart: unless-stopped
+
   frontend:
     build:
       context: ./frontend

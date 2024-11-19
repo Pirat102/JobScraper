@@ -46,10 +46,12 @@ class NoFluffScraper(WebScraper):
             if span:
                 text = span.get_text(strip=True)
                 text = text.split('+')[0].strip()
+            else: 
+                return ""
             
             if "Hybrydowo" in text or "Praca zdalna" in text:
                 return ""
-            return text if text else ""
+            return text
         except Exception as e:
             self.logger.error(f"Error extracting location: {e}")
 
