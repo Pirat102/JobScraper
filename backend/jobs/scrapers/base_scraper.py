@@ -236,7 +236,6 @@ class WebScraper(ABC):
                 else:
                     self.logger.info(f"Skipping {title} already exists in database")
             except Exception as e:
-                self.logger.info(f" {data.get("salary")}/n{data.get("experience")} ")
                 self.logger.error(f"Error saving job {title}: {e}")
         return saved_count
 

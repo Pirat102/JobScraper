@@ -137,6 +137,7 @@ function FilterPanel({ onFilterChange }) {
           <option value="Pracuj.pl">Pracuj.pl</option>
           <option value="NoFluffJobs">NoFluffJobs</option>
           <option value="JustJoinIt">JustJoinIt</option>
+          <option value="TheProtocol">TheProtocol</option>
 
         </select>
       </div>
