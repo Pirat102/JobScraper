@@ -6,7 +6,7 @@ class NoFluffScraper(WebScraper):
     def __init__(self, request_limit: int):
         super().__init__(
             base_url= "https://nofluffjobs.com",
-            filter_url="https://nofluffjobs.com/pl/Python?sort=newest",
+            filter_urls=["https://nofluffjobs.com/pl/Python?sort=newest", "https://nofluffjobs.com/pl/JavaScript?sort=newest"],
             request_limit=request_limit
         )
 
@@ -72,7 +72,7 @@ class NoFluffScraper(WebScraper):
             elif 'Hybrydowo' in text:
                 return 'Hybrid'
             else:
-                return ""
+                return "Office"
         except Exception as e:
             self.logger.error(f"Error extracting operating mode: {e}")
 

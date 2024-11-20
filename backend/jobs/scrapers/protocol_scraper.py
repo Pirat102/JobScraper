@@ -9,7 +9,7 @@ class TheProtocolScraper(WebScraper):
     def __init__(self, request_limit: int):
         super().__init__(
             base_url= "https://theprotocol.it",
-            filter_url="https://theprotocol.it/filtry/python;t?sort=date",
+            filter_urls=["https://theprotocol.it/filtry/javascript;t?sort=date", "https://theprotocol.it/filtry/python;t?sort=date"],
             request_limit=request_limit
         )
 

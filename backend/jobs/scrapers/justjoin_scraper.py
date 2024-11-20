@@ -7,7 +7,7 @@ class JustJoinScraper(WebScraper):
     def __init__(self, request_limit: int):
         super().__init__(
             base_url="https://justjoin.it",
-            filter_url="https://justjoin.it/job-offers/all-locations/python?orderBy=DESC&sortBy=newest",
+            filter_urls=["https://justjoin.it/job-offers/all-locations/python?orderBy=DESC&sortBy=newest", "https://justjoin.it/job-offers/all-locations/javascript?orderBy=DESC&sortBy=newest"],
             request_limit=request_limit
         )
 

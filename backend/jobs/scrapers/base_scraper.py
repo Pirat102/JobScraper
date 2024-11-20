@@ -12,9 +12,9 @@ from random import randint
 class WebScraper(ABC):
     """Base scraper class for job websites."""
     
-    def __init__(self, base_url: str, filter_url: str, request_limit: int):
+    def __init__(self, base_url: str, filter_urls: list[str], request_limit: int):
         self.base_url = base_url
-        self.filter_url = filter_url
+        self.filter_urls = filter_urls
         self.logger = logging.getLogger(f'scraper.{self.__class__.__name__}')
         self.request_limit = request_limit
         self.request_count = 0
@@ -32,27 +32,34 @@ class WebScraper(ABC):
             self.logger.error(f"Error in scraping process: {e}")
             return 0
 
-    def get_main_html(self) -> str:
+    def get_main_html(self) -> list[str]:
         """Fetches HTML from the main job listings page."""
+        pages = []
         headers = {
                 'User-Agent': "Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0"
             }
-        self.logger.debug(f"Fetching main page from: {self.filter_url}")
-        res = requests.get(self.filter_url, headers=headers)
-        res.raise_for_status()
-        self.logger.debug("Successfully fetched main page")
-        return res.text
+        for url in self.filter_urls:
+            self.logger.info(f"Fetching main page from: {url}")
+            res = requests.get(url, headers=headers)
+            res.raise_for_status()
+            pages.append(res.text)
+            self.logger.debug("Successfully fetched main page")
+        return pages
 
-    def get_job_listings(self, html: str) -> Dict[str, Dict[str, str]]:
+    def get_job_listings(self, html_pages: list[str]) -> Dict[str, Dict[str, str]]:
         """Extracts basic job information (title, link) from the main listings page."""
-        soup = BeautifulSoup(html, 'html.parser')
-        containers = soup.find_all(**self.get_jobs_container_selector())
-        
-        if not containers:
-            self.logger.warning("No job listings found on the page")
-            return {}
-        
-        return self._extract_listings_from_containers(containers)
+        page_listings = []
+        for html in html_pages:
+            soup = BeautifulSoup(html, 'html.parser')
+            containers = soup.find_all(**self.get_jobs_container_selector())
+            
+            if not containers:
+                self.logger.warning("No job listings found on the page")
+                return {}
+            page_listing = self._extract_listings_from_containers(containers)
+            page_listings.append(page_listing)
+            
+        return page_listings
 
     def _extract_listings_from_containers(self, containers) -> Dict[str, Dict[str, str]]:
         """Processes each container to extract job listings."""
@@ -70,17 +77,18 @@ class WebScraper(ABC):
 
     # Job Details Processing
     # --------------------------------------------------
-    def process_job_listings(self, listings: Dict) -> Dict:
+    def process_job_listings(self, page_listings: list[Dict]) -> Dict:
         """Processes each job listing to get detailed information."""
         detailed_jobs = {}
-        self.logger.info(f"Starting to process {len(listings)} job listings")
-        
-        for title, data in listings.items():
-            self.logger.debug(f"Processing job: {title}")
-            if job_details := self._process_single_job(title, data["link"]):
-                detailed_jobs[title] = job_details
-                self.logger.debug(f"Successfully processed job: {title}")
+        for listings in page_listings:
+            self.logger.info(f"Starting to process {len(listings)} job listings")
             
+            for title, data in listings.items():
+                self.logger.debug(f"Processing job: {title}")
+                if job_details := self._process_single_job(title, data["link"]):
+                    detailed_jobs[title] = job_details
+                    self.logger.debug(f"Successfully processed job: {title}")
+                
         self.logger.info(f"Completed processing. Successfully processed {len(detailed_jobs)} out of requested {(self.request_count)} jobs")
         return detailed_jobs
 

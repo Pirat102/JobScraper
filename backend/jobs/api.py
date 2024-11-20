@@ -71,8 +71,8 @@ class JobController:
     
     @route.get("dates", response=List[date])
     def available_dates(self):
-        dates = Job.objects.dates('scraped_date', 'day').order_by("-scraped_date")
-        return set(dates)
+        dates = Job.objects.dates('scraped_date', 'day',"DESC").distinct()
+        return dates
                 
 
     @route.get("/filter", response=PaginatedResponseSchema[JobSchema])
