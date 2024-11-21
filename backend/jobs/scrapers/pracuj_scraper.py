@@ -104,6 +104,7 @@ class PracujScraper(WebScraper):
                 return f"{formated[0]} - {formated[1]} PLN" if formated else ""
             except Exception as e:
                 self.logger.error(f"Error extracting salary: {e}")
+                return f"{formated[0]} PLN" if formated else ""
 
     def extract_description(self, soup: BeautifulSoup) -> str:
         try:
