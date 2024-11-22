@@ -12,11 +12,17 @@ function FilterPanel({ onFilterChange }) {
     skills: [],
     source: "",
   });
-
- 
+  const [availableDates, setAvailableDates] = useState([]);
+  
+  // Add stats state to avoid multiple API calls
+  const [stats, setStats] = useState({
+    skills: [],
+    sources: [],
+    experiences: [],
+    workModes: []
+  });
 
   // State for available options
-  const [availableLocations, setAvailableLocations] = useState([]);
   const [availableSkills, setAvailableSkills] = useState([]);
   const [skillSearch, setSkillSearch] = useState("");
   const [isSkillsDropdownOpen, setIsSkillsDropdownOpen] = useState(false);
@@ -35,40 +41,22 @@ function FilterPanel({ onFilterChange }) {
   }, []);
 
   
-  // Fetch locations and skills when component mounts
+  // Fetch skills when component mounts
   useEffect(() => {
-    api
-      .get("api/jobs")
-      .then((res) => {
-        // Get unique locations
-        const locationsSet = new Set();
-        // Get skills with their frequency
-        const skillsFrequency = {};
-        
-        res.data.results.forEach((job) => {
-          if (job.location) {
-            locationsSet.add(job.location);
-          }
-          // Count skills frequency
-          Object.keys(job.skills).forEach((skill) => {
-            skillsFrequency[skill] = (skillsFrequency[skill] || 0) + 1;
-          });
-        });
-
-        setAvailableLocations(Array.from(locationsSet).sort());
-
-        // Get all unique skills
-        const allSkills = Array.from(Object.keys(skillsFrequency));
-        setAvailableSkills(allSkills.sort());
-
-        // Get top 10 most common skills
-        const topSkills = Object.entries(skillsFrequency)
-          .sort(([, a], [, b]) => b - a)
-          .slice(0, 10)
-          .map(([skill]) => skill);
-        setTopSkills(topSkills);
-      })
-      .catch((err) => console.error("Error fetching data:", err));
+    Promise.all([
+      api.get("api/jobs/stats"),
+      api.get("api/jobs/dates")
+    ]).then(([statsRes, datesRes]) => {
+      setStats({
+        skills: Object.keys(statsRes.data.top_skills),
+        sources: Object.keys(statsRes.data.source_stats),
+        experiences: Object.keys(statsRes.data.exp_stats),
+        workModes: Object.keys(statsRes.data.operating_mode_stats)
+      });
+      setAvailableDates(datesRes.data);
+      setAvailableSkills(Object.keys(statsRes.data.top_skills).sort());
+      setTopSkills(Object.keys(statsRes.data.top_skills).slice(0, 10));
+    });
   }, []);
 
   const handleInputChange = (e) => {
@@ -170,11 +158,13 @@ function FilterPanel({ onFilterChange }) {
           onChange={handleInputChange}
         >
           <option value="">All Locations</option>
-          {availableLocations.map((location) => (
-            <option key={location} value={location}>
-              {location}
-            </option>
-          ))}
+          <option value="Gdańsk">Gdańsk</option>
+          <option value="Katowice">Katowice</option>
+          <option value="Kraków">Kraków</option>
+          <option value="Łódź">Łódź</option>
+          <option value="Poznań">Poznań</option>
+          <option value="Warszawa">Warszawa</option>
+          <option value="Wrocław">Wrocław</option>
         </select>
       </div>
 
@@ -188,9 +178,13 @@ function FilterPanel({ onFilterChange }) {
           onChange={handleInputChange}
         >
           <option value="">All Dates</option>
+          {availableDates.map(date => (
+            <option key={date} value={date}>
+              {new Date(date).toLocaleDateString("en-GB")}
+            </option>
+          ))}
         </select>
       </div>
-
 
       {/* Operating Mode dropdown */}
       <div className="filter-section">
@@ -270,7 +264,10 @@ function FilterPanel({ onFilterChange }) {
       {/* Clear filters button */}
       {(filters.title ||
         filters.location ||
+        filters.scraped_date ||
+        filters.experience ||
         filters.operating_mode ||
+        filters.source ||
         filters.skills.length > 0) && (
         <button
           className="clear-filters"
@@ -278,8 +275,12 @@ function FilterPanel({ onFilterChange }) {
             setFilters({
               title: "",
               location: "",
+              scraped_date: "",
+              experience: "",
               operating_mode: "",
+              source: "",
               skills: [],
+              
             });
             setSkillSearch("");
             onFilterChange("");

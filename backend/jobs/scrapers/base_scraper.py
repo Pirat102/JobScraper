@@ -8,6 +8,8 @@ from typing import Dict, Optional
 from django.db import transaction
 from jobs.summarizer import summarize_text
 from random import randint
+from django_redis import get_redis_connection
+from difflib import SequenceMatcher
 
 class WebScraper(ABC):
     """Base scraper class for job websites."""
@@ -18,6 +20,7 @@ class WebScraper(ABC):
         self.logger = logging.getLogger(f'scraper.{self.__class__.__name__}')
         self.request_limit = request_limit
         self.request_count = 0
+        self.redis_client = get_redis_connection("default")
 
     # Main Flow Methods
     # --------------------------------------------------
@@ -249,13 +252,34 @@ class WebScraper(ABC):
 
     def _is_duplicate_job(self, title: str, data: Dict) -> bool:
         """Checks if a job already exists in the database."""
-        return (
-            Job.objects.filter(url=data.get("link")).exists() or
-            Job.objects.filter(
-                title__iexact=title,
-                company__iexact=data.get("company")
-            ).exists()
-        )
+        if Job.objects.filter(url=data.get("link")).exists():
+            return True
+        
+        company = data.get("company")
+        existing_jobs = Job.objects.filter(
+            company__icontains=company.split()[0]
+        ).values('title', 'company')
+        
+        for existing_job in existing_jobs:
+            title_similarity = self._text_similarity(existing_job['title'], title)
+            company_similarity = self._text_similarity(existing_job['company'], company)
+            
+            if title_similarity > 0.85 and company_similarity > 0.85:
+                self.logger.info(
+                    f"Duplicate found: {title} at {company} matches "
+                    f"{existing_job['title']} at {existing_job['company']}"
+                )
+                return True
+        return False
+    
+    def _text_similarity(self, text1: str, text2: str) -> float:
+        """Calculate similarity ratio between two texts"""
+        if not text1 or not text2:
+            return 0.0
+        return SequenceMatcher(None, text1.lower(), text2.lower()).ratio()
+            
+         
+        
 
 
     # Abstract Methods That Need Implementation

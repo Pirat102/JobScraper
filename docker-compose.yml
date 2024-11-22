@@ -39,8 +39,9 @@ services:
 
   celery_worker:
     image: app-image   
-    container_name: celery-worker-container
-    command: celery -A backend worker
+    deploy:
+      replicas: 4
+    command: celery -A backend worker --pool=prefork --concurrency=4
     volumes:
       - ./backend:/app
     depends_on:
