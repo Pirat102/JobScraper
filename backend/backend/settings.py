@@ -8,8 +8,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 env = environ.Env()
-# read .env file if it exists
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+ENVIRONMENT = env('ENVIRONMENT')
 
 # Fetch the API key
 OPENAI_API_KEY = env("OPENAI_API_KEY")
@@ -21,9 +21,15 @@ SECRET_KEY = env("DJANGO_SECRET_KEY")
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if ENVIRONMENT == 'development':
+    DEBUG = True
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    DEBUG = False
+    ALLOWED_HOSTS=["devradar.work","www.devradar.work","128.140.62.90"]
+    CORS_ALLOWED_ORIGINS=["https://devradar.work", "https://www.devradar.work"]
 
-ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -46,7 +52,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
-    
     
     
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -130,7 +135,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
-
+STATIC_ROOT = '/app/static'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -141,11 +146,15 @@ NINJA_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
 
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:5173",
-# ]
+# CSRF settings
+CSRF_TRUSTED_ORIGINS = [
+    'https://devradar.work',
+    'https://www.devradar.work'
+]
 
-CORS_ALLOW_ALL_ORIGINS = True
+# Security settings
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
 
 # Redis
 CACHES = {
