@@ -3,6 +3,6 @@ from django.urls import path
 from jobs.api import api
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('management/', admin.site.urls),
     path("api/", api.urls),
 ]

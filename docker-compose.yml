@@ -19,7 +19,7 @@ services:
     restart: unless-stopped
 
   postgres:
-    image: postgres
+    image: postgres:15
     container_name: postgres-container
     env_file:
     - ./backend/.env
@@ -41,7 +41,7 @@ services:
     image: app-image   
     deploy:
       replicas: 4
-    command: celery -A backend worker --pool=prefork --concurrency=4
+    command: celery -A backend worker 
     volumes:
       - ./backend:/app
     depends_on:
