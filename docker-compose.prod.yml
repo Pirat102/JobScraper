@@ -35,14 +35,13 @@ services:
 
   celery_worker:
     image: app-image
-    command: celery -A backend worker --uid=1000 --gid=1000
-    user: "1000:1000"
     volumes:
       - ./backend:/app
     depends_on:
       - django
       - postgres
       - redis
+    command: celery -A backend worker
     restart: unless-stopped
     mem_limit: 512M
     cpus: 0.5
@@ -63,8 +62,6 @@ services:
     image: app-image
     container_name: flower-container
     command: celery -A backend flower --url-prefix=/monitoring
-    env_file:
-    - ./backend/.env
     ports:
       - "5555:5555"
     depends_on:

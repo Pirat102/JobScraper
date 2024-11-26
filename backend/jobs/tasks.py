@@ -3,5 +3,5 @@ from celery import shared_task
 
 @shared_task
 def run_scrapers_task():
-	result = call_command("run_scrapers")
-	return result
+    result = call_command("run_scrapers")
+    return result
