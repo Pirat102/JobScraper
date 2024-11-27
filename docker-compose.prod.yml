@@ -74,13 +74,29 @@ services:
       dockerfile: Dockerfile.prod
     image: frontend-image
     container_name: frontend-container
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     ports:
       - "3000:80"
     depends_on:
       - django
     restart: unless-stopped
 
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-container
+    volumes:
+      - static_volume:/usr/share/nginx/html
+    ports:
+      - "8080:80"
+    depends_on:
+      - django
+      - frontend
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   redis_data:
   static_volume:
+
