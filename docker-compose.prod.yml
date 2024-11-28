@@ -1,0 +1,102 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres-container
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+
+  redis:
+    image: redis:alpine
+    container_name: redis-container
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  django:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    image: app-image
+    container_name: django-container
+    command: gunicorn backend.wsgi:application --bind 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - static_volume:/app/static
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  celery_worker:
+    image: app-image
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - django
+      - postgres
+      - redis
+    command: celery -A backend worker
+    restart: unless-stopped
+    mem_limit: 512M
+    cpus: 0.5
+
+  celery_beat:
+    image: app-image
+    container_name: celery-beat-container
+    command: celery -A backend beat -l info
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - django
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  flower:
+    image: app-image
+    container_name: flower-container
+    command: celery -A backend flower --url-prefix=/monitoring
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    image: frontend-image
+    container_name: frontend-container
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:80"
+    depends_on:
+      - django
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-container
+    volumes:
+      - static_volume:/usr/share/nginx/html
+    ports:
+      - "8080:80"
+    depends_on:
+      - django
+      - frontend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  static_volume:
+
