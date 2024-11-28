@@ -30,7 +30,7 @@ class PracujScraper(WebScraper):
 
     def extract_job_link(self, job_listing: BeautifulSoup) -> str:
             link = job_listing.find('a', {'data-test': 'link-offer'})
-            return link['href']
+            return link['href'] + "?targetCurrency=pln"
         
 
     def extract_company(self, soup: BeautifulSoup) -> str:
