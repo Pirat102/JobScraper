@@ -32,7 +32,7 @@ class JustJoinScraper(WebScraper):
         }
 
     def extract_job_link(self, job_listing: BeautifulSoup) -> str:
-        return f"{self.base_url}{job_listing.a['href']}"
+        return f"{self.base_url}{job_listing.a['href']}?targetCurrency=pln"
 
     def extract_company(self, soup: BeautifulSoup) -> str:
         div_elements = soup.find("div", {"class": "MuiBox-root css-yd5zxy"})
