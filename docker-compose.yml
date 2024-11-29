@@ -39,9 +39,7 @@ services:
 
   celery_worker:
     image: app-image   
-    deploy:
-      replicas: 4
-    command: celery -A backend worker 
+    command: celery -A backend worker --concurency 
     volumes:
       - ./backend:/app
     depends_on:

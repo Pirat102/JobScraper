@@ -20,7 +20,6 @@ class WebScraper(ABC):
         self.logger = logging.getLogger(f'scraper.{self.__class__.__name__}')
         self.request_limit = request_limit
         self.request_count = 0
-        self.redis_client = get_redis_connection("default")
 
     # Main Flow Methods
     # --------------------------------------------------
