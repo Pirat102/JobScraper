@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 
 class Job(models.Model):
@@ -11,7 +12,7 @@ class Job(models.Model):
     skills = models.JSONField()
     description = models.TextField(null=True, blank=True)
     url = models.URLField()
-    scraped_date = models.DateTimeField(auto_now_add=True)
+    scraped_date = models.DateTimeField(default=timezone.now)
     summary = models.TextField(null=True, blank=True)
     source = models.CharField(max_length=20, null=True)
     
@@ -23,7 +24,7 @@ class Job(models.Model):
 class Requested(models.Model):
     url = models.URLField()
     title = models.CharField(max_length=255, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
     
     
     def __str__(self):
