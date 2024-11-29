@@ -21,7 +21,9 @@ RUN pip install gunicorn
 
 COPY . .
 
-RUN chown -R celery:celery /app
+RUN chown -R celery:celery /app && \
+    chmod -R 755 /app && \
+    chmod -R 777 /app/logs
 USER celery
 
 EXPOSE 8000
