@@ -15,7 +15,7 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }} 
           script: |
-            cd /apps/scraper
+            cd /home/deploy/apps/scraper
             git pull
             dcp down
             dcp up -d --build 
