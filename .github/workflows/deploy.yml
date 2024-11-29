@@ -17,5 +17,5 @@ jobs:
           script: |
             cd /home/deploy/apps/scraper
             git pull
-            dcp down
-            dcp up -d --build 
+            docker compose -f docker-compose.prod.yml down django frontend
+            docker compose -f docker-compose.prod.yml up -d --build django frontend
