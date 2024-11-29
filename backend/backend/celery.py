@@ -10,6 +10,7 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.conf.update(
     task_acks_late=True,
     task_track_started=True,
+    broker_connection_retry_on_startup=True 
     
 )
 

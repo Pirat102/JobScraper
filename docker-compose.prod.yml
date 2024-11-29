@@ -26,6 +26,7 @@ services:
       - "8000:8000"
     volumes:
       - static_volume:/app/static
+      - ./backend:/app
     env_file:
       - ./backend/.env
     depends_on:
@@ -41,10 +42,8 @@ services:
       - django
       - postgres
       - redis
-    command: celery -A backend worker
+    command: celery -A backend worker --concurrency=1 --uid=celery
     restart: unless-stopped
-    mem_limit: 512M
-    cpus: 0.5
 
   celery_beat:
     image: app-image
@@ -87,7 +86,8 @@ services:
     image: nginx:alpine
     container_name: nginx-container
     volumes:
-      - static_volume:/usr/share/nginx/html
+      - static_volume:/usr/share/nginx/html/static
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
     ports:
       - "8080:80"
     depends_on:
