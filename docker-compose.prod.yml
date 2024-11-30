@@ -61,6 +61,8 @@ services:
     image: app-image
     container_name: flower-container
     command: celery -A backend flower --url-prefix=/monitoring
+    env_file:
+      - ./backend/.env
     ports:
       - "5555:5555"
     depends_on:
