@@ -8,8 +8,8 @@ from typing import Dict, Optional
 from django.db import transaction
 from jobs.summarizer import summarize_text
 from random import randint
-from django_redis import get_redis_connection
 from difflib import SequenceMatcher
+from jobs.utils.salary_standardizer import standardize_salary
 
 class WebScraper(ABC):
     """Base scraper class for job websites."""
@@ -228,13 +228,17 @@ class WebScraper(ABC):
                     elif 'theprotocol.it' in url:
                         source = "TheProtocol"
                     
+                    # Standardize salary before saving
+                    raw_salary = data.get("salary")
+                    standardized_salary = standardize_salary(raw_salary) if raw_salary else None
+                    
                     Job.objects.create(
                         title=title,
                         company=data.get("company"),
                         location=data.get("location"),
                         operating_mode=data.get("operating_mode"),
                         experience=data.get("experience"),
-                        salary=data.get("salary"),
+                        salary=standardize_salary,
                         description=description,
                         skills=data.get("skills"),
                         summary=summary,
