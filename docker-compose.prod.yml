@@ -42,7 +42,7 @@ services:
       - django
       - postgres
       - redis
-    command: celery -A backend worker --concurrency=1 --uid=celery
+    command: celery -A backend worker --concurrency=1
     restart: unless-stopped
 
   celery_beat:

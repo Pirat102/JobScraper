@@ -5,8 +5,6 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-RUN groupadd celery && useradd -g celery celery
-
 # System dependencies
 RUN apt-get update \
     && apt-get install -y \
@@ -21,10 +19,6 @@ RUN pip install gunicorn
 
 COPY . .
 
-RUN chown -R celery:celery /app && \
-    chmod -R 755 /app && \
-    chmod -R 777 /app/logs
-USER celery
 
 EXPOSE 8000
 
