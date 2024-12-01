@@ -45,7 +45,7 @@ class JobFilterSchema(FilterSchema):
             'scraped_date__gt': self.scraped_date,
             'experience__icontains': self.experience,
             'operating_mode__icontains': self.operating_mode,
-            'source__exact': self.source
+            'source__icontains': self.source
         }
         # Remove None values
         filters = {k: v for k, v in filters.items() if v is not None}
