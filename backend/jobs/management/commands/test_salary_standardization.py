@@ -30,7 +30,7 @@ class Command(BaseCommand):
         self.stdout.write("-" * 50)
 
         for job in jobs:
-            old_salary = job.salary
+            old_salary = job.salary.replace('\xa0', ' ')
             new_salary = standardize_salary(old_salary)
             
             if old_salary != new_salary:
