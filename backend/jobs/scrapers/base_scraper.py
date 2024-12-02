@@ -238,7 +238,7 @@ class WebScraper(ABC):
                         location=data.get("location"),
                         operating_mode=data.get("operating_mode"),
                         experience=data.get("experience"),
-                        salary=standardize_salary,
+                        salary=standardized_salary,
                         description=description,
                         skills=data.get("skills"),
                         summary=summary,
