@@ -37,40 +37,40 @@ services:
     restart: unless-stopped
 
 
-  celery_worker:
-    image: app-image   
-    command: celery -A backend worker --concurency 
-    volumes:
-      - ./backend:/app
-    depends_on:
-      - postgres
-      - redis
-      - django
-    restart: unless-stopped
+  # celery_worker:
+  #   image: app-image   
+  #   command: celery -A backend worker --concurency 
+  #   volumes:
+  #     - ./backend:/app
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #     - django
+  #   restart: unless-stopped
 
-  celery_beat:
-    image: app-image  
-    container_name: celery-beat-container
-    command: celery -A backend beat -l info
-    volumes:
-      - ./backend:/app
-    depends_on:
-      - postgres
-      - redis
-      - django
-    restart: unless-stopped
+  # celery_beat:
+  #   image: app-image  
+  #   container_name: celery-beat-container
+  #   command: celery -A backend beat -l info
+  #   volumes:
+  #     - ./backend:/app
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #     - django
+  #   restart: unless-stopped
 
-  flower:
-    image: app-image
-    container_name: flower-container
-    command: celery -A backend flower 
-    env_file:
-    - ./backend/.env
-    ports:
-      - "5555:5555"
-    depends_on:
-      - redis
-    restart: unless-stopped
+  # flower:
+  #   image: app-image
+  #   container_name: flower-container
+  #   command: celery -A backend flower 
+  #   env_file:
+  #   - ./backend/.env
+  #   ports:
+  #     - "5555:5555"
+  #   depends_on:
+  #     - redis
+  #   restart: unless-stopped
 
   frontend:
     build:

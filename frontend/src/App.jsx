@@ -7,6 +7,7 @@ import NotFound from "./pages/NotFound";
 import JobsPage from "./pages/JobsPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import './styles/Base.css';
+import './index.css'
 
 function Logout() {
   localStorage.clear();
@@ -27,9 +28,7 @@ function App() {
           <Route
             path="/"
             element={
-              <ProtectedRoute>
                 <Home />
-              </ProtectedRoute>
             }
           />
           <Route path="/login" element={<Login />} />
