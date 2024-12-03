@@ -65,7 +65,9 @@ class TestSalaryStandardizer(TestCase):
             ("", ""),  # Empty string
             ("invalid salary", "invalid salary"),  # Invalid format
             ("10 000 PLN", "10 000 PLN"),
-            ("12 000  PLN", "12 000 PLN"),# No range
+            ("12 000  PLN", "12 000 PLN"),
+            ("100,00 PLN", "100 PLN"),
+            ("10 000,00 - 12 000,00 PLN", "10 000 - 12 000 PLN")
         ]
         
         for input_salary, expected in test_cases:

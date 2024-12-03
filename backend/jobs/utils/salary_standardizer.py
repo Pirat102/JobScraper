@@ -28,6 +28,7 @@ def average_salary(salary):
         return ""
     
     cleaned = ' '.join(salary.split())
+    cleaned = cleaned.replace(",00", "")
     
     # Remove "PLN" and split on hyphen
     salary_part = cleaned.replace("PLN", "").strip()
