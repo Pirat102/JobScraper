@@ -68,10 +68,9 @@ class TheProtocolScraper(WebScraper):
             return 'Mid'
         elif 'senior' in experience:
             return 'Senior'
-        elif 'expert' in experience:
-            return 'Expert'
         else:
-            return 'Manager'
+            return 'Expert'
+ 
 
     def extract_salary(self, soup: BeautifulSoup) -> str:
         element = soup.find('p', {'data-test': 'text-contractSalary'})

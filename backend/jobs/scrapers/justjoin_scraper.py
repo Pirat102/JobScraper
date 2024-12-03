@@ -49,6 +49,9 @@ class JustJoinScraper(WebScraper):
     
     def extract_experience_level(self, soup: BeautifulSoup) -> str:
         mode_divs = soup.find_all("div", {"class": "MuiBox-root css-snbmy4"})
+        if "C-level" in mode_divs[1].text.strip():
+            return "Expert"
+
         return mode_divs[1].text.strip() if mode_divs else ""
     
     def extract_salary(self, soup: BeautifulSoup) -> str:
