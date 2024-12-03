@@ -1,0 +1,17 @@
+.stats-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+  }
+  
+  .stats-label {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+  
+  .stats-value {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+  

@@ -1,10 +1,9 @@
-
+import Dashboard from "../components/dashboard/Dashboard";
 
 function Home() {
   return (
     <div className="home-page">
-      <h1>Welcome to Job Board</h1>
-      <p>Find your next Python opportunity</p>
+      <Dashboard />
       {/* Add featured jobs or statistics later */}
     </div>
   );
