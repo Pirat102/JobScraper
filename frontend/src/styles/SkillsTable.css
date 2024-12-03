@@ -1,0 +1,24 @@
+.skills-table {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  .skills-table-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .skill-name {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+  
+  .skill-count {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+  

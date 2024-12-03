@@ -1,0 +1,21 @@
+.stats-card {
+    background-color: var(--card-background);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    padding: 1.5rem;
+  }
+  
+  .stats-card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+  }
+  
+  .stats-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
