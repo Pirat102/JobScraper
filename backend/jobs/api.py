@@ -1,5 +1,5 @@
 from collections import Counter
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from ninja import Query
 from typing import Dict, Any
 from jobs.models import Job
@@ -37,10 +37,12 @@ class JobController:
     
     @route.get("stats", response=Dict[str, Any])
     def stats(self, filters: JobFilterSchema = Query(...)):
-        today = datetime.now()
+        today = datetime.combine(datetime.now().date(), time.min)
         last_week = today - timedelta(days=7)
+        last_two_weeks = today - timedelta(days=14)
         last_month = today - timedelta(days=30)
         jobs = Job.objects.all()
+        
         
         jobs = filters.filter_queryset(jobs)
         
@@ -87,8 +89,10 @@ class JobController:
             "operating_mode_stats": sort_dict(work_mode),
             "salary_stats": salary,
             "trends": {
-            "last_7_days": jobs.filter(scraped_date__gte=last_week).count(),
-            "last_30_days": jobs.filter(scraped_date__gte=last_month).count(),
+                "today": jobs.filter(scraped_date__gte=today).count(),
+                "last_7_days": jobs.filter(scraped_date__gte=last_week).count(),
+                "last_14_days": jobs.filter(scraped_date__gte=last_two_weeks).count(),
+                "last_30_days": jobs.filter(scraped_date__gte=last_month).count(),
         },
         }
     

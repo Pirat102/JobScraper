@@ -140,11 +140,11 @@ function FilterPanel({ onFilterChange }) {
           onChange={handleInputChange}
         >
           <option value="">All Types</option>
+          <option value="trainee">Trainee</option>
           <option value="junior">Junior</option>
           <option value="mid">Mid</option>
           <option value="senior">Senior</option>
-          <option value="c-Level">C-Level</option>
-          <option value="manager">Manager</option>
+          <option value="expert">Expert</option>
         </select>
       </div>
 

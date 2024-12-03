@@ -86,12 +86,8 @@ class PracujScraper(WebScraper):
                     return 'Mid'
                 elif 'Senior' in text:
                     return 'Senior'
-                elif 'expert' in text:
-                    return 'Expert'
-                elif 'manager' in text:
-                    return 'Manager'
                 else:
-                    return ""
+                    return 'Expert'
             except Exception as e:
                 self.logger.error(f"Error extracting experience level: {e}")
 
