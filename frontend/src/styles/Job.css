@@ -174,8 +174,25 @@
 
 @media (max-width: 768px) {
   .job-container {
-    padding: var(--page-padding, 16px);
+    padding: 1rem;
+  }
+
+  .job-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .job-details {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .detail-item {
     width: 100%;
-    display: grid;
+    justify-content: center;
+  }
+
+  .skills {
+    justify-content: center;
   }
 }
