@@ -53,10 +53,6 @@
   gap: 0.25rem;
 }
 
-.date-icon {
-  color: var(--text-secondary);
-}
-
 .job-details {
   display: flex;
   flex-wrap: wrap;
@@ -174,4 +170,29 @@
   background-color: rgba(255, 255, 255, 0.5); /* Made more visible on light backgrounds */
   border-radius: 9999px;
   border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+  .job-container {
+    padding: 1rem;
+  }
+
+  .job-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .job-details {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .detail-item {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .skills {
+    justify-content: center;
+  }
 }

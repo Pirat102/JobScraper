@@ -3,12 +3,13 @@
     border-bottom: 1px solid var(--border-color);
     padding: 1rem 0;
     box-shadow: var(--shadow-sm);
+    width: 100%;
 }
   
 .navbar-container {
     max-width: 1280px;
     margin: 0 auto;
-    padding: 0 1rem;
+    padding: 0 var(--container-padding);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -39,9 +40,25 @@
     color: var(--primary-color);
 }
 
-
 @media (max-width: 768px) {
+    .navbar {
+        padding: 0.75rem 0;
+    }
+
+    .navbar-container {
+        width: 100%;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
     .navbar-links {
-        gap: 1rem;
+        width: 100%;
+        justify-content: space-around;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .nav-link {
+        padding: 0.5rem;
     }
 }

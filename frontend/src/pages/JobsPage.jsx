@@ -1,123 +1,100 @@
-// pages/JobsPage.jsx
 import { useState, useEffect } from "react";
 import api from "../api";
 import Job from "../components/Job";
 import FilterPanel from "../components/FilterPanel";
 import Pagination from "../components/Pagination";
-import "../styles/JobsPage.css"; // Make sure to create this CSS file
+import "../styles/JobsPage.css";
 
 function JobsPage() {
-  const [jobs, setJobs] = useState([]);
+  const [jobs, setJobs] = useState({ results: [], count: 0 });
   const [nextUrl, setNextUrl] = useState(null);
   const [previousUrl, setPreviousUrl] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Initial fetch of all jobs when component mounts
   useEffect(() => {
     fetchJobs();
   }, []);
 
-  // Function to fetch jobs (with or without filters)
   const fetchJobs = async (params = "") => {
-    setLoading(true);
     try {
       const response = await api.get(`api/jobs/filter${params}`);
       setJobs(response.data);
-      setNextUrl(
-        response.data.next ? `?${response.data.next.split("?")[1]}` : null
-      );
-      setPreviousUrl(
-        response.data.previous
-          ? `?${response.data.previous.split("?")[1]}`
-          : null
-      );
+      setNextUrl(response.data.next ? `?${response.data.next.split("?")[1]}` : null);
+      setPreviousUrl(response.data.previous ? `?${response.data.previous.split("?")[1]}` : null);
       setError(null);
     } catch (err) {
       setError("Failed to fetch jobs. Please try again later.");
-      console.error("Error fetching jobs:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle filter changes from FilterPanel
   const handleFilterChange = (filters) => {
     const params = new URLSearchParams();
 
-    // First add non-skill filters
-    console.log(Object.entries(filters));
     Object.entries(filters).forEach(([key, value]) => {
       if (key !== "skills" && value) {
         params.append(key, value);
       }
     });
 
-    // Then add skills in a specific order
-    if (
-      filters.skills &&
-      Array.isArray(filters.skills) &&
-      filters.skills.length > 0
-    ) {
-      // Sort skills alphabetically to ensure consistent order
+    if (filters.skills?.length > 0) {
       filters.skills.forEach((skill) => {
         params.append("skills", skill);
       });
     }
-    console.log("Filters being applied:", filters); // For debugging
-    console.log("URL params:", params.toString()); // For debugging
 
     fetchJobs(`?${params}`);
   };
 
-  return (
-    <div className="jobs-page">
-      {/* Header section with title and count */}
-      <div className="jobs-header">
-        <h2>Available Jobs</h2>
-        {!loading && !error && (
-          <p className="jobs-count">
-            Found {jobs.count} job{jobs.count !== 1 ? "s" : ""}
-          </p>
-        )}
-      </div>
-
-      {/* Main content with filters and job listings */}
-      <div className="jobs-layout">
-        {/* Filters sidebar */}
-        <aside className="filters-container">
+  if (loading) {
+    return (
+      <div className="jobs-page">
+        <div className="jobs-layout">
           <FilterPanel onFilterChange={handleFilterChange} />
-        </aside>
+          <main className="jobs-container">
+            <div className="loading-state">Loading jobs...</div>
+          </main>
+        </div>
+      </div>
+    );
+  }
 
-        {/* Jobs list main content */}
-        <main className="jobs-container">
-          {loading ? (
-            // Loading state
-            <div className="loading-state">
-              <p>Loading jobs...</p>
-            </div>
-          ) : error ? (
-            // Error state
+  if (error) {
+    return (
+      <div className="jobs-page">
+        <div className="jobs-layout">
+          <FilterPanel onFilterChange={handleFilterChange} />
+          <main className="jobs-container">
             <div className="error-state">
               <p>{error}</p>
               <button onClick={() => fetchJobs()}>Try Again</button>
             </div>
-          ) : jobs.count === 0 ? (
-            // No jobs found state
+          </main>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="jobs-page">
+      <div className="jobs-layout">
+        <FilterPanel onFilterChange={handleFilterChange} />
+        <main className="jobs-container">
+          {jobs.count === 0 ? (
             <div className="no-jobs-state">
               <p>No jobs found matching your criteria.</p>
-              <p>
-                Try adjusting your filters or clearing them to see more results.
-              </p>
+              <p>Try adjusting your filters to see more results.</p>
             </div>
           ) : (
             <>
+              <div className="jobs-header">
+                <p className="jobs-count">Found {jobs.count} jobs</p>
+              </div>
               <div className="jobs-list">
                 {jobs.results.map((job) => (
-                  <Job
-                    key={job.id || job.url} // Fallback to url if id is not available
-                    job={job}
-                  />
+                  <Job key={job.id || job.url} job={job} />
                 ))}
               </div>
               <Pagination

@@ -1,295 +1,257 @@
 import { useState, useEffect } from "react";
-import "../styles/FilterPanel.css";
+import { Filter, X, ChevronDown } from "lucide-react";
 import api from "../api";
+import "../styles/FilterPanel.css";
 
 function FilterPanel({ onFilterChange }) {
+  const [isOpen, setIsOpen] = useState(false);
   const [filters, setFilters] = useState({
-    title: "",
+    operating_mode: "",
+    experience: "",
+    skills: [],
     location: "",
     scraped_date: "",
-    experience: "",
-    operating_mode: "",
-    skills: [],
     source: "",
   });
+  const [openSections, setOpenSections] = useState({});
   const [availableDates, setAvailableDates] = useState([]);
-  
-  // Add stats state to avoid multiple API calls
-  const [stats, setStats] = useState({
-    skills: [],
-    sources: [],
-    experiences: [],
-    workModes: []
-  });
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
-  // State for available options
-  const [availableSkills, setAvailableSkills] = useState([]);
-  const [skillSearch, setSkillSearch] = useState("");
-  const [isSkillsDropdownOpen, setIsSkillsDropdownOpen] = useState(false);
-  const [topSkills, setTopSkills] = useState([]); // New state for top skills
+  const sections = [
+    {
+      id: 'operating_mode',
+      title: 'Tryb pracy',
+      options: [
+        { value: 'Remote', label: 'Remote' },
+        { value: 'Hybrid', label: 'Hybrid' },
+        { value: 'Office', label: 'Office' },
+      ]
+    },
+    {
+      id: 'experience',
+      title: 'Poziom stanowiska',
+      options: [
+        { value: 'trainee', label: 'Trainee' },
+        { value: 'junior', label: 'Junior' },
+        { value: 'mid', label: 'Mid' },
+        { value: 'senior', label: 'Senior' },
+        { value: 'expert', label: 'Expert' },
+      ]
+    },
+    {
+      id: 'skills',
+      title: 'Technologie',
+      isSkillSection: true,
+      topSkills: ['Python', 'JavaScript', 'React', 'Django', 'SQL', 'AWS', 'Docker', 'TypeScript', 'Node.js', 'Git']
+    },
+    {
+      id: 'location',
+      title: 'Lokalizacja',
+      options: [
+        { value: 'Warszawa', label: 'Warszawa' },
+        { value: 'Kraków', label: 'Kraków' },
+        { value: 'Wrocław', label: 'Wrocław' },
+        { value: 'Poznań', label: 'Poznań' },
+        { value: 'Gdańsk', label: 'Gdańsk' },
+      ]
+    },
+    {
+      id: 'scraped_date',
+      title: 'Daty od',
+      options: [] // Will be populated with dates
+    },
+    {
+      id: 'source',
+      title: 'Źródło',
+      options: [
+        { value: 'Pracuj.pl', label: 'Pracuj.pl' },
+        { value: 'NoFluffJobs', label: 'NoFluffJobs' },
+        { value: 'JustJoinIt', label: 'JustJoinIt' },
+        { value: 'TheProtocol', label: 'TheProtocol' },
+      ]
+    }
+  ];
 
-  // Add click outside handler
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (!event.target.closest(".multi-select-container")) {
-        setIsSkillsDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  
-  // Fetch skills when component mounts
   useEffect(() => {
-    Promise.all([
-      api.get("api/jobs/stats"),
-      api.get("api/jobs/dates")
-    ]).then(([statsRes, datesRes]) => {
-      setStats({
-        skills: Object.keys(statsRes.data.top_skills),
-        sources: Object.keys(statsRes.data.source_stats),
-        experiences: Object.keys(statsRes.data.exp_stats),
-        workModes: Object.keys(statsRes.data.operating_mode_stats)
-      });
-      setAvailableDates(datesRes.data);
-      setAvailableSkills(Object.keys(statsRes.data.top_skills).sort());
-      setTopSkills(Object.keys(statsRes.data.top_skills).slice(0, 10));
+    api.get("api/jobs/dates").then(res => {
+      const formattedDates = res.data.map(date => ({
+        value: date,
+        label: new Date(date).toLocaleDateString()
+      }));
+      sections.find(s => s.id === 'scraped_date').options = formattedDates;
+      setAvailableDates(formattedDates);
     });
   }, []);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    const newFilters = {
-      ...filters,
-      [name]: value,
-    };
-    setFilters(newFilters);
-    onFilterChange(newFilters);
-  };
+  const handleFilterChange = async (section, value) => {
+    let newFilters = { ...filters };
 
-  const handleSkillSelect = (skill) => {
-    const newSkills = [...filters.skills, skill];
-    const newFilters = {
-      ...filters,
-      skills: newSkills,
-    };
-    setFilters(newFilters);
-    setSkillSearch("");
-    setIsSkillsDropdownOpen(false);
-    onFilterChange(newFilters);
-  };
-
-  // New function for filtering skills
-  const getFilteredSkills = () => {
-    if (skillSearch) {
-      // If user is searching, filter through all available skills
-      return availableSkills.filter(
-        (skill) =>
-          skill.toLowerCase().includes(skillSearch.toLowerCase()) &&
-          !filters.skills.includes(skill)
-      );
+    if (section === 'skills') {
+      newFilters.skills = filters.skills.includes(value)
+        ? filters.skills.filter(s => s !== value)
+        : [...filters.skills, value];
     } else {
-      // If no search term, show only top 10 skills that haven't been selected
-      return topSkills.filter((skill) => !filters.skills.includes(skill));
+      newFilters[section] = filters[section] === value ? "" : value;
+    }
+
+    setFilters(newFilters);
+    
+    if (!isMobile) {
+      onFilterChange(newFilters);
     }
   };
 
-  return (
-    <div className="filter-panel">
-      <h3>Filters</h3>
+  const clearFilters = () => {
+    const emptyFilters = {
+      operating_mode: "",
+      experience: "",
+      skills: [],
+      location: "",
+      scraped_date: "",
+      source: "",
+    };
+    setFilters(emptyFilters);
+    onFilterChange(emptyFilters);
+  };
 
-      {/* Search by title */}
-      <div className="filter-section">
-        <label htmlFor="title">Search by title</label>
-        <input
-          type="text"
-          id="title"
-          name="title"
-          value={filters.title}
-          onChange={handleInputChange}
-          placeholder="Search job titles..."
-        />
+  const renderSelectedFilters = () => {
+    const selectedFilters = [];
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (key === 'skills' && value.length > 0) {
+        value.forEach(skill => {
+          selectedFilters.push(
+            <button 
+              key={`skill-${skill}`} 
+              className="selected-filter"
+              onClick={() => handleFilterChange('skills', skill)}
+            >
+              {skill} <X size={14} />
+            </button>
+          );
+        });
+      } else if (value) {
+        const section = sections.find(s => s.id === key);
+        const option = section?.options?.find(o => o.value === value);
+        if (option) {
+          selectedFilters.push(
+            <button
+              key={key}
+              className="selected-filter"
+              onClick={() => handleFilterChange(key, value)}
+            >
+              {option.label} <X size={14} />
+            </button>
+          );
+        }
+      }
+    });
+
+    return selectedFilters.length > 0 && (
+      <div className="selected-filters">
+        {selectedFilters}
       </div>
-      {/* Search by source */}
-      <div className="filter-section">
-        <label htmlFor="source">Source</label>
-        <select
-          id="source"
-          name="source"
-          value={filters.source}
-          onChange={handleInputChange}
-        >
-          <option value="">All Types</option>
-          <option value="Pracuj.pl">Pracuj.pl</option>
-          <option value="NoFluffJobs">NoFluffJobs</option>
-          <option value="JustJoinIt">JustJoinIt</option>
-          <option value="TheProtocol">TheProtocol</option>
+    );
+  };
 
-        </select>
-      </div>
-
-      {/* Experience dropdown */}
-      <div className="filter-section">
-        <label htmlFor="experience">Experience</label>
-        <select
-          id="experience"
-          name="experience"
-          value={filters.experience}
-          onChange={handleInputChange}
-        >
-          <option value="">All Types</option>
-          <option value="trainee">Trainee</option>
-          <option value="junior">Junior</option>
-          <option value="mid">Mid</option>
-          <option value="senior">Senior</option>
-          <option value="expert">Expert</option>
-        </select>
-      </div>
-
-      {/* Location dropdown */}
-      <div className="filter-section">
-        <label htmlFor="location">Location</label>
-        <select
-          id="location"
-          name="location"
-          value={filters.location}
-          onChange={handleInputChange}
-        >
-          <option value="">All Locations</option>
-          <option value="Gdańsk">Gdańsk</option>
-          <option value="Katowice">Katowice</option>
-          <option value="Kraków">Kraków</option>
-          <option value="Łódź">Łódź</option>
-          <option value="Poznań">Poznań</option>
-          <option value="Warszawa">Warszawa</option>
-          <option value="Wrocław">Wrocław</option>
-        </select>
-      </div>
-
-      {/* Date dropdown */}
-      <div className="filter-section">
-        <label htmlFor="date">Date</label>
-        <select
-          id="scraped_date"
-          name="scraped_date"
-          value={filters.scraped_date}
-          onChange={handleInputChange}
-        >
-          <option value="">All Dates</option>
-          {availableDates.map(date => (
-            <option key={date} value={date}>
-              {new Date(date).toLocaleDateString("en-GB")}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Operating Mode dropdown */}
-      <div className="filter-section">
-        <label htmlFor="operating_mode">Work Mode</label>
-        <select
-          id="operating_mode"
-          name="operating_mode"
-          value={filters.operating_mode}
-          onChange={handleInputChange}
-        >
-          <option value="">All Types</option>
-          <option value="Remote">Remote</option>
-          <option value="Hybrid">Hybrid</option>
-          <option value="Office">Office</option>
-        </select>
-      </div>
-
-      {/* Skills filter with search */}
-      <div className="filter-section">
-        <label>Skills (Top 10 Most Common)</label>
-        <div className="multi-select-container">
-          <input
-            type="text"
-            value={skillSearch}
-            onChange={(e) => setSkillSearch(e.target.value)}
-            onFocus={() => setIsSkillsDropdownOpen(true)}
-            placeholder="Search skills or select from top 10..."
-          />
-
-          {isSkillsDropdownOpen && (
-            <div className="skills-dropdown">
-              {getFilteredSkills().length > 0 ? (
-                getFilteredSkills().map((skill) => (
-                  <div
-                    key={skill}
-                    className="skill-option"
-                    onClick={() => handleSkillSelect(skill)}
-                  >
-                    {skill}
-                    {!skillSearch && topSkills.includes(skill) && (
-                      <span className="popular-tag">Popular</span>
-                    )}
-                  </div>
-                ))
-              ) : (
-                <div className="no-results">
-                  {skillSearch
-                    ? "No matching skills found"
-                    : "No more top skills available"}
-                </div>
-              )}
+  const renderSectionContent = (section) => {
+    if (section.isSkillSection) {
+      return (
+        <div className="skills-list">
+          {section.topSkills.map(skill => (
+            <div
+              key={skill}
+              className={`skill-option ${filters.skills.includes(skill) ? 'selected' : ''}`}
+              onClick={() => handleFilterChange('skills', skill)}
+            >
+              <span>{skill}</span>
             </div>
-          )}
-
-          {/* Selected skills tags */}
-          <div className="skills-tags">
-            {filters.skills.map((skill) => (
-              <span key={skill} className="skill-tag">
-                {skill}
-                <span
-                  className="remove-skill"
-                  onClick={() => {
-                    const newSkills = filters.skills.filter((s) => s !== skill);
-                    const newFilters = { ...filters, skills: newSkills };
-                    setFilters(newFilters);
-                    onFilterChange(newFilters);
-                  }}
-                >
-                  ×
-                </span>
-              </span>
-            ))}
-          </div>
+          ))}
         </div>
-      </div>
+      );
+    }
 
-      {/* Clear filters button */}
-      {(filters.title ||
-        filters.location ||
-        filters.scraped_date ||
-        filters.experience ||
-        filters.operating_mode ||
-        filters.source ||
-        filters.skills.length > 0) && (
-        <button
-          className="clear-filters"
-          onClick={() => {
-            setFilters({
-              title: "",
-              location: "",
-              scraped_date: "",
-              experience: "",
-              operating_mode: "",
-              source: "",
-              skills: [],
-              
-            });
-            setSkillSearch("");
-            onFilterChange("");
-          }}
-        >
-          Clear all filters
+    return (
+      <div className="option-list">
+        {section.options.map(option => (
+          <div
+            key={option.value}
+            className={`option-item ${filters[section.id] === option.value ? 'selected' : ''}`}
+            onClick={() => handleFilterChange(section.id, option.value)}
+          >
+            <span>{option.label}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  return (
+    <>
+      {isMobile && (
+        <button className="mobile-filter-toggle" onClick={() => setIsOpen(true)}>
+          <Filter size={20} />
+          Filtry
         </button>
       )}
-    </div>
+
+      <div className={`filter-panel ${isMobile ? 'mobile' : ''} ${isOpen ? 'open' : ''}`}>
+        {isMobile && (
+          <div className="filter-header">
+            <h3>Filtry</h3>
+            <button className="close-button" onClick={() => setIsOpen(false)}>
+              <X size={24} />
+            </button>
+          </div>
+        )}
+
+        {renderSelectedFilters()}
+
+        <div className="filter-content">
+          {sections.map(section => (
+            <div key={section.id} className="filter-section">
+              <button
+                className={`section-header ${openSections[section.id] ? 'open' : ''}`}
+                onClick={() => setOpenSections(prev => ({
+                  ...prev,
+                  [section.id]: !prev[section.id]
+                }))}
+              >
+                <span>{section.title}</span>
+                <ChevronDown size={20} />
+              </button>
+              
+              <div className={`section-content ${openSections[section.id] ? 'open' : ''}`}>
+                {renderSectionContent(section)}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {isMobile && (
+          <div className="filter-footer">
+            <button className="clear-button" onClick={clearFilters}>
+              Wyczyść
+            </button>
+            <button 
+              className="search-button" 
+              onClick={() => {
+                onFilterChange(filters);
+                setIsOpen(false);
+              }}
+            >
+              Zastosuj filtry
+            </button>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 
