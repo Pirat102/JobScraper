@@ -40,3 +40,16 @@
   font-weight: 600;
   color: var(--text-primary);
 }
+
+@media (max-width: 768px) {
+  .skills-table {
+    gap: 0.75rem;
+  }
+  
+  .skills-table-row {
+    display: grid;
+    flex-flow: row;
+    padding: 0.375rem;
+    font-size: 0.875rem;
+  }
+}
