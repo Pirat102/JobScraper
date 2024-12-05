@@ -14,10 +14,9 @@ function FilterPanel({ onFilterChange }) {
     source: "",
   });
   const [openSections, setOpenSections] = useState({});
-  const [availableDates, setAvailableDates] = useState([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-
-  const sections = [
+  const [skillSearch, setSkillSearch] = useState("");
+  const [sections, setSections] = useState([
     {
       id: 'operating_mode',
       title: 'Tryb pracy',
@@ -42,7 +41,7 @@ function FilterPanel({ onFilterChange }) {
       id: 'skills',
       title: 'Technologie',
       isSkillSection: true,
-      topSkills: ['Python', 'JavaScript', 'React', 'Django', 'SQL', 'AWS', 'Docker', 'TypeScript', 'Node.js', 'Git']
+      topSkills: []
     },
     {
       id: 'location',
@@ -58,7 +57,7 @@ function FilterPanel({ onFilterChange }) {
     {
       id: 'scraped_date',
       title: 'Daty od',
-      options: [] // Will be populated with dates
+      options: []
     },
     {
       id: 'source',
@@ -66,11 +65,11 @@ function FilterPanel({ onFilterChange }) {
       options: [
         { value: 'Pracuj.pl', label: 'Pracuj.pl' },
         { value: 'NoFluffJobs', label: 'NoFluffJobs' },
-        { value: 'JustJoinIt', label: 'JustJoinIt' },
+        { value: 'JustJoinIT', label: 'JustJoinIT' },
         { value: 'TheProtocol', label: 'TheProtocol' },
       ]
     }
-  ];
+  ]);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -79,13 +78,27 @@ function FilterPanel({ onFilterChange }) {
   }, []);
 
   useEffect(() => {
-    api.get("api/jobs/dates").then(res => {
-      const formattedDates = res.data.map(date => ({
+    Promise.all([
+      api.get("api/jobs/stats"),
+      api.get("api/jobs/dates")
+    ]).then(([statsRes, datesRes]) => {
+      const topSkills = Object.keys(statsRes.data.top_skills);
+      const formattedDates = datesRes.data.map(date => ({
         value: date,
         label: new Date(date).toLocaleDateString()
       }));
-      sections.find(s => s.id === 'scraped_date').options = formattedDates;
-      setAvailableDates(formattedDates);
+
+      setSections(prev => prev.map(section => {
+        if (section.id === 'scraped_date') {
+          return { ...section, options: formattedDates };
+        }
+        if (section.id === 'skills') {
+          return { ...section, topSkills };
+        }
+        return section;
+      }));
+    }).catch(error => {
+      console.error("Failed to fetch initial data:", error);
     });
   }, []);
 
@@ -160,19 +173,35 @@ function FilterPanel({ onFilterChange }) {
     );
   };
 
+  const getFilteredSkills = (section) => {
+    if (!skillSearch) return section.topSkills.slice(0, 10);
+    return section.topSkills.filter(skill => 
+      skill.toLowerCase().includes(skillSearch.toLowerCase())
+    );
+  };
+
   const renderSectionContent = (section) => {
     if (section.isSkillSection) {
       return (
-        <div className="skills-list">
-          {section.topSkills.map(skill => (
-            <div
-              key={skill}
-              className={`skill-option ${filters.skills.includes(skill) ? 'selected' : ''}`}
-              onClick={() => handleFilterChange('skills', skill)}
-            >
-              <span>{skill}</span>
-            </div>
-          ))}
+        <div className="skills-section">
+          <input
+            type="text"
+            placeholder="Wpisz nazwę technologii..."
+            value={skillSearch}
+            onChange={(e) => setSkillSearch(e.target.value)}
+            className="skill-search-input"
+          />
+          <div className="skills-list">
+            {getFilteredSkills(section).map(skill => (
+              <div
+                key={skill}
+                className={`skill-option ${filters.skills.includes(skill) ? 'selected' : ''}`}
+                onClick={() => handleFilterChange('skills', skill)}
+              >
+                <span>{skill}</span>
+              </div>
+            ))}
+          </div>
         </div>
       );
     }
@@ -200,7 +229,7 @@ function FilterPanel({ onFilterChange }) {
           Filtry
         </button>
       )}
-
+      
       <div className={`filter-panel ${isMobile ? 'mobile' : ''} ${isOpen ? 'open' : ''}`}>
         {isMobile && (
           <div className="filter-header">
