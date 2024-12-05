@@ -18,6 +18,7 @@ function JobsPage() {
 
   const fetchJobs = async (params = "") => {
     try {
+      setLoading(true);
       const response = await api.get(`api/jobs/filter${params}`);
       setJobs(response.data);
       setNextUrl(response.data.next ? `?${response.data.next.split("?")[1]}` : null);
