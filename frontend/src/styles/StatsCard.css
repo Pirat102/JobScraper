@@ -1,21 +1,36 @@
 .stats-card {
-    background-color: var(--card-background);
-    border-radius: var(--radius);
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-sm);
-    padding: 1.5rem;
-  }
+  background-color: var(--card-background);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-6);
+  transition: var(--transition-all);
+}
+
   
-  .stats-card-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 1rem;
+.stats-card-title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+}
+
+.stats-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.market-overview {
+  background: linear-gradient(
+    to bottom right,
+    var(--card-background),
+    var(--background-color)
+  );
+}
+
+@media (max-width: 768px) {
+  .stats-card {
+    padding: var(--space-4);
   }
-  
-  .stats-card-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
+}

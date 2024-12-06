@@ -1,13 +1,13 @@
 .job-container {
   background: var(--card-background);
-  padding: 1.5rem;
+  padding: var(--space-6);
   border-radius: var(--radius);
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: var(--transition-all);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .job-container:hover {
@@ -19,54 +19,55 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .job-title-section {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 .job-title {
   color: var(--primary-color);
   text-decoration: none;
-  font-size: 1.25rem;
+  font-size: var(--text-xl);
   font-weight: 600;
 }
 
 .job-title:hover {
+  color: var(--primary-dark);
   text-decoration: underline;
 }
 
 .company-name {
   color: var(--text-secondary);
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
 }
 
 .post-date {
   color: var(--text-secondary);
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   white-space: nowrap;
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: var(--space-1);
 }
 
 .job-details {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .detail-item {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.375rem 0.75rem;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
   background-color: var(--background-color);
-  border-radius: 9999px;
-  font-size: 0.875rem;
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
   color: var(--text-secondary);
   border: 1px solid var(--border-color);
 }
@@ -75,25 +76,26 @@
   color: var(--primary-color);
   background: none;
   border: none;
-  padding: 0.5rem 0;
+  padding: var(--space-2) 0;
   cursor: pointer;
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   font-weight: 500;
   text-align: left;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
+  transition: var(--transition-colors);
 }
 
 .toggle-button:hover {
-  text-decoration: underline;
+  color: var(--primary-dark);
 }
 
 .job-summary {
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   line-height: 1.6;
   color: var(--text-secondary);
-  padding: 0.5rem 0;
+  padding: var(--space-2) 0;
 }
 
 .job-summary strong {
@@ -102,89 +104,98 @@
 }
 
 .job-summary ul {
-  margin: 0.75rem 0;
-  padding-left: 1.5rem;
+  margin: var(--space-3) 0;
+  padding-left: var(--space-6);
   list-style-type: none;
 }
 
 .job-summary ul li {
   position: relative;
-  padding-left: 0.5rem;
-  margin-bottom: 0.5rem;
+  padding-left: var(--space-2);
+  margin-bottom: var(--space-2);
 }
 
 .job-summary ul li:before {
   content: "•";
   position: absolute;
-  left: -1rem;
+  left: calc(-1 * var(--space-4));
   color: var(--primary-color);
 }
 
-.job-summary p {
-  margin-bottom: 1rem;
-}
-
 .skills-section {
-  margin-top: 0.5rem;
+  margin-top: var(--space-2);
 }
 
 .skills {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .skill-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.375rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  background-color: #f3f4f6;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  background-color: var(--background-color);
   color: var(--text-secondary);
   border: 1px solid var(--border-color);
+  transition: var(--transition-colors);
 }
 
-.skill-item.senior {
-  background-color: #dcfce7;
-  color: #166534;
-  border-color: #86efac;
-}
-
-.skill-item.regular {
-  background-color: #fef3c7; 
-  color: #92400e;           
-  border-color: #fcd34d;    
+.skill-item.nice {
+  background-color: var(--level-nice-bg);
+  color: var(--level-nice-text);
+  border-color: var(--level-nice-text);
 }
 
 .skill-item.junior {
-  background-color: #e0f2fe; 
-  color: #075985;           
-  border-color: #7dd3fc;    
+  background-color: var(--level-junior-bg);
+  color: var(--level-junior-text);
+  border-color: var(--level-junior-text);
+}
+
+.skill-item.regular {
+  background-color: var(--level-regular-bg);
+  color: var(--level-regular-text);
+  border-color: var(--level-regular-text);
+}
+
+.skill-item.senior {
+  background-color: var(--level-senior-bg);
+  color: var(--level-senior-text);
+  border-color: var(--level-senior-text);
+}
+
+.skill-item.advanced {
+  background-color: var(--level-advanced-bg);
+  color: var(--level-advanced-text);
+  border-color: var(--level-advanced-text);
 }
 
 .skill-level {
-  font-size: 0.65rem;
-  padding: 0.125rem 0.375rem;
-  background-color: rgba(255, 255, 255, 0.5); /* Made more visible on light backgrounds */
-  border-radius: 9999px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  font-size: var(--text-xs);
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--background-hover);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--background-hover);
 }
 
 @media (max-width: 768px) {
   .job-container {
-    padding: 1rem;
+    padding: var(--space-4);
   }
 
   .job-header {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: var(--space-2);
   }
 
   .job-details {
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: var(--space-2);
   }
 
   .detail-item {

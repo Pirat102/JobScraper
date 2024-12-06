@@ -1,26 +1,105 @@
 :root {
-  --primary-color: #2563eb;
-  --card-background: #ffffff;
-  --text-primary: #111827;
-  --text-secondary: #4b5563;
-  --border-color: #e5e7eb;
-  --background-color: #f8fafc;
-  --primary-light: rgba(37, 99, 235, 0.1);
-  --primary-dark: #1d4ed8;
-  --background-hover: rgba(0, 0, 0, 0.02);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --radius: 8px;
+  /* Core colors */
+  --primary-color: #60a5fa;       /* Bright blue */
+  --primary-dark: #3b82f6;        /* Darker blue */
+  --primary-light: rgba(96, 165, 250, 0.1); /* Transparent blue */
+  
+  /* Background colors */
+  --background-color: #0f172a;    /* Dark blue-gray */
+  --card-background: #1e293b;     /* Lighter blue-gray */
+  --background-hover: rgba(255, 255, 255, 0.05);
+  --background-active: rgba(96, 165, 250, 0.2);
+  
+  /* Text colors */
+  --text-primary: #f8fafc;        /* Nearly white */
+  --text-secondary: #94a3b8;      /* Light gray */
+  --text-muted: #64748b;          /* Darker gray for less emphasis */
+  
+  /* Border and shadow */
+  --border-color: #334155;        /* Medium blue-gray */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+  
+  /* Status colors */
+  --success-color: #22c55e;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
+  
+
+  
+  --level-nice-text: #b0bdd1;
+  --level-junior-text: #7dd3fc;
+  --level-junior-bg: rgba(14, 164, 233, 0);
+  --level-regular-text: #fcd34d;
+  --level-advanced-bg: rgba(233, 134, 14, 0.071);
+  --level-senior-text: #86efac;
+  --level-advanced-text: #f7945b;
+
+  /* Spacing */
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  
+  /* Border radius */
+  --radius: 0.5rem;
+  --radius-full: 9999px;
+  
+  /* Transitions */
+  --transition-all: all 0.2s ease;
+  --transition-colors: color 0.2s ease, background-color 0.2s ease;
+  --transition-transform: transform 0.2s ease;
+  
+  /* Font sizes */
+  --text-xs: 0.65rem;
+  --text-sm: 0.775rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+
+  /* Layout */
+  --container-width: 1280px;
+  --container-padding: 1rem;
+  --page-margin: 2rem;
+  --sidebar-width: 300px;
+  --header-height: 48px;
+  
+  /* Z-index scale */
+  --z-header: 40;
+  --z-modal: 1000;
+  
+  /* Opacity */
+  --opacity-disabled: 0.5;
+  
+  /* Mobile */
+  --mobile-padding: 0.75rem;
+  --mobile-gap: 0.75rem;
 }
 
+/* Base styles */
 body {
   background-color: var(--background-color);
   color: var(--text-primary);
-  margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.5;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+input {
+  color: var(--text-primary);
 }
