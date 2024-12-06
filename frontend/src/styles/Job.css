@@ -115,6 +115,10 @@
   margin-bottom: var(--space-2);
 }
 
+.job-summary p {
+  margin-bottom: var(--space-3);
+}
+
 .job-summary ul li:before {
   content: "•";
   position: absolute;

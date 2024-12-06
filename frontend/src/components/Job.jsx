@@ -68,10 +68,10 @@ function Job({ job }) {
           }}
         />
       )}
-
       <div className="skills-section">
         <div className="skills">
-          {Object.entries(job.skills).map(([skill, level]) => (
+          
+          {Object.entries(job.skills).slice(0, showSummary ? undefined : 10).map(([skill, level]) => (
             <div key={skill} className={`skill-item ${level.toLowerCase()}`}>
               {skill}
               <span className="skill-level">{level}</span>

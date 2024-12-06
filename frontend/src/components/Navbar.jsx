@@ -1,5 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Navbar.css';
+import '../styles/ThemeToggle.css';
+import { ThemeToggle } from './ThemeToggle';
 
 function Navbar() {
   const navigate = useNavigate();
@@ -29,6 +31,7 @@ function Navbar() {
               <Link to="/register" className="nav-link">Register</Link>
             </>
           )}
+          <ThemeToggle />
         </div>
       </div>
     </nav>
