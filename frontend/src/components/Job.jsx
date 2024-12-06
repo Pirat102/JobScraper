@@ -2,11 +2,11 @@ import { useState } from "react";
 import "../styles/Job.css";
 import { Calendar } from "lucide-react";
 import DOMPurify from "dompurify";
-import { useLanguage } from '../contexts/LanguageContext';
+import { useLanguage } from "../contexts/LanguageContext";
 
 function Job({ job }) {
   const [showSummary, setShowSummary] = useState(false);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -17,7 +17,13 @@ function Job({ job }) {
       month: "short",
       year: "numeric",
     };
-    return date.toLocaleDateString("en-US", options);
+
+    // Use Polish or English date format based on selected language
+    if (language === "pl") {
+      return date.toLocaleDateString("pl-PL", options);
+    } else {
+      return date.toLocaleDateString("en-US", options);
+    }
   };
 
   return (
@@ -56,7 +62,7 @@ function Job({ job }) {
         onClick={() => setShowSummary(!showSummary)}
         className="toggle-button"
       >
-        {showSummary ? t('hide_summary') : t('show_summary')}
+        {showSummary ? t("hide_summary") : t("show_summary")}
       </button>
 
       {showSummary && job.summary && (
@@ -72,13 +78,15 @@ function Job({ job }) {
       )}
       <div className="skills-section">
         <div className="skills">
-          
-          {Object.entries(job.skills).slice(0, showSummary ? undefined : 10).map(([skill, level]) => (
-            <div key={skill} className={`skill-item ${level.toLowerCase()}`}>
-              {skill}
-              <span className="skill-level">{level}</span>
-            </div>
-          ))}
+          {Object.entries(job.skills)
+            .sort(([, a], [, b]) => b.localeCompare(a))
+            .slice(0, showSummary ? undefined : 10)
+            .map(([skill, level]) => (
+              <div key={skill} className={`skill-item ${level.toLowerCase()}`}>
+                {skill}
+                <span className="skill-level">{level}</span>
+              </div>
+            ))}
         </div>
       </div>
     </div>

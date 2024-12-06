@@ -45,16 +45,19 @@ function FilterPanel({ onFilterChange, jobCount }) {
       if (!value) return [];
 
       const section = sections.find((s) => s.id === key);
-      const option = section?.options?.find((o) => o.value === value);
-      return option
-        ? [
-            {
-              key,
-              label: option.label,
-              onClick: () => handleFilterChange(key, value),
-            },
-          ]
-        : [];
+      if (!section) return [];
+
+      const option = section.options?.find((o) => o.value === value);
+      if (!option) return [];
+
+      return [
+        {
+          key,
+          // Use the translation key if available
+          label: option.labelKey ? t(option.labelKey) : option.label || value,
+          onClick: () => handleFilterChange(key, value),
+        },
+      ];
     });
 
     if (selectedFilters.length === 0) return null;
@@ -80,7 +83,7 @@ function FilterPanel({ onFilterChange, jobCount }) {
         <div className="skills-section">
           <input
             type="text"
-            placeholder="Wpisz nazwę technologii..."
+            placeholder={t("search_technology")}
             value={skillSearch}
             onChange={(e) => setSkillSearch(e.target.value)}
             className="skill-search-input"
@@ -156,6 +159,11 @@ function FilterPanel({ onFilterChange, jobCount }) {
           <p className="jobs-count">
             {t("found_jobs").replace("{{count}}", jobCount)}
           </p>
+          {Object.values(filters).some((v) => v && v.length !== 0) && (
+            <button onClick={clearFilters} className="clear-filters-button">
+              {t("clear_filters")}
+            </button>
+          )}
         </div>
 
         {renderSelectedFilters()}
