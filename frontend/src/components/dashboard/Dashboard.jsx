@@ -7,7 +7,6 @@ import '../../styles/Dashboard.css';
 
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedView, setSelectedView] = useState('all');
   const [selectedExperience, setSelectedExperience] = useState('');
@@ -16,7 +15,6 @@ const Dashboard = () => {
 
   const fetchDashboardData = async (view, experience) => {
     try {
-      setLoading(true);
       const params = new URLSearchParams();
       
       if (view !== 'all') {
@@ -34,7 +32,6 @@ const Dashboard = () => {
       setError('Failed to load dashboard data. Please try again later.');
       console.error('Dashboard data fetch error:', err);
     } finally {
-      setLoading(false);
     }
   };
 
@@ -43,10 +40,6 @@ const Dashboard = () => {
   }, [selectedView, selectedExperience]);
 
 
-
-  if (loading) {
-    return <div className="dashboard-loader">Loading...</div>;
-  }
 
   if (error) {
     return (

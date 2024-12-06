@@ -3,7 +3,7 @@ import { Filter, X, ChevronDown } from "lucide-react";
 import api from "../api";
 import "../styles/FilterPanel.css";
 
-function FilterPanel({ onFilterChange }) {
+function FilterPanel({ onFilterChange, jobCount }) {
   const [isOpen, setIsOpen] = useState(false);
   const [filters, setFilters] = useState({
     operating_mode: "",
@@ -13,7 +13,15 @@ function FilterPanel({ onFilterChange }) {
     scraped_date: "",
     source: "",
   });
-  const [openSections, setOpenSections] = useState({});
+  // Set default open sections for the first three filters
+  const [openSections, setOpenSections] = useState({
+    operating_mode: true,
+    experience: true,
+    skills: true,
+    location: false,
+    scraped_date: false,
+    source: false
+  });
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [skillSearch, setSkillSearch] = useState("");
   const [sections, setSections] = useState([
@@ -77,6 +85,22 @@ function FilterPanel({ onFilterChange }) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Add body scroll lock for mobile filters
+  useEffect(() => {
+    if (isMobile && isOpen) {
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+    } else {
+      document.body.style.position = '';
+      document.body.style.width = '';
+    }
+
+    return () => {
+      document.body.style.position = '';
+      document.body.style.width = '';
+    };
+  }, [isOpen, isMobile]);
+
   useEffect(() => {
     Promise.all([
       api.get("api/jobs/stats"),
@@ -115,9 +139,8 @@ function FilterPanel({ onFilterChange }) {
 
     setFilters(newFilters);
     
-    if (!isMobile) {
-      onFilterChange(newFilters);
-    }
+    onFilterChange(newFilters);
+    
   };
 
   const clearFilters = () => {
@@ -131,6 +154,9 @@ function FilterPanel({ onFilterChange }) {
     };
     setFilters(emptyFilters);
     onFilterChange(emptyFilters);
+    if (isMobile) {
+      setIsOpen(false);
+    }
   };
 
   const renderSelectedFilters = () => {
@@ -207,7 +233,7 @@ function FilterPanel({ onFilterChange }) {
     }
 
     return (
-      <div className="option-list">
+      <div className={`option-list ${section.id === 'scraped_date' ? 'date-list' : ''}`}>
         {section.options.map(option => (
           <div
             key={option.value}
@@ -240,6 +266,10 @@ function FilterPanel({ onFilterChange }) {
           </div>
         )}
 
+        <div className="jobs-count-wrapper">
+          <p className="jobs-count">Found {jobCount} jobs</p>
+        </div>
+
         {renderSelectedFilters()}
 
         <div className="filter-content">
@@ -253,7 +283,11 @@ function FilterPanel({ onFilterChange }) {
                 }))}
               >
                 <span>{section.title}</span>
-                <ChevronDown size={20} />
+                <ChevronDown 
+                  size={20} 
+                  className={openSections[section.id] ? 'rotate-180' : ''}
+                  style={{ transition: 'transform 0.2s' }}
+                />
               </button>
               
               <div className={`section-content ${openSections[section.id] ? 'open' : ''}`}>

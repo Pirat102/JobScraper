@@ -6,7 +6,7 @@ import Pagination from "../components/Pagination";
 import "../styles/JobsPage.css";
 
 function JobsPage() {
-  const [jobs, setJobs] = useState({ results: [], count: 0 });
+  const [jobs, setJobs] = useState([]);
   const [nextUrl, setNextUrl] = useState(null);
   const [previousUrl, setPreviousUrl] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -81,18 +81,17 @@ function JobsPage() {
   return (
     <div className="jobs-page">
       <div className="jobs-layout">
-        <FilterPanel onFilterChange={handleFilterChange} />
+      <FilterPanel 
+          onFilterChange={handleFilterChange} 
+          jobCount={jobs.count} // Pass job count to FilterPanel
+        />
         <main className="jobs-container">
           {jobs.count === 0 ? (
             <div className="no-jobs-state">
-              <p>No jobs found matching your criteria.</p>
-              <p>Try adjusting your filters to see more results.</p>
+              <p>Nie znaleziono wyników spełniających kryteria.</p>
             </div>
           ) : (
             <>
-              <div className="jobs-header">
-                <p className="jobs-count">Found {jobs.count} jobs</p>
-              </div>
               <div className="jobs-list">
                 {jobs.results.map((job) => (
                   <Job key={job.id || job.url} job={job} />
