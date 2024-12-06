@@ -4,6 +4,7 @@ import Job from "../components/Job";
 import FilterPanel from "../components/FilterPanel";
 import Pagination from "../components/Pagination";
 import "../styles/JobsPage.css";
+import { useLanguage } from '../contexts/LanguageContext';
 
 function JobsPage() {
   const [jobs, setJobs] = useState([]);
@@ -11,6 +12,7 @@ function JobsPage() {
   const [previousUrl, setPreviousUrl] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { t } = useLanguage();
 
   useEffect(() => {
     fetchJobs();
@@ -55,7 +57,7 @@ function JobsPage() {
         <div className="jobs-layout">
           <FilterPanel onFilterChange={handleFilterChange} />
           <main className="jobs-container">
-            <div className="loading-state">Loading jobs...</div>
+          <div className="loading-state">{t('loading')}</div>
           </main>
         </div>
       </div>
@@ -70,7 +72,7 @@ function JobsPage() {
           <main className="jobs-container">
             <div className="error-state">
               <p>{error}</p>
-              <button onClick={() => fetchJobs()}>Try Again</button>
+              <button onClick={() => fetchJobs()}>{t('try_again')}</button>
             </div>
           </main>
         </div>

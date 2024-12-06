@@ -1,0 +1,14 @@
+.language-toggle {
+    padding: var(--space-2) var(--space-3);
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    color: var(--text-primary);
+    font-size: var(--text-sm);
+    cursor: pointer;
+    transition: var(--transition-all);
+  }
+  
+  .language-toggle:hover {
+    background-color: var(--background-hover);
+  }

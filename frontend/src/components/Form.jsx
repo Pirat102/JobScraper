@@ -3,12 +3,15 @@ import api from "../api";
 import { useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 import "../styles/Form.css";
+import { useLanguage } from '../contexts/LanguageContext';
 
 function Form({ route, method }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { t } = useLanguage();
+
 
   const name = method === "login" ? "Login" : "Register";
 
@@ -36,24 +39,24 @@ function Form({ route, method }) {
   };
   return (
     <form onSubmit={handleSubmit} className="form-container">
-      <h1>{name}</h1>
+      <h1>{t(method)}</h1>
 
       <input
         className="form-input"
         type="text"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
-        placeholder="Username"
+        placeholder={t('username')}
       />
       <input
         className="form-input"
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
+        placeholder={t('password')}
       />
       <button className="form-button" type="submit">
-        {name}
+        {t(method)}
       </button>
     </form>
   );

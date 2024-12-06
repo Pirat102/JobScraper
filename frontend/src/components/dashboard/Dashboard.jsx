@@ -4,12 +4,14 @@ import StatsCard from './StatsCard';
 import StatsRow from './StatsRow';
 import SkillsTable from './SkillsTable';
 import '../../styles/Dashboard.css';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
   const [error, setError] = useState(null);
   const [selectedView, setSelectedView] = useState('all');
   const [selectedExperience, setSelectedExperience] = useState('');
+  const { t } = useLanguage();
 
   const experienceLevels = ['trainee', 'junior', 'mid', 'senior', 'expert'];
 
@@ -62,7 +64,7 @@ const Dashboard = () => {
             className={`filter-button ${selectedView === 'all' ? 'active' : ''}`}
             onClick={() => setSelectedView('all')}
           >
-            Overview
+            {t('overview')}
           </button>
           <button 
             className={`filter-button ${selectedView === 'Python' ? 'active' : ''}`}
@@ -84,59 +86,59 @@ const Dashboard = () => {
               className={`experience-button ${selectedExperience === level ? 'active' : ''}`}
               onClick={() => setSelectedExperience(selectedExperience === level ? '' : level)}
             >
-              {level.charAt(0).toUpperCase() + level.slice(1)}
+              {t(level)}
             </button>
           ))}
         </div>
       </div>
 
       <div className="dashboard-grid">
-        <StatsCard title="Market Overview" className="market-overview">
+        <StatsCard title={t('market_overview')} className="market-overview">
           <div className="market-stats">
             <StatsRow 
-              label="Today"
-              value={`${stats.trends.today} jobs`}
+              label={t('today')}
+              value={`${stats.trends.today} ${t('jobs')}`}
             />
             <StatsRow 
-              label="Last 7 days"
-              value={`${stats.trends.last_7_days} jobs`}
+              label={t('last_7_days')}
+              value={`${stats.trends.last_7_days} ${t('jobs')}`}
             />
             <StatsRow 
-              label="Last 14 days"
-              value={`${stats.trends.last_14_days} jobs`}
+              label={t('last_14_days')}
+              value={`${stats.trends.last_14_days} ${t('jobs')}`}
             />
             <StatsRow 
-              label="Last 30 days"
-              value={`${stats.trends.last_30_days} jobs`}
+              label={t('last_30_days')}
+              value={`${stats.trends.last_30_days} ${t('jobs')}`}
             />
           </div>
         </StatsCard>
 
-        <StatsCard title="Experience Distribution">
+        <StatsCard title={t('experience_distribution')}>
           {Object.entries(stats.exp_stats).map(([level, count]) => (
             <StatsRow 
               key={level}
-              label={level}
+              label={t(level.toLowerCase())}
               value={count}
             />
           ))}
         </StatsCard>
 
-        <StatsCard title="Average Salary">
+        <StatsCard title={t('average_salary')}>
           <div className="salary-display">
-            {stats.salary_stats || "Not available"}
+            {stats.salary_stats || t('not_available')}
           </div>
         </StatsCard>
 
-        <StatsCard title="Most In-Demand Skills" className="skills-card">
+        <StatsCard title={t('most_demanded_skills')} className="skills-card">
           <SkillsTable skills={stats.top_skills} />
         </StatsCard>
 
-        <StatsCard title="Work Mode Distribution">
+        <StatsCard title={t('work_mode_distribution')}>
           {Object.entries(stats.operating_mode_stats).map(([mode, count]) => (
             <StatsRow 
               key={mode}
-              label={mode || 'Unspecified'}
+              label={t(mode.toLowerCase()) || t('not_specified')}
               value={count}
             />
           ))}

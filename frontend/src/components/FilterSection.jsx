@@ -1,6 +1,9 @@
 import { ChevronDown } from "lucide-react";
+import { useLanguage } from '../contexts/LanguageContext';
 
 export const FilterSection = ({ section, openSections, setOpenSections, children }) => {
+  const { t } = useLanguage();
+  
   return (
     <div className="filter-section">
       <button
@@ -10,7 +13,7 @@ export const FilterSection = ({ section, openSections, setOpenSections, children
           [section.id]: !prev[section.id]
         }))}
       >
-        <span>{section.title}</span>
+        <span>{t(section.titleKey)}</span>
         <ChevronDown 
           size={20} 
           className={openSections[section.id] ? 'rotate-180' : ''}

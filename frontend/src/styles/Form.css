@@ -7,7 +7,7 @@
   padding: var(--space-4);
   border-radius: var(--radius);
   box-shadow: var(--shadow-md);
-  max-width: var(--container-width);
+  max-width: 600px;
   background-color: var(--card-background);
 }
 

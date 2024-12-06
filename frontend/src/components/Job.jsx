@@ -2,9 +2,11 @@ import { useState } from "react";
 import "../styles/Job.css";
 import { Calendar } from "lucide-react";
 import DOMPurify from "dompurify";
+import { useLanguage } from '../contexts/LanguageContext';
 
 function Job({ job }) {
   const [showSummary, setShowSummary] = useState(false);
+  const { t } = useLanguage();
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -54,7 +56,7 @@ function Job({ job }) {
         onClick={() => setShowSummary(!showSummary)}
         className="toggle-button"
       >
-        {showSummary ? "Hide summary" : "Show summary"}
+        {showSummary ? t('hide_summary') : t('show_summary')}
       </button>
 
       {showSummary && job.summary && (

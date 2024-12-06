@@ -7,6 +7,7 @@ import NotFound from "./pages/NotFound";
 import JobsPage from "./pages/JobsPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import './styles/Base.css';
+import { LanguageProvider } from './contexts/LanguageContext';
 
 function Logout() {
   localStorage.clear();
@@ -20,22 +21,24 @@ function RegisterUser() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <Navbar />
-      <div className="app-container">
-        <Routes>
-          <Route
-            path="/"
-            element={<Home />}
-          />
-          <Route path="/login" element={<Login />} />
-          <Route path="/logout" element={<Logout />} />
-          <Route path="/register" element={<RegisterUser />} />
-          <Route path="*" element={<NotFound />} />
-          <Route path="/jobs" element={<JobsPage />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
+    <LanguageProvider>
+      <BrowserRouter>
+        <Navbar />
+        <div className="app-container">
+          <Routes>
+            <Route
+              path="/"
+              element={<Home />}
+            />
+            <Route path="/login" element={<Login />} />
+            <Route path="/logout" element={<Logout />} />
+            <Route path="/register" element={<RegisterUser />} />
+            <Route path="*" element={<NotFound />} />
+            <Route path="/jobs" element={<JobsPage />} />
+          </Routes>
+        </div>
+      </BrowserRouter>
+    </LanguageProvider>
   );
 }
 
