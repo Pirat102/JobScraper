@@ -86,6 +86,7 @@ function JobsPage() {
       <FilterPanel 
           onFilterChange={handleFilterChange} 
           jobCount={jobs.count} // Pass job count to FilterPanel
+          loading={loading}
         />
         <main className="jobs-container">
           {jobs.count === 0 ? (

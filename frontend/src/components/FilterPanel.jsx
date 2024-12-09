@@ -8,7 +8,7 @@ import { FilterSection } from "./FilterSection";
 import "../styles/FilterPanel.css";
 import { useLanguage } from "../contexts/LanguageContext";
 
-function FilterPanel({ onFilterChange, jobCount }) {
+function FilterPanel({ onFilterChange, jobCount, loading }) {
   const { filters, handleFilterChange, clearFilters } =
     useFilterHandlers(onFilterChange);
   const { isOpen, setIsOpen, isMobile } = useMobileHandler();
@@ -157,7 +157,9 @@ function FilterPanel({ onFilterChange, jobCount }) {
 
         <div className="jobs-count-wrapper">
           <p className="jobs-count">
-            {t("found_jobs").replace("{{count}}", jobCount)}
+            {loading
+              ? t("loading")
+              : t("found_jobs").replace("{{count}}", jobCount || "")}
           </p>
           {Object.values(filters).some((v) => v && v.length !== 0) && (
             <button onClick={clearFilters} className="clear-filters-button">
