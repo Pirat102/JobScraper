@@ -23,7 +23,7 @@ export const translations = {
       // Experience Levels
       "trainee": "Praktykant",
       "junior": "Junior",
-      "mid": "Średniozaawansowany",
+      "mid": "Mid",
       "senior": "Senior",
       "expert": "Ekspert",
   
