@@ -126,7 +126,7 @@
   }
 
   .experience-button:hover {
-    color: var(--text-secondary);
+    background-color: var(--background-hover)
   }
 
   .dashboard-grid {
