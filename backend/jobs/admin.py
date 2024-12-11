@@ -9,3 +9,5 @@ class JobView(admin.ModelAdmin):
 # Register your models here.
 admin.site.register(Job, JobView)
 admin.site.register(Requested)
+admin.site.register(JobApplication)
+admin.site.register(ApplicationNote)

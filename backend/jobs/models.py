@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 
 class Job(models.Model):
@@ -29,3 +30,32 @@ class Requested(models.Model):
     
     def __str__(self):
         return f"ID: {self.id} - Title: {self.title} - {self.created_at.strftime('%d/%m/%Y %H:%M')}"
+    
+    
+class JobApplication(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    applied_date = models.DateTimeField(default=timezone.now)
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ('APPLIED', 'Applied'),
+            ('INTERVIEWING', 'Interviewing'),
+            ('REJECTED', 'Rejected'),
+            ('ACCEPTED', 'Accepted'),
+        ],
+        default='APPLIED'
+    )
+
+    class Meta:
+        # Ensure a user can't apply to the same job twice
+        unique_together = ['user', 'job']
+        
+class ApplicationNote(models.Model):
+    application = models.ForeignKey(JobApplication, on_delete=models.CASCADE, related_name='notes')
+    content = models.TextField()
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=timezone.now)
+
+    class Meta:
+        ordering = ['-created_at']
