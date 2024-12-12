@@ -59,3 +59,16 @@ class JobFilterSchema(FilterSchema):
             queryset = queryset.filter(skills_query)
         
         return queryset
+    
+class ApplicationNoteSchema(Schema):
+    content: str
+    created_at: datetime
+    updated_at: datetime
+
+class JobApplicationSchema(Schema):
+    id: int
+    job: JobSchema
+    applied_date: datetime
+    status: str
+    notes: List[ApplicationNoteSchema]
+    

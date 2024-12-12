@@ -1,8 +1,9 @@
 from collections import Counter
 from datetime import datetime, timedelta, time
+from django.shortcuts import get_object_or_404
 from ninja import Query
 from typing import Dict, Any
-from jobs.models import Job
+from jobs.models import Job, JobApplication, ApplicationNote
 from jobs.schemas import *
 from django.contrib.auth.models import User
 from ninja_extra.permissions import AllowAny
@@ -110,8 +111,38 @@ class JobController:
         return jobs.order_by("-scraped_date")
     
 
+@api_controller("/applications", auth=JWTAuth())
+class JobApplicationController:
+    @route.post("", response={200: JobApplicationSchema, 400: Dict})
+    def create_application(self, request, job_id: int):
+        try:
+            job = Job.objects.get(id=job_id)
+        except Exception as e:
+            return 400, {"success": False, "message": "Job not found"}
+        
+        if JobApplication.objects.filter(user=request.user, job_id=job_id):
+            return 400, {"success": False, "message": "Already applied to this job"}
+        
+        application = JobApplication.objects.create(
+            user = request.user,
+            job_id=job_id
+        )
+        return application
+        
+    @route.get("", response=List[JobApplicationSchema])
+    def get_user_applications(self, request):
+        return JobApplication.objects.filter(user=request.user)
+        
+    @route.post("{application_id}/notes", response=ApplicationNoteSchema)
+    def add_note(self, request, application_id: int, note_data: ApplicationNoteSchema):
+        application = get_object_or_404(JobApplication, id=application_id, user=request.user)
+        note = ApplicationNote.objects.create(
+            application=application,
+            content=note_data.content
+        )
+        return note
+    
+
     
     
-    
-    
-api.register_controllers(NinjaJWTDefaultController, AuthController, JobController)
+api.register_controllers(NinjaJWTDefaultController, AuthController, JobController, JobApplicationController)
