@@ -61,6 +61,7 @@ class JobFilterSchema(FilterSchema):
         return queryset
     
 class ApplicationNoteSchema(Schema):
+    id: Optional[int] = None
     content: str
     created_at: datetime
     updated_at: datetime
@@ -72,3 +73,5 @@ class JobApplicationSchema(Schema):
     status: str
     notes: List[ApplicationNoteSchema]
     
+class UpdateStatusSchema(Schema):
+    status: str

@@ -1,7 +1,7 @@
 from collections import Counter
 from datetime import datetime, timedelta, time
 from django.shortcuts import get_object_or_404
-from ninja import Query
+from ninja import Body, Query
 from typing import Dict, Any
 from jobs.models import Job, JobApplication, ApplicationNote
 from jobs.schemas import *
@@ -19,7 +19,7 @@ api = NinjaExtraAPI()
 @api_controller('/auth', tags=['Authentication'], permissions=[AllowAny])
 class AuthController:
 
-    @route.post('register', response={201: Dict, 400: Dict})
+    @route.post('register', response={200: Dict, 400: Dict})
     def register(self, user_data: UserRegistrationSchema) -> Dict:
         if User.objects.filter(username=user_data.username).exists():
             return 400, {"success": False, "message": "Username already exists"}
@@ -28,7 +28,7 @@ class AuthController:
             username=user_data.username,
             password=user_data.password
         )
-        return 201, {"success": True, "message": "Registration successful"}
+        return 200, {"success": True, "message": "Registration successful"}
 
 @api_controller("/jobs")
 class JobController:
@@ -141,6 +141,28 @@ class JobApplicationController:
             content=note_data.content
         )
         return note
+    
+    @route.patch("{application_id}", response=JobApplicationSchema)
+    def update_application_status(self, request, application_id: int, status_data: UpdateStatusSchema):
+        application = get_object_or_404(JobApplication, id=application_id, user=request.user)
+        application.status = status_data.status
+        application.save()
+        return application
+    
+    @route.delete("{application_id}", response={200: Dict, 404: Dict})
+    def delete_application(self, request, application_id: int):
+        application = get_object_or_404(JobApplication, id=application_id, user=request.user)
+        application.delete()
+        return 200, {"success": True, "message": "Application deleted"}
+    
+    @route.delete("{application_id}/notes/{note_id}", response={200: Dict, 404: Dict})
+    def delete_note(self, request, note_id: int, application_id):
+        application = get_object_or_404(JobApplication, id=application_id, user=request.user)
+        note = get_object_or_404(ApplicationNote, application=application, id=note_id)
+        note.delete()
+        return 200, {"success": True, "message": "Note deleted"}
+        
+        
     
 
     
