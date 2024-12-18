@@ -70,7 +70,7 @@ export const translations = {
       "theprotocol": "TheProtocol",
 
 
-      "my_applications": "Moje aplikacje",
+      "my_applications": "Moje Aplikacje",
       "applied": "Aplikowano",
       "status": "Status",
       "company": "Firma",

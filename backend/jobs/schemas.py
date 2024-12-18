@@ -75,3 +75,6 @@ class JobApplicationSchema(Schema):
     
 class UpdateStatusSchema(Schema):
     status: str
+    
+class CreateApplicationSchema(Schema):
+    job_id: int

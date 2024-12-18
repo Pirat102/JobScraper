@@ -1,7 +1,7 @@
 from collections import Counter
 from datetime import datetime, timedelta, time
 from django.shortcuts import get_object_or_404
-from ninja import Body, Query
+from ninja import Query
 from typing import Dict, Any
 from jobs.models import Job, JobApplication, ApplicationNote
 from jobs.schemas import *
@@ -108,24 +108,25 @@ class JobController:
     def list_jobs(self, filters: JobFilterSchema=Query(...)):
         jobs = Job.objects.all()
         jobs = filters.filter_queryset(jobs)
+        
         return jobs.order_by("-scraped_date")
     
 
 @api_controller("/applications", auth=JWTAuth())
 class JobApplicationController:
     @route.post("", response={200: JobApplicationSchema, 400: Dict})
-    def create_application(self, request, job_id: int):
+    def create_application(self, request, payload: CreateApplicationSchema):
         try:
-            job = Job.objects.get(id=job_id)
+            job = Job.objects.get(id=payload.job_id)
         except Exception as e:
-            return 400, {"success": False, "message": "Job not found"}
+            return 400, {"success": False, f"message {payload}": f"Job not found {payload.id}"}
         
-        if JobApplication.objects.filter(user=request.user, job_id=job_id):
+        if JobApplication.objects.filter(user=request.user, job_id=payload.job_id):
             return 400, {"success": False, "message": "Already applied to this job"}
         
         application = JobApplication.objects.create(
             user = request.user,
-            job_id=job_id
+            job_id=payload.job_id
         )
         return application
         

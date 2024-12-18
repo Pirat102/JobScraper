@@ -3,27 +3,27 @@ import "../styles/Job.css";
 import { Calendar } from "lucide-react";
 import DOMPurify from "dompurify";
 import { useLanguage } from "../contexts/LanguageContext";
+import { formatDate } from "../config/DateFormater";
+import { ApplyButton } from "./ApplyButton";
 
 function Job({ job }) {
   const [showSummary, setShowSummary] = useState(false);
   const { t, language } = useLanguage();
+  const handleApplySuccess = () => {
+  };
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const options = {
-      minute: "numeric",
-      hour: "numeric",
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    };
-
-    // Use Polish or English date format based on selected language
-    if (language === "pl") {
-      return date.toLocaleDateString("pl-PL", options);
-    } else {
-      return date.toLocaleDateString("en-US", options);
+  const ApplicationStatus = () => {
+    if (job.application) {
+      return (
+        <div
+          className={`status-badge status-${job.application.status.toLowerCase()}`}
+        >
+          {t(job.application.status.toLowerCase())}
+        </div>
+      );
     }
+
+    return <ApplyButton jobId={job.id} onApply={handleApplySuccess} />;
   };
 
   return (
@@ -42,7 +42,7 @@ function Job({ job }) {
         </div>
         <span className="post-date">
           <Calendar size={16} className="date-icon" />
-          {formatDate(job.scraped_date)}
+          {formatDate(job.scraped_date, language)}
         </span>
       </div>
 

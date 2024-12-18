@@ -24,7 +24,7 @@ function Navbar() {
         <div className="navbar-links">
           <Link to="/" className="nav-link">{t('home')}</Link>
           <Link to="/jobs" className="nav-link">{t('jobs')}</Link>
-          <Link to="/applications" className="nav-link">'Applications'</Link>
+          <Link to="/applications" className="nav-link">{t('my_applications')}</Link>
           {isAuthenticated ? (
             <Link onClick={handleLogout} className="nav-link">
               {t('logout')}

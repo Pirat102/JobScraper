@@ -10,6 +10,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import './styles/Base.css';
 import { LanguageProvider } from './contexts/LanguageContext';
 
+
 function Logout() {
   localStorage.clear();
   return <Navigate to="/login" />;
@@ -22,6 +23,7 @@ function RegisterUser() {
 
 function App() {
   return (
+    <>
     <LanguageProvider>
       <BrowserRouter>
         <Navbar />
@@ -47,6 +49,7 @@ function App() {
         </div>
       </BrowserRouter>
     </LanguageProvider>
+    </>
   );
 }
 

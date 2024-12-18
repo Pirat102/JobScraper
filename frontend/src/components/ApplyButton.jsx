@@ -2,7 +2,7 @@ import { useState } from 'react';
 import api from '../api';
 import '../styles/Applications.css';
 
-function ApplyButton({ jobId, onApply }) {
+export function ApplyButton({ jobId, onApply }) {
     const [loading, setLoading] = useState(false);
 
     const handleClick = async () => {
