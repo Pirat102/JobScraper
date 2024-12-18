@@ -1,3 +1,6 @@
+import re
+
+
 def standardize_salary(salary: str) -> str:
     """
     Standardizes salary format and converts hourly to monthly if needed.
