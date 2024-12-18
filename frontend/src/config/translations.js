@@ -68,6 +68,26 @@ export const translations = {
       "nofluffjobs": "NoFluffJobs",
       "justjoinit": "JustJoinIT",
       "theprotocol": "TheProtocol",
+
+
+      "my_applications": "Moje Aplikacje",
+      "applied": "Aplikowano",
+      "status": "Status",
+      "company": "Firma",
+      "notes": "Notatki",
+      "add_note": "Dodaj notatkę",
+      "add_note_placeholder": "Wpisz notatkę...",
+      "delete_application": "Usuń aplikację",
+      "confirm_delete_application": "Czy na pewno chcesz usunąć tę aplikację?",
+      "failed_load_applications": "Nie udało się załadować aplikacji",
+      "failed_add_note": "Nie udało się dodać notatki",
+      "failed_delete_note": "Nie udało się usunąć notatki",
+      "failed_delete_application": "Nie udało się usunąć aplikacji",
+      "failed_update_status": "Nie udało się zaktualizować statusu",
+      "applied": "Aplikowano",
+      "interviewing": "W trakcie rozmów",
+      "rejected": "Odrzucono",
+      "accepted": "Zaakceptowano"
     },
     en: {
       // Navigation
@@ -137,5 +157,24 @@ export const translations = {
       "nofluffjobs": "NoFluffJobs",
       "justjoinit": "JustJoinIT",
       "theprotocol": "TheProtocol",
+
+      "my_applications": "My Applications",
+      "applied": "Applied",
+      "status": "Status",
+      "company": "Company",
+      "notes": "Notes",
+      "add_note": "Add Note",
+      "add_note_placeholder": "Type a note...",
+      "delete_application": "Delete Application",
+      "confirm_delete_application": "Are you sure you want to delete this application?",
+      "failed_load_applications": "Failed to load applications",
+      "failed_add_note": "Failed to add note",
+      "failed_delete_note": "Failed to delete note",
+      "failed_delete_application": "Failed to delete application",
+      "failed_update_status": "Failed to update status",
+      "applied": "Applied",
+      "interviewing": "Interviewing",
+      "rejected": "Rejected",
+      "accepted": "Accepted"
     }
   };

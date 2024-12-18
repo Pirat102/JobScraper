@@ -1,8 +1,9 @@
 from collections import Counter
 from datetime import datetime, timedelta, time
+from django.shortcuts import get_object_or_404
 from ninja import Query
 from typing import Dict, Any
-from jobs.models import Job
+from jobs.models import Job, JobApplication, ApplicationNote
 from jobs.schemas import *
 from django.contrib.auth.models import User
 from ninja_extra.permissions import AllowAny
@@ -18,7 +19,7 @@ api = NinjaExtraAPI()
 @api_controller('/auth', tags=['Authentication'], permissions=[AllowAny])
 class AuthController:
 
-    @route.post('register', response={201: Dict, 400: Dict})
+    @route.post('register', response={200: Dict, 400: Dict})
     def register(self, user_data: UserRegistrationSchema) -> Dict:
         if User.objects.filter(username=user_data.username).exists():
             return 400, {"success": False, "message": "Username already exists"}
@@ -27,7 +28,7 @@ class AuthController:
             username=user_data.username,
             password=user_data.password
         )
-        return 201, {"success": True, "message": "Registration successful"}
+        return 200, {"success": True, "message": "Registration successful"}
 
 @api_controller("/jobs")
 class JobController:
@@ -107,11 +108,64 @@ class JobController:
     def list_jobs(self, filters: JobFilterSchema=Query(...)):
         jobs = Job.objects.all()
         jobs = filters.filter_queryset(jobs)
+        
         return jobs.order_by("-scraped_date")
+    
+
+@api_controller("/applications", auth=JWTAuth())
+class JobApplicationController:
+    @route.post("", response={200: JobApplicationSchema, 400: Dict})
+    def create_application(self, request, payload: CreateApplicationSchema):
+        try:
+            job = Job.objects.get(id=payload.job_id)
+        except Exception as e:
+            return 400, {"success": False, f"message {payload}": f"Job not found {payload.id}"}
+        
+        if JobApplication.objects.filter(user=request.user, job_id=payload.job_id):
+            return 400, {"success": False, "message": "Already applied to this job"}
+        
+        application = JobApplication.objects.create(
+            user = request.user,
+            job_id=payload.job_id
+        )
+        return application
+        
+    @route.get("", response=List[JobApplicationSchema])
+    def get_user_applications(self, request):
+        return JobApplication.objects.filter(user=request.user)
+        
+    @route.post("{application_id}/notes", response=ApplicationNoteSchema)
+    def add_note(self, request, application_id: int, note_data: ApplicationNoteSchema):
+        application = get_object_or_404(JobApplication, id=application_id, user=request.user)
+        note = ApplicationNote.objects.create(
+            application=application,
+            content=note_data.content
+        )
+        return note
+    
+    @route.patch("{application_id}", response=JobApplicationSchema)
+    def update_application_status(self, request, application_id: int, status_data: UpdateStatusSchema):
+        application = get_object_or_404(JobApplication, id=application_id, user=request.user)
+        application.status = status_data.status
+        application.save()
+        return application
+    
+    @route.delete("{application_id}", response={200: Dict, 404: Dict})
+    def delete_application(self, request, application_id: int):
+        application = get_object_or_404(JobApplication, id=application_id, user=request.user)
+        application.delete()
+        return 200, {"success": True, "message": "Application deleted"}
+    
+    @route.delete("{application_id}/notes/{note_id}", response={200: Dict, 404: Dict})
+    def delete_note(self, request, note_id: int, application_id):
+        application = get_object_or_404(JobApplication, id=application_id, user=request.user)
+        note = get_object_or_404(ApplicationNote, application=application, id=note_id)
+        note.delete()
+        return 200, {"success": True, "message": "Note deleted"}
+        
+        
     
 
     
     
-    
-    
-api.register_controllers(NinjaJWTDefaultController, AuthController, JobController)
+api.register_controllers(NinjaJWTDefaultController, AuthController, JobController, JobApplicationController)
