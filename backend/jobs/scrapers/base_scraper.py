@@ -8,7 +8,6 @@ from typing import Dict, Optional
 from django.db import transaction
 from jobs.summarizer import summarize_text
 from random import randint
-from difflib import SequenceMatcher
 from jobs.utils.salary_standardizer import standardize_salary
 
 class WebScraper(ABC):

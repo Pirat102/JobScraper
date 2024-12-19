@@ -1,5 +1,7 @@
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 from bs4 import BeautifulSoup
+
+from jobs.models import Requested
 from .base_scraper import WebScraper
 from playwright.sync_api import sync_playwright
 
@@ -53,6 +55,34 @@ class JustJoinScraper(WebScraper):
 
     def extract_job_link(self, job_listing: BeautifulSoup) -> str:
         return f"{self.base_url}{job_listing.a['href']}?targetCurrency=pln"
+    
+    def _get_job_page(self, link: str, title: str) -> Optional[BeautifulSoup]:
+        """Fetches and parses individual job posting page with request limit."""
+        if self.request_count >= self.request_limit:
+            return None
+        
+        if Requested.objects.filter(url=link).exists():
+            return None
+        
+        try:
+            with sync_playwright() as p:
+                browser = p.firefox.launch(headless=True)
+                page = browser.new_page(extra_http_headers={
+                    'User-Agent': "Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0"
+                })
+                page.goto(link)
+                page.wait_for_timeout(3000)
+                self.request_count += 1
+                
+                self.logger.info(f"Requested: {title}")
+                html = page.content()
+                browser.close()
+            
+            Requested.objects.create(url=link, title=title)
+            return BeautifulSoup(html, "html.parser")
+        except Exception as e:
+            self.logger.error(f"Failed to request {title}: {e}")
+            return None
 
     def extract_company(self, soup: BeautifulSoup) -> str:
         div_elements = soup.find("div", {"class": "MuiBox-root css-yd5zxy"})
