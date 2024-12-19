@@ -16,14 +16,14 @@ class JustJoinScraper(WebScraper):
     def get_main_html(self) -> list[str]:
         pages = []
         with sync_playwright() as p:
+            # Increase viewport height to see more items at once
             browser = p.firefox.launch(headless=True)
-            page = browser.new_page()
+            page = browser.new_page(viewport={'width': 1280, 'height': 20000})
             
             for url in self.filter_urls:
                 page.goto(url)
-                
-                # Wait for content to load
                 page.wait_for_selector('[data-test-id="virtuoso-item-list"]')
+                page.wait_for_timeout(2000)
                 
                 html = page.content()
                 pages.append(html)
