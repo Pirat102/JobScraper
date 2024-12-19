@@ -1,6 +1,7 @@
 from typing import Any, Dict
 from bs4 import BeautifulSoup
 from .base_scraper import WebScraper
+from playwright.sync_api import sync_playwright
 
 class JustJoinScraper(WebScraper):
     
@@ -12,6 +13,25 @@ class JustJoinScraper(WebScraper):
             request_limit=request_limit
         )
 
+    def get_main_html(self) -> list[str]:
+        pages = []
+        with sync_playwright() as p:
+            browser = p.firefox.launch(headless=True)
+            page = browser.new_page()
+            
+            for url in self.filter_urls:
+                page.goto(url)
+                
+                # Wait for content to load
+                page.wait_for_selector('[data-test-id="virtuoso-item-list"]')
+                
+                html = page.content()
+                pages.append(html)
+                    
+            browser.close()
+        return pages
+    
+    
     def get_jobs_container_selector(self) -> Dict[str, Any]:
         return {
             'name': 'div',
