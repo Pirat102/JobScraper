@@ -25,7 +25,7 @@ class JustJoinScraper(WebScraper):
             for url in self.filter_urls:
                 page.goto(url)
                 page.wait_for_selector('[data-test-id="virtuoso-item-list"]')
-                page.wait_for_timeout(2000)
+                page.wait_for_timeout(3000)
                 
                 html = page.content()
                 pages.append(html)
@@ -67,17 +67,36 @@ class JustJoinScraper(WebScraper):
         try:
             with sync_playwright() as p:
                 browser = p.firefox.launch(headless=True)
-                page = browser.new_page(extra_http_headers={
-                    'User-Agent': "Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0"
-                })
+                
+                # Create context with all headers
+                context = browser.new_context(
+                    locale='pl-PL',
+                    extra_http_headers={
+                        'Accept-Language': 'pl-PL,pl;q=0.6',
+                        'Cache-Control': 'max-age=0',
+                        'User-Agent': "Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0"
+                    }
+                )
+                
+                # Create page from context
+                page = context.new_page()
+                
+                # Add cookies with required parameters
+                context.add_cookies([{
+                    'name': 'userCurrency', 
+                    'value': 'pln',
+                    'domain': '.justjoin.it',
+                    'path': '/'
+                }])
+                
                 page.goto(link)
-                page.wait_for_timeout(8000)
+                page.wait_for_timeout(3000)
                 self.request_count += 1
                 
                 self.logger.info(f"Requested: {title}")
                 html = page.content()
                 browser.close()
-            
+
             Requested.objects.create(url=link, title=title)
             return BeautifulSoup(html, "html.parser")
         except Exception as e:
