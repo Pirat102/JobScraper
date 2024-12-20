@@ -71,7 +71,7 @@ class JustJoinScraper(WebScraper):
                     'User-Agent': "Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0"
                 })
                 page.goto(link)
-                page.wait_for_timeout(4000)
+                page.wait_for_timeout(8000)
                 self.request_count += 1
                 
                 self.logger.info(f"Requested: {title}")
