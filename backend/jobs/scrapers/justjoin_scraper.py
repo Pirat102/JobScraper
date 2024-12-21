@@ -33,17 +33,20 @@ class JustJoinScraper(WebScraper):
         pages = []
         async with async_playwright() as p:
             # Increase viewport height to see more items at once
-            browser = await p.firefox.launch(headless=True)
-            page = await browser.new_page(viewport={'width': 1280, 'height': 20000})
-            
-            for url in self.filter_urls:
-                await page.goto(url)
-                await page.wait_for_selector('[data-test-id="virtuoso-item-list"]')
+            try:
+                browser = await p.firefox.launch(headless=True)
+                page = await browser.new_page(viewport={'width': 1280, 'height': 20000})
                 
-                html = await page.content()
-                pages.append(html)
+                for url in self.filter_urls:
+                    await page.goto(url)
+                    await page.wait_for_selector('[data-test-id="virtuoso-item-list"]')
                     
-            await browser.close()
+                    html = await page.content()
+                    pages.append(html)
+                        
+            finally:
+                await page.close()
+                await browser.close()
         return pages
     
     def _get_job_page(self, link: str, title: str) -> Optional[BeautifulSoup]:
@@ -78,11 +81,18 @@ class JustJoinScraper(WebScraper):
                         }])
                         
                         page = await context.new_page()
-                        await page.goto(link)
-                        await page.wait_for_timeout(3000)
-                        html = await page.content()
-                        await browser.close()
-                        return html
+                        
+                        try:
+                            await page.goto(link)
+                            await page.wait_for_timeout(3000)
+                            html = await page.content()
+                            await browser.close()
+                            return html
+                        finally:
+                            await page.close()
+                            await context.close()
+                            await browser.close()
+                    
                 return asyncio.run(get_page())
             
             html = run_playwright()
