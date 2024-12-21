@@ -122,6 +122,7 @@ class WebScraper(ABC):
             return None
         
         if Requested.objects.filter(url=link).exists():
+            self.logger.debug(f"Job already requested in DB: {title}")
             return None
         
         try:

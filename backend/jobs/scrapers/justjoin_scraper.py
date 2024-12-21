@@ -40,6 +40,7 @@ class JustJoinScraper(WebScraper):
             return None
         
         if Requested.objects.filter(url=link).exists():
+            self.logger.debug(f"Job already exists in database: {title}")
             return None
         
         try:
