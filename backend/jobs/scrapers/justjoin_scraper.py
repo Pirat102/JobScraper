@@ -1,14 +1,10 @@
 from typing import Any, Dict, Optional
 from bs4 import BeautifulSoup
-from jobs.models import Job
 
 from jobs.models import Requested
 from .base_scraper import WebScraper
-from playwright.async_api import async_playwright
-import asyncio
+from playwright.sync_api import sync_playwright
 
-import os
-os.environ["PLAYWRIGHT_BROWSERS_PATH"] = "0"
 
 class JustJoinScraper(WebScraper):
     
@@ -20,66 +16,26 @@ class JustJoinScraper(WebScraper):
             request_limit=request_limit
         )
 
-    def run(self) -> int:
-        try:
-            return asyncio.run(self._run_scraper())
-        except Exception as e:
-            self.logger.error(f"Error in scraping process: {e}")
-            return 0
-
-    async def _run_scraper(self) -> int:
-        """Async implementation of the scraping process"""
-        try:
-            # Use a single browser instance for the entire scraping session
-            async with async_playwright() as p:
-                browser = await p.firefox.launch(
-                    headless=True,
-                    args=['--no-sandbox', '--disable-dev-shm-usage']
-                )
-                try:
-                    html = await self.get_main_html(browser)
-                    job_listings = self.get_job_listings(html)
-                    jobs_data = await self.process_job_listings(browser, job_listings)
-                    return self.save_jobs(jobs_data)
-                finally:
-                    await browser.close()
-        except Exception as e:
-            self.logger.error(f"Error in scraping process: {e}")
-            return 0
-
-    async def get_main_html(self, browser) -> list[str]:
+    def get_main_html(self) -> list[str]:
         pages = []
-        context = await browser.new_context(viewport={'width': 1280, 'height': 20000})
-        try:
-            page = await context.new_page()
+        with sync_playwright() as p:
+            browser = p.firefox.launch(headless=True)
+            page = browser.new_page(viewport={'width': 1280, 'height': 20000})
+            
             for url in self.filter_urls:
                 try:
-                    await page.goto(url)
-                    await page.wait_for_selector('[data-test-id="virtuoso-item-list"]')
-                    html = await page.content()
+                    page.goto(url)
+                    self.logger.info(f"Fetching main page from: {url}")
+                    page.wait_for_timeout(6000)
+                    html = page.content()
                     pages.append(html)
+                    self.logger.debug("Successfully fetched main page")
                 except Exception as e:
                     self.logger.error(f"Error fetching {url}: {e}")
-        finally:
-            await page.close()
-            await context.close()
+                
         return pages
-
-    async def process_job_listings(self, browser, page_listings: list[Dict]) -> Dict:
-        """Async version of processing job listings"""
-        detailed_jobs = {}
-        for listings in page_listings:
-            self.logger.info(f"Starting to process {len(listings)} job listings")
-            
-            for title, data in listings.items():
-                self.logger.debug(f"Processing job: {title}")
-                if job_details := await self._get_job_page(browser, title, data["link"]):
-                    detailed_jobs[title] = job_details
-                    self.logger.debug(f"Successfully processed job: {title}")
-        return detailed_jobs
-
-    async def _get_job_page(self, browser, title: str, link: str) -> Optional[Dict]:
-        """Async version of getting job page"""
+        
+    def _get_job_page(self, link: str, title: str) -> Optional[BeautifulSoup]:
         if self.request_count >= self.request_limit:
             return None
         
@@ -87,43 +43,48 @@ class JustJoinScraper(WebScraper):
             return None
         
         try:
-            # Create new context for each job to ensure clean state
-            context = await browser.new_context(
-                locale='pl-PL',
-                extra_http_headers={
-                    'Accept-Language': 'pl-PL,pl;q=0.6',
-                    'Cache-Control': 'max-age=0',
-                    'User-Agent': "Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0"
-                }
-            )
-            
-            await context.add_cookies([{
-                'name': 'userCurrency', 
-                'value': 'pln',
-                'domain': '.justjoin.it',
-                'path': '/'
-            }])
-            
-            try:
-                page = await context.new_page()
-                try:
-                    await page.goto(link)
-                    await page.wait_for_timeout(3000)
-                    html = await page.content()
-                    
-                    self.request_count += 1
-                    Requested.objects.create(url=link, title=title)
-                    self.logger.info(f"Requested: {title}")
-                    
-                    return BeautifulSoup(html, "html.parser")
-                finally:
-                    await page.close()
-            finally:
-                await context.close()
+            with sync_playwright() as p:
+                browser = p.firefox.launch(
+                    headless=True,
+                    args=[
+                        '--no-sandbox',
+                        '--single-process',
+                    ]
+                )
                 
+                context = browser.new_context(
+                    locale='pl-PL',
+                    extra_http_headers={
+                        'Accept-Language': 'pl-PL,pl;q=0.6',
+                        'Cache-Control': 'max-age=0',
+                        'User-Agent': "Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0"
+                    }
+                )
+                
+                context.add_cookies([{
+                    'name': 'userCurrency', 
+                    'value': 'pln',
+                    'domain': '.justjoin.it',
+                    'path': '/'
+                }])
+                
+                page = context.new_page()
+                # Wait for navigation to complete
+                page.goto(link)
+                # Wait for content
+                page.wait_for_timeout(3000)
+                # Get content
+                html = page.content()
+                
+                self.request_count += 1
+                self.logger.info(f"Requested: {title}")
+                
+            Requested.objects.create(url=link, title=title)
+            return BeautifulSoup(html, "html.parser")
         except Exception as e:
             self.logger.error(f"Failed to request {title}: {e}")
             return None
+    
     
     def get_jobs_container_selector(self) -> Dict[str, Any]:
         return {

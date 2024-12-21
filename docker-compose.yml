@@ -7,6 +7,7 @@ services:
     image: app-image  
     container_name: django-container
     command: python manage.py runserver 0.0.0.0:8000
+    
     ports:
       - "8000:8000"
     volumes:
@@ -44,6 +45,11 @@ services:
       - django
       - postgres
       - redis
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'  
+          memory: 1012M
     command: celery -A backend worker --concurrency=1
     restart: unless-stopped
 

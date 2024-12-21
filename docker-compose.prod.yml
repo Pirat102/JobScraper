@@ -42,6 +42,11 @@ services:
       - django
       - postgres
       - redis
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'  
+          memory: 1012M
     command: celery -A backend worker --concurrency=1
     restart: unless-stopped
 

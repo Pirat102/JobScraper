@@ -8,21 +8,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     postgresql-client \
     gcc \
-    python3-dev \
-    # Playwright dependencies 
-    libx11-6 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxext6 \
-    libxfixes3 \
-    libxrandr2 \
-    libxtst6 \
-    libglib2.0-0 \
-    libpango-1.0-0 \
-    libcairo2 \
-    libfontconfig1 \
-    libgdk-pixbuf2.0-0 \
-    && rm -rf /var/lib/apt/lists/*
+    python3-dev
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt \
