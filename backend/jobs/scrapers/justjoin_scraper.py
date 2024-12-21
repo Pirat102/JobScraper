@@ -1,9 +1,12 @@
 from typing import Any, Dict, Optional
 from bs4 import BeautifulSoup
+from jobs.models import Job
 
 from jobs.models import Requested
 from .base_scraper import WebScraper
-from playwright.sync_api import sync_playwright
+from playwright.async_api import async_playwright
+import asyncio
+from asgiref.sync import sync_to_async
 
 class JustJoinScraper(WebScraper):
     
@@ -15,25 +18,123 @@ class JustJoinScraper(WebScraper):
             request_limit=request_limit
         )
 
-    def get_main_html(self) -> list[str]:
+    def run(self) -> int:
+        """Main entry point for the scraper."""
+        try:
+            html = asyncio.run(self.get_main_html())
+            job_listings = self.get_job_listings(html)
+            jobs_data = asyncio.run(self.process_job_listings(job_listings))
+            return self.save_jobs(jobs_data)
+        except Exception as e:
+            self.logger.error(f"Error in scraping process: {e}")
+            return 0
+
+
+    async def get_main_html(self) -> list[str]:
         pages = []
-        with sync_playwright() as p:
+        async with async_playwright() as p:
             # Increase viewport height to see more items at once
-            browser = p.firefox.launch(headless=True)
-            page = browser.new_page(viewport={'width': 1280, 'height': 20000})
+            browser = await p.firefox.launch(headless=True)
+            page = await browser.new_page(viewport={'width': 1280, 'height': 20000})
             
             for url in self.filter_urls:
-                page.goto(url)
-                page.wait_for_selector('[data-test-id="virtuoso-item-list"]')
-                page.wait_for_timeout(3000)
+                await page.goto(url)
+                await page.wait_for_selector('[data-test-id="virtuoso-item-list"]')
+                await page.wait_for_timeout(3000)
                 
-                html = page.content()
+                html = await page.content()
                 pages.append(html)
                     
-            browser.close()
+            await browser.close()
         return pages
     
     
+    async def _get_job_page(self, link: str, title: str) -> Optional[BeautifulSoup]:
+        """Fetches and parses individual job posting page with request limit."""
+        if self.request_count >= self.request_limit:
+            return None
+        
+        if Requested.objects.filter(url=link).exists():
+            return None
+        
+        try:
+            async with async_playwright() as p:
+                browser = await p.firefox.launch(headless=True)
+                context = await browser.new_context(
+                    locale='pl-PL',
+                    extra_http_headers={
+                        'Accept-Language': 'pl-PL,pl;q=0.6',
+                        'Cache-Control': 'max-age=0',
+                        'User-Agent': "Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0"
+                    }
+                )
+                # Create page from context
+                page = await context.new_page()
+                
+                # Add cookies with required parameters
+                context.add_cookies([{
+                    'name': 'userCurrency', 
+                    'value': 'pln',
+                    'domain': '.justjoin.it',
+                    'path': '/'
+                }])
+                
+                await page.goto(link)
+                await page.wait_for_timeout(3000)
+                self.request_count += 1
+                
+                self.logger.info(f"Requested: {title}")
+                html = await page.content()
+                await browser.close()
+
+            Requested.objects.create(url=link, title=title)
+            return BeautifulSoup(html, "html.parser")
+        except Exception as e:
+            self.logger.error(f"Failed to request {title}: {e}")
+            return None
+        
+        
+    async def process_job_listings(self, page_listings: list[Dict]) -> Dict:
+        """Processes each job listing to get detailed information."""
+        detailed_jobs = {}
+        for listings in page_listings:
+            self.logger.info(f"Starting to process {len(listings)} job listings")
+            
+            for title, data in listings.items():
+                self.logger.debug(f"Processing job: {title}")
+                if job_details := await self._process_single_job(title, data["link"]):
+                    detailed_jobs[title] = job_details
+                    self.logger.debug(f"Successfully processed job: {title}")
+                
+        self.logger.info(f"Completed processing. Successfully processed {len(detailed_jobs)} out of requested {(self.request_count)} jobs")
+        return detailed_jobs
+    
+    
+    async def _process_single_job(self, title: str, link: str) -> Optional[Dict]:
+        """Processes a single job listing."""
+        try:
+            if Job.objects.filter(url=link).exists():
+                self.logger.debug(f"Job already exists in database: {title}")
+                return None
+            
+            if soup := await (self._get_job_page(link, title)):
+                experience = self.extract_experience_level(soup)
+                return {
+                    "company": self.extract_company(soup),
+                    "location": self.extract_location(soup),
+                    "operating_mode": self.extract_operating_mode(soup),
+                    "experience": experience,
+                    "salary": self.extract_salary(soup),
+                    "description": self.extract_description(soup),
+                    "skills": self.process_skills(soup, experience),
+                    "link": link
+                }
+        except Exception as e:
+            self.logger.error(f"Error processing job {title}: {e}")
+        return None
+
+
+
     def get_jobs_container_selector(self) -> Dict[str, Any]:
         return {
             'name': 'div',
@@ -55,53 +156,7 @@ class JustJoinScraper(WebScraper):
 
     def extract_job_link(self, job_listing: BeautifulSoup) -> str:
         return f"{self.base_url}{job_listing.a['href']}?targetCurrency=pln"
-    
-    def _get_job_page(self, link: str, title: str) -> Optional[BeautifulSoup]:
-        """Fetches and parses individual job posting page with request limit."""
-        if self.request_count >= self.request_limit:
-            return None
-        
-        if Requested.objects.filter(url=link).exists():
-            return None
-        
-        try:
-            with sync_playwright() as p:
-                browser = p.firefox.launch(headless=True)
-                
-                # Create context with all headers
-                context = browser.new_context(
-                    locale='pl-PL',
-                    extra_http_headers={
-                        'Accept-Language': 'pl-PL,pl;q=0.6',
-                        'Cache-Control': 'max-age=0',
-                        'User-Agent': "Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0"
-                    }
-                )
-                
-                # Create page from context
-                page = context.new_page()
-                
-                # Add cookies with required parameters
-                context.add_cookies([{
-                    'name': 'userCurrency', 
-                    'value': 'pln',
-                    'domain': '.justjoin.it',
-                    'path': '/'
-                }])
-                
-                page.goto(link)
-                page.wait_for_timeout(3000)
-                self.request_count += 1
-                
-                self.logger.info(f"Requested: {title}")
-                html = page.content()
-                browser.close()
 
-            Requested.objects.create(url=link, title=title)
-            return BeautifulSoup(html, "html.parser")
-        except Exception as e:
-            self.logger.error(f"Failed to request {title}: {e}")
-            return None
 
     def extract_company(self, soup: BeautifulSoup) -> str:
         div_elements = soup.find("div", {"class": "MuiBox-root css-yd5zxy"})
