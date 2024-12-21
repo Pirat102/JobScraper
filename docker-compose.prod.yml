@@ -45,8 +45,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.50'  
-          memory: 1012M
+          cpus: '0.6'  
+          memory: 1212M
     command: celery -A backend worker --concurrency=1
     restart: unless-stopped
 

@@ -26,7 +26,7 @@ class JustJoinScraper(WebScraper):
                 try:
                     page.goto(url)
                     self.logger.info(f"Fetching main page from: {url}")
-                    page.wait_for_timeout(6000)
+                    page.wait_for_timeout(30000)
                     html = page.content()
                     pages.append(html)
                     self.logger.debug("Successfully fetched main page")
