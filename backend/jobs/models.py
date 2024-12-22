@@ -16,6 +16,8 @@ class Job(models.Model):
     scraped_date = models.DateTimeField(default=timezone.now)
     summary = models.TextField(null=True, blank=True)
     source = models.CharField(max_length=20, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    
     
 
     def __str__(self):

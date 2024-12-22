@@ -9,6 +9,7 @@ from django.db import transaction
 from jobs.summarizer import summarize_text
 from random import randint
 from jobs.utils.salary_standardizer import standardize_salary
+from datetime import datetime, timedelta, timezone
 
 class WebScraper(ABC):
     """Base scraper class for job websites."""
@@ -19,6 +20,7 @@ class WebScraper(ABC):
         self.logger = logging.getLogger(f'scraper.{self.__class__.__name__}')
         self.request_limit = request_limit
         self.request_count = 0
+        self.updated_count = 0
 
     # Main Flow Methods
     # --------------------------------------------------
@@ -90,15 +92,33 @@ class WebScraper(ABC):
                     detailed_jobs[title] = job_details
                     self.logger.debug(f"Successfully processed job: {title}")
                 
-        self.logger.info(f"Completed processing. Successfully processed {len(detailed_jobs)} out of requested {(self.request_count)} jobs")
+        self.logger.info(f"Completed processing. Updated {self.updated_count}. Requested {(self.request_count)} jobs")
         return detailed_jobs
 
     def _process_single_job(self, title: str, link: str) -> Optional[Dict]:
         """Processes a single job listing."""
         try:
-            if Job.objects.filter(url=link).exists():
+            today = datetime.now(timezone.utc)
+            
+            url_pattern = '?targetCurrency=pln'
+            if url_pattern in link:
+                link = link.replace(url_pattern, '')
+            
+            if job := Job.objects.filter(url=link):
+                job = job.get()
                 self.logger.debug(f"Job already exists in database: {title}")
+                two_weeks_later = job.scraped_date + timedelta(days=14)
+                if two_weeks_later < today:
+                    job.scraped_date = today
+                    job.save()
+                    self.updated_count +=1
+                    self.logger.info(f"Scraped over 14 days ago, updating date for: {title}")
+                    return None
+                    
+            if Requested.objects.filter(url=link).exists():
+                self.logger.debug(f"Request already exists in database: {title}")
                 return None
+                
             
             if soup := self._get_job_page(link, title):
                 experience = self.extract_experience_level(soup)
@@ -119,10 +139,6 @@ class WebScraper(ABC):
     def _get_job_page(self, link: str, title: str) -> Optional[BeautifulSoup]:
         """Fetches and parses individual job posting page with request limit."""
         if self.request_count >= self.request_limit:
-            return None
-        
-        if Requested.objects.filter(url=link).exists():
-            self.logger.debug(f"Job already requested in DB: {title}")
             return None
         
         try:

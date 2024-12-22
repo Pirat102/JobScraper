@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 
 from jobs.models import Requested
 from .base_scraper import WebScraper
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, expect
 
 
 class JustJoinScraper(WebScraper):
@@ -19,30 +19,25 @@ class JustJoinScraper(WebScraper):
     def get_main_html(self) -> list[str]:
         pages = []
         with sync_playwright() as p:
-            browser = p.firefox.launch(headless=True)
-            page = browser.new_page(viewport={'width': 1280, 'height': 20000})
             
             for url in self.filter_urls:
                 try:
-                    page.goto(url)
+                    browser = p.firefox.launch(headless=True, timeout=80000)
+                    page = browser.new_page(viewport={'width': 1280, 'height': 8000}, reduced_motion='reduce')
+                    page.goto(url, timeout=80000)
                     self.logger.info(f"Fetching main page from: {url}")
-                    page.wait_for_timeout(30000)
+                    expect(page.get_by_text('New').first).to_be_visible(timeout=80000)
                     html = page.content()
                     pages.append(html)
-                    self.logger.debug("Successfully fetched main page")
+                    self.logger.info("Successfully fetched main page")
                 except Exception as e:
                     self.logger.error(f"Error fetching {url}: {e}")
-                
         return pages
         
     def _get_job_page(self, link: str, title: str) -> Optional[BeautifulSoup]:
         if self.request_count >= self.request_limit:
             return None
-        
-        if Requested.objects.filter(url=link).exists():
-            self.logger.debug(f"Job already exists in database: {title}")
-            return None
-        
+ 
         try:
             with sync_playwright() as p:
                 browser = p.firefox.launch(
