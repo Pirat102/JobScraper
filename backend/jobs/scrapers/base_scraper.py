@@ -100,14 +100,10 @@ class WebScraper(ABC):
         try:
             today = datetime.now(timezone.utc)
             
-            url_pattern = '?targetCurrency=pln'
-            if url_pattern in link:
-                formated_link = link.replace(url_pattern, '')
-            else:
-                formated_link = link
+            base_link = link.split('?')[0]
             
             
-            if job := Job.objects.filter(url__icontains=formated_link):
+            if job := Job.objects.filter(url__startswith=base_link):
                 job = job.get()
                 self.logger.debug(f"Job already exists in database: {title}")
                 two_weeks_later = job.scraped_date + timedelta(days=14)
@@ -118,7 +114,7 @@ class WebScraper(ABC):
                     self.logger.info(f"Scraped over 14 days ago, updating date for: {title}")
                     return None
                     
-            if Requested.objects.filter(url__icontains=formated_link).exists():
+            if Requested.objects.filter(url__startswith=base_link).exists():
                 self.logger.debug(f"Request already exists in database: {title}")
                 return None
                 
