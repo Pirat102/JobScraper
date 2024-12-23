@@ -104,7 +104,7 @@ class WebScraper(ABC):
             if url_pattern in link:
                 link = link.replace(url_pattern, '')
             
-            if job := Job.objects.filter(url=link):
+            if job := Job.objects.filter(url__icontains=link):
                 job = job.get()
                 self.logger.debug(f"Job already exists in database: {title}")
                 two_weeks_later = job.scraped_date + timedelta(days=14)

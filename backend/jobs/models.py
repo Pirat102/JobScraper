@@ -32,7 +32,7 @@ class Requested(models.Model):
     
     
     def __str__(self):
-        return f"ID: {self.id} - Title: {self.title} - {self.created_at.strftime('%d/%m/%Y %H:%M')}"
+        return f"ID: {self.id} - Title: {self.title} - {self.created_at.strftime('%d/%m/%Y %H:%M')} - Source: {self.url.replace('www.', '').replace('https://', '').split('.')[0]}"
     
     
 class JobApplication(models.Model):
