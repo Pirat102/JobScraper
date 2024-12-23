@@ -115,7 +115,7 @@ class WebScraper(ABC):
                     self.logger.info(f"Scraped over 14 days ago, updating date for: {title}")
                     return None
                     
-            if Requested.objects.filter(url=link).exists():
+            if Requested.objects.filter(url__icontains=link).exists():
                 self.logger.debug(f"Request already exists in database: {title}")
                 return None
                 
