@@ -17,11 +17,12 @@ class Job(models.Model):
     summary = models.TextField(null=True, blank=True)
     source = models.CharField(max_length=20, null=True)
     created_at = models.DateTimeField(default=timezone.now)
-    
-    
 
     def __str__(self):
         return f"ID: {self.id} - Title: {self.title}"
+    
+    class Meta:
+        ordering = ['-scraped_date']
     
     
 class Requested(models.Model):
@@ -52,6 +53,7 @@ class JobApplication(models.Model):
     class Meta:
         # Ensure a user can't apply to the same job twice
         unique_together = ['user', 'job']
+        ordering = ['-applied_date']
         
 class ApplicationNote(models.Model):
     application = models.ForeignKey(JobApplication, on_delete=models.CASCADE, related_name='notes')

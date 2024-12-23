@@ -34,7 +34,7 @@ class AuthController:
 class JobController:
     @route.get("", response=List[JobSchema])
     def get_jobs(self):
-        return Job.objects.all().order_by("-scraped_date")
+        return Job.objects.all()
     
     @route.get("stats", response=Dict[str, Any])
     def stats(self, filters: JobFilterSchema = Query(...)):
@@ -90,16 +90,16 @@ class JobController:
             "operating_mode_stats": sort_dict(work_mode),
             "salary_stats": salary,
             "trends": {
-                "today": jobs.filter(scraped_date__gte=today).count(),
-                "last_7_days": jobs.filter(scraped_date__gte=last_week).count(),
-                "last_14_days": jobs.filter(scraped_date__gte=last_two_weeks).count(),
-                "last_30_days": jobs.filter(scraped_date__gte=last_month).count(),
+                "today": jobs.filter(created_at__gte=today).count(),
+                "last_7_days": jobs.filter(created_at__gte=last_week).count(),
+                "last_14_days": jobs.filter(created_at__gte=last_two_weeks).count(),
+                "last_30_days": jobs.filter(created_at__gte=last_month).count(),
         },
         }
     
     @route.get("dates", response=List[date])
     def available_dates(self):
-        dates = Job.objects.dates('scraped_date', 'day',"DESC").distinct()
+        dates = Job.objects.dates("scraped_date", "day","DESC").distinct()
         return dates
                 
 
@@ -109,7 +109,7 @@ class JobController:
         jobs = Job.objects.all()
         jobs = filters.filter_queryset(jobs)
         
-        return jobs.order_by("-scraped_date")
+        return jobs
     
 
 @api_controller("/applications", auth=JWTAuth())
