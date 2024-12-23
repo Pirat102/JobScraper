@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from jobs.models import Requested
 from .base_scraper import WebScraper
 from playwright.sync_api import sync_playwright, expect
+import time
 
 
 class JustJoinScraper(WebScraper):
@@ -26,7 +27,8 @@ class JustJoinScraper(WebScraper):
                     page = browser.new_page(viewport={'width': 1280, 'height': 8000}, reduced_motion='reduce')
                     page.goto(url, timeout=80000)
                     self.logger.info(f"Fetching main page from: {url}")
-                    expect(page.get_by_text('New').first).to_be_visible(timeout=80000)
+                    page.wait_for_selector('#up-offers-list', timeout=80000)
+                    
                     html = page.content()
                     pages.append(html)
                     self.logger.info("Successfully fetched main page")
@@ -85,13 +87,13 @@ class JustJoinScraper(WebScraper):
     def get_jobs_container_selector(self) -> Dict[str, Any]:
         return {
             'name': 'div',
-            'attrs': {'data-test-id': 'virtuoso-item-list'}
+            'attrs': {'id': 'up-offers-list'}
         }
         
 
     def get_listings_selector(self) -> Dict[str, Any]:
         return {
-            'name': 'div',
+            'name': 'li',
             'attrs': {'data-index': True}
         }
 
