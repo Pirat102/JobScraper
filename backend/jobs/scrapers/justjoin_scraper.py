@@ -1,10 +1,7 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 from bs4 import BeautifulSoup
 
-from jobs.models import Requested
 from .base_scraper import WebScraper
-from playwright.sync_api import sync_playwright, expect
-import time
 
 
 class JustJoinScraper(WebScraper):
@@ -17,72 +14,6 @@ class JustJoinScraper(WebScraper):
             request_limit=request_limit
         )
 
-    def get_main_html(self) -> list[str]:
-        pages = []
-        with sync_playwright() as p:
-            
-            for url in self.filter_urls:
-                try:
-                    browser = p.firefox.launch(headless=True, timeout=80000)
-                    page = browser.new_page(viewport={'width': 1280, 'height': 8000}, reduced_motion='reduce')
-                    page.goto(url, timeout=80000)
-                    self.logger.info(f"Fetching main page from: {url}")
-                    page.wait_for_selector('#up-offers-list', timeout=80000)
-                    
-                    html = page.content()
-                    pages.append(html)
-                    self.logger.info("Successfully fetched main page")
-                except Exception as e:
-                    self.logger.error(f"Error fetching {url}: {e}")
-        return pages
-        
-    def _get_job_page(self, link: str, title: str) -> Optional[BeautifulSoup]:
-        if self.request_count >= self.request_limit:
-            return None
- 
-        try:
-            with sync_playwright() as p:
-                browser = p.firefox.launch(
-                    headless=True,
-                    args=[
-                        '--no-sandbox',
-                        '--single-process',
-                    ]
-                )
-                
-                context = browser.new_context(
-                    locale='pl-PL',
-                    extra_http_headers={
-                        'Accept-Language': 'pl-PL,pl;q=0.6',
-                        'Cache-Control': 'max-age=0',
-                        'User-Agent': "Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0"
-                    }
-                )
-                
-                context.add_cookies([{
-                    'name': 'userCurrency', 
-                    'value': 'pln',
-                    'domain': '.justjoin.it',
-                    'path': '/'
-                }])
-                
-                page = context.new_page()
-                # Wait for navigation to complete
-                page.goto(link)
-                # Wait for content
-                page.wait_for_timeout(3000)
-                # Get content
-                html = page.content()
-                
-                self.request_count += 1
-                self.logger.info(f"Requested: {title}")
-                
-            Requested.objects.create(url=link, title=title)
-            return BeautifulSoup(html, "html.parser")
-        except Exception as e:
-            self.logger.error(f"Failed to request {title}: {e}")
-            return None
-    
     
     def get_jobs_container_selector(self) -> Dict[str, Any]:
         return {

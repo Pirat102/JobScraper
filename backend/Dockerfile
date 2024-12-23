@@ -11,9 +11,7 @@ RUN apt-get update && apt-get install -y \
     python3-dev
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt \
-    && pip install --no-cache-dir playwright \
-    && playwright install firefox --with-deps
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
