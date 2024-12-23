@@ -143,10 +143,11 @@ class WebScraper(ABC):
             return None
         
         try:
-            headers = {
-                'User-Agent': "Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0",
-                'Accept-Language:': "pl-PL,pl;q=0.5"
-            }
+            headers = {'User-Agent': "Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0"}
+            
+            if 'justjoin' in link:
+                headers = {'User-Agent': "Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0",
+                           'cookie': 'userCurrency=pln'}
             response = requests.get(link, headers=headers)
             self.request_count += 1
             time.sleep(randint(1, 5))
