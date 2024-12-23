@@ -144,7 +144,8 @@ class WebScraper(ABC):
         
         try:
             headers = {
-                'User-Agent': "Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0"
+                'User-Agent': "Mozilla/5.0 (X11; Linux x86_64; rv:132.0) Gecko/20100101 Firefox/132.0",
+                'Accept-Language:': "pl-PL,pl;q=0.5"
             }
             response = requests.get(link, headers=headers)
             self.request_count += 1
