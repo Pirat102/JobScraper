@@ -47,15 +47,15 @@ class JustJoinScraper(WebScraper):
         return location_span.text.strip() if location_span else ""
 
     def extract_operating_mode(self, soup: BeautifulSoup) -> str:
-        mode_divs = soup.find_all("div", {"class": "MuiBox-root css-snbmy4"})
-        return mode_divs[3].text.strip() if len(mode_divs) > 3 else ""
+        mode_text = soup.find("div", {"class": "MuiBox-root css-ktfb40"})
+        return mode_text.text.strip() if mode_text else ""
     
     def extract_experience_level(self, soup: BeautifulSoup) -> str:
-        mode_divs = soup.find_all("div", {"class": "MuiBox-root css-snbmy4"})
-        if "C-level" in mode_divs[1].text.strip():
+        mode_text = soup.find("div", {"class": "MuiBox-root css-ktfb40"})
+        if "C-level" in mode_text.text.strip():
             return "Expert"
 
-        return mode_divs[1].text.strip() if mode_divs else ""
+        return mode_text.text.strip() if mode_text else ""
     
     def extract_salary(self, soup: BeautifulSoup) -> str:
         salary_elements = soup.findChildren("span", {"class": "css-1pavfqb"})
