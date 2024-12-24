@@ -1,0 +1,71 @@
+.notes-section {
+    border-top: 1px solid var(--border-color);
+    padding-top: var(--space-4);
+}
+  
+.notes-title {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-4);
+}
+  
+.notes-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+}
+  
+.note-item {
+    background-color: var(--background-color);
+    border-radius: var(--radius);
+    padding: var(--space-3);
+}
+  
+.note-content {
+    color: var(--text-primary);
+    margin-bottom: var(--space-2);
+    line-height: 1.5;
+}
+  
+.note-date {
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+}
+  
+.add-note-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+  
+.note-input {
+    width: 100%;
+    padding: var(--space-3);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    resize: vertical;
+    min-height: 100px;
+    font-family: inherit;
+}
+  
+.note-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.note-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--space-2);
+}
+
+@media (max-width: 768px) {
+    .add-note-button {
+        width: 100%;
+    }
+}
