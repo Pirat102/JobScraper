@@ -187,6 +187,7 @@
   border: 1px solid var(--background-hover);
 }
 
+
 @media (max-width: 768px) {
   .job-container {
     padding: var(--space-4);

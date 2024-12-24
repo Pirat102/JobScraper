@@ -5,25 +5,22 @@ import DOMPurify from "dompurify";
 import { useLanguage } from "../contexts/LanguageContext";
 import { formatDate } from "../config/DateFormater";
 import { ApplyButton } from "./ApplyButton";
+import api from "../api";
 
-function Job({ job }) {
+
+function Job({ job, onJobUpdate }) {
   const [showSummary, setShowSummary] = useState(false);
   const { t, language } = useLanguage();
-  const handleApplySuccess = () => {
-  };
 
-  const ApplicationStatus = () => {
-    if (job.application) {
-      return (
-        <div
-          className={`status-badge status-${job.application.status.toLowerCase()}`}
-        >
-          {t(job.application.status.toLowerCase())}
-        </div>
-      );
+  const handleApplySuccess = async () => {
+    try {
+      const response = await api.get(`api/jobs/filter?id=${job.id}`);
+      if (response.data.results && response.data.results[0]) {
+        onJobUpdate?.(response.data.results[0]);
+      }
+    } catch (error) {
+      console.error("Failed to refresh job data:", error);
     }
-
-    return <ApplyButton jobId={job.id} onApply={handleApplySuccess} />;
   };
 
   return (
@@ -76,6 +73,7 @@ function Job({ job }) {
           }}
         />
       )}
+
       <div className="skills-section">
         <div className="skills">
           {Object.entries(job.skills)
@@ -88,6 +86,14 @@ function Job({ job }) {
               </div>
             ))}
         </div>
+      </div>
+
+      <div className="job-actions">
+        <ApplyButton
+          jobId={job.id}
+          application={job.application}
+          onApply={handleApplySuccess}
+        />
       </div>
     </div>
   );

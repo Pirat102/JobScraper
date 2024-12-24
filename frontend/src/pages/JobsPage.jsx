@@ -14,9 +14,14 @@ function JobsPage() {
   const [error, setError] = useState(null);
   const { t } = useLanguage();
 
-  useEffect(() => {
-    fetchJobs();
-  }, []);
+  const handleJobUpdate = (updatedJob) => {
+    setJobs(prevJobs => ({
+      ...prevJobs,
+      results: prevJobs.results.map(job => 
+        job.id === updatedJob.id ? updatedJob : job
+      )
+    }));
+  };
 
   const fetchJobs = async (params = "") => {
     try {
@@ -32,6 +37,10 @@ function JobsPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
 
   const handleFilterChange = (filters) => {
     const params = new URLSearchParams();
@@ -57,7 +66,7 @@ function JobsPage() {
         <div className="jobs-layout">
           <FilterPanel onFilterChange={handleFilterChange} />
           <main className="jobs-container">
-          <div className="loading-state">{t('loading')}</div>
+            <div className="loading-state">{t('loading')}</div>
           </main>
         </div>
       </div>
@@ -83,21 +92,23 @@ function JobsPage() {
   return (
     <div className="jobs-page">
       <div className="jobs-layout">
-      <FilterPanel 
+        <FilterPanel 
           onFilterChange={handleFilterChange} 
-          jobCount={jobs.count} // Pass job count to FilterPanel
+          jobCount={jobs.count}
           loading={loading}
         />
         <main className="jobs-container">
           {jobs.count === 0 ? (
-            <div className="no-jobs-state">
-              <p>Nie znaleziono wyników spełniających kryteria.</p>
-            </div>
+            <div className="no-jobs-state">{t('no_results')}</div>
           ) : (
             <>
               <div className="jobs-list">
                 {jobs.results.map((job) => (
-                  <Job key={job.id || job.url} job={job} />
+                  <Job 
+                    key={job.id} 
+                    job={job} 
+                    onJobUpdate={handleJobUpdate}
+                  />
                 ))}
               </div>
               <Pagination
