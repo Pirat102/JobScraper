@@ -5,23 +5,12 @@ import DOMPurify from "dompurify";
 import { useLanguage } from "../contexts/LanguageContext";
 import { formatDate } from "../config/DateFormater";
 import { ApplyButton } from "./ApplyButton";
-import api from "../api";
 
 
-function Job({ job, onJobUpdate }) {
+function Job({ job }) {
   const [showSummary, setShowSummary] = useState(false);
   const { t, language } = useLanguage();
 
-  const handleApplySuccess = async () => {
-    try {
-      const response = await api.get(`api/jobs/filter?id=${job.id}`);
-      if (response.data.results && response.data.results[0]) {
-        onJobUpdate?.(response.data.results[0]);
-      }
-    } catch (error) {
-      console.error("Failed to refresh job data:", error);
-    }
-  };
 
   return (
     <div className="job-container">
@@ -92,7 +81,7 @@ function Job({ job, onJobUpdate }) {
         <ApplyButton
           jobId={job.id}
           application={job.application}
-          onApply={handleApplySuccess}
+          
         />
       </div>
     </div>
