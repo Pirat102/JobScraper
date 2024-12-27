@@ -32,7 +32,6 @@ function Navbar() {
           ) : (
             <>
               <Link to="/login" className="nav-link">{t('login')}</Link>
-              <Link to="/register" className="nav-link">{t('register')}</Link>
             </>
           )}
           <ThemeToggle />

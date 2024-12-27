@@ -1,16 +1,27 @@
 import { useState, useEffect } from "react";
 import api from "../api";
-import { Trash2 } from "lucide-react";
-import "../styles/Applications.css";
+import { Trash2, Calendar } from "lucide-react";
+import "../styles/applications/Applications.css";
+import "../styles/applications/StatusButtons.css";
+import "../styles/applications/Buttons.css";
+import "../styles/applications/Notes.css";
 import { useLanguage } from "../contexts/LanguageContext";
 import { formatDate } from "../config/DateFormater";
+import DOMPurify from "dompurify";
 
 function JobApplications() {
   const [applications, setApplications] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [newNote, setNewNote] = useState("");
+  const [error, setError] = useState(null);
   const { t, language } = useLanguage();
+  const [expandedCards, setExpandedCards] = useState({});
+
+  const toggleCard = (id) => {
+    setExpandedCards((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
   useEffect(() => {
     fetchApplications();
@@ -22,12 +33,33 @@ function JobApplications() {
       setApplications(response.data);
     } catch (error) {
       setError(t("failed_load_applications"));
-    } finally {
-      setLoading(false);
     }
   };
 
-  const addNote = async (applicationId) => {
+  const updateApplicationStatus = async (applicationId, newStatus) => {
+    try {
+      await api.patch(`api/applications/${applicationId}`, {
+        status: newStatus,
+      });
+      fetchApplications();
+    } catch (error) {
+      alert(t("failed_update_status"));
+    }
+  };
+
+  const deleteApplication = async (applicationId) => {
+    if (window.confirm(t("confirm_delete_application"))) {
+      try {
+        await api.delete(`api/applications/${applicationId}`);
+        fetchApplications();
+      } catch (error) {
+        alert(t("failed_delete_application"));
+      }
+    }
+  };
+
+  const addNote = async (applicationId, e) => {
+    e.preventDefault();
     if (!newNote.trim()) return;
 
     try {
@@ -52,37 +84,12 @@ function JobApplications() {
     }
   };
 
-  const deleteApplication = async (applicationId) => {
-    if (window.confirm(t("confirm_delete_application"))) {
-      try {
-        await api.delete(`api/applications/${applicationId}`);
-        fetchApplications();
-      } catch (error) {
-        alert(t("failed_delete_application"));
-      }
-    }
-  };
-
-  const updateApplicationStatus = async (applicationId, newStatus) => {
-    try {
-      await api.patch(`api/applications/${applicationId}`, {
-        status: newStatus,
-      });
-      fetchApplications();
-    } catch (error) {
-      alert(t("failed_update_status"));
-    }
-  };
-
-  const statusOptions = ["APPLIED", "INTERVIEWING", "REJECTED", "ACCEPTED"];
-
-  if (loading) {
-    return <div className="applications-loading">{t("loading")}</div>;
-  }
-
-  if (error) {
-    return <div className="applications-error">{error}</div>;
-  }
+  const statuses = [
+    { key: "APPLIED", icon: "📝" },
+    { key: "INTERVIEWING", icon: "💼" },
+    { key: "ACCEPTED", icon: "🎉" },
+    { key: "REJECTED", icon: "❌" },
+  ];
 
   return (
     <div className="applications-container">
@@ -91,49 +98,102 @@ function JobApplications() {
         {applications.map((application) => (
           <div key={application.id} className="application-card">
             <div className="application-header">
-              <h2 className="application-job-title">{application.job.title}</h2>
-              <span className="application-date">
-                {t("applied")}:{" "}
-                {formatDate(application.applied_date, language)}
-              </span>
+              <div className="job-title-section">
+                <span className="post-date">
+                  <Calendar size={16} className="date-icon" />
+                  {formatDate(application.applied_date, language)}
+                </span>
+                <a
+                  href={application.job.url}
+                  className="job-title"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {application.job.title}
+                </a>
+                <span className="company-name">{application.job.company}</span>
+              </div>
+
+              <button
+                onClick={() => toggleCard(application.id)}
+                className="toggle-details-button"
+              >
+                {expandedCards[application.id]
+                  ? t("hide_details")
+                  : t("show_details")}
+              </button>
             </div>
 
-            <div className="application-details">
-              <div className="detail-item">
-                <span className="detail-label">{t("status")}:</span>
-                <select
-                  value={application.status}
-                  onChange={(e) =>
-                    updateApplicationStatus(application.id, e.target.value)
-                  }
-                  className={`status-select status-${application.status.toLowerCase()}`}
+            <div className="status-buttons">
+              {statuses.map(({ key, icon }) => (
+                <button
+                  key={key}
+                  onClick={() => updateApplicationStatus(application.id, key)}
+                  className={`status-button ${key.toLowerCase()} ${
+                    application.status === key ? "active" : ""
+                  }`}
                 >
-                  {statusOptions.map((status) => (
-                    <option key={status} value={status}>
-                      {t(status.toLowerCase())}
-                    </option>
-                  ))}
-                </select>
+                  {icon} {t(key.toLowerCase())}
+                </button>
+              ))}
+            </div>
+
+            <div
+              className={`application-details ${
+                expandedCards[application.id] ? "expanded" : ""
+              }`}
+            >
+              {application.job.location && (
+                <span className="detail-item location">
+                  📍 {application.job.location}
+                </span>
+              )}
+              {application.job.operating_mode && (
+                <span className="detail-item work-mode">
+                  💼 {application.job.operating_mode}
+                </span>
+              )}
+              {application.job.salary && (
+                <span className="detail-item salary">
+                  💰 {application.job.salary}
+                </span>
+              )}
+              {application.job.summary && (
+                <div
+                  className="job-summary"
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(application.job.summary, {
+                      ALLOWED_TAGS: ["strong", "ul", "li", "br", "p"],
+                      ALLOWED_ATTR: [],
+                    }),
+                  }}
+                />
+              )}
+
+              <div className="skills-section">
+                <div className="skills">
+                  {Object.entries(application.job.skills).map(
+                    ([skill, level]) => (
+                      <div
+                        key={skill}
+                        className={`skill-item ${level.toLowerCase()}`}
+                      >
+                        {skill}
+                        <span className="skill-level">{level}</span>
+                      </div>
+                    )
+                  )}
+                </div>
               </div>
-              <div className="detail-item">
-                <span className="detail-label">{t("company")}:</span>
-                <span>{application.job.company}</span>
-              </div>
-              <button
-                onClick={() => deleteApplication(application.id)}
-                className="delete-application-button"
-              >
-                <Trash2 size={16} />
-                {t("delete_application")}
-              </button>
             </div>
 
             <div className="notes-section">
               <h3 className="notes-title">{t("notes")}</h3>
+
               <div className="notes-list">
                 {application.notes?.map((note) => (
                   <div key={note.id} className="note-item">
-                    <p className="note-content">{note.content}</p>
+                    <div className="note-content">{note.content}</div>
                     <div className="note-footer">
                       <span className="note-date">
                         {formatDate(note.created_at, language)}
@@ -142,28 +202,36 @@ function JobApplications() {
                         onClick={() => deleteNote(application.id, note.id)}
                         className="delete-note-button"
                       >
-                        <Trash2 size={14} />
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="add-note-form">
+              <form
+                onSubmit={(e) => addNote(application.id, e)}
+                className="add-note-form"
+              >
                 <textarea
                   value={newNote}
                   onChange={(e) => setNewNote(e.target.value)}
-                  className="note-input"
                   placeholder={t("add_note_placeholder")}
+                  className="note-input"
                 />
-                <button
-                  onClick={() => addNote(application.id)}
-                  className="add-note-button"
-                >
+                <button type="submit" className="add-note-button">
                   {t("add_note")}
                 </button>
-              </div>
+              </form>
             </div>
+
+            <button
+              onClick={() => deleteApplication(application.id)}
+              className="delete-application-button"
+            >
+              <Trash2 size={20} />
+              {t("delete_application")}
+            </button>
           </div>
         ))}
       </div>

@@ -6,25 +6,11 @@ import { useLanguage } from "../contexts/LanguageContext";
 import { formatDate } from "../config/DateFormater";
 import { ApplyButton } from "./ApplyButton";
 
+
 function Job({ job }) {
   const [showSummary, setShowSummary] = useState(false);
   const { t, language } = useLanguage();
-  const handleApplySuccess = () => {
-  };
 
-  const ApplicationStatus = () => {
-    if (job.application) {
-      return (
-        <div
-          className={`status-badge status-${job.application.status.toLowerCase()}`}
-        >
-          {t(job.application.status.toLowerCase())}
-        </div>
-      );
-    }
-
-    return <ApplyButton jobId={job.id} onApply={handleApplySuccess} />;
-  };
 
   return (
     <div className="job-container">
@@ -76,10 +62,10 @@ function Job({ job }) {
           }}
         />
       )}
+
       <div className="skills-section">
         <div className="skills">
           {Object.entries(job.skills)
-            .sort(([, a], [, b]) => b.localeCompare(a))
             .slice(0, showSummary ? undefined : 10)
             .map(([skill, level]) => (
               <div key={skill} className={`skill-item ${level.toLowerCase()}`}>
@@ -88,6 +74,14 @@ function Job({ job }) {
               </div>
             ))}
         </div>
+      </div>
+
+      <div className="job-actions">
+        <ApplyButton
+          jobId={job.id}
+          application={job.application}
+          
+        />
       </div>
     </div>
   );

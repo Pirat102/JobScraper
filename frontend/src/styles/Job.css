@@ -10,10 +10,10 @@
   gap: var(--space-4);
 }
 
-.job-container:hover {
+/* .job-container:hover {
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
-}
+} */
 
 .job-header {
   display: flex;
@@ -179,6 +179,12 @@
   border-color: var(--level-advanced-text);
 }
 
+.skill-item.master {
+  background-color: var(--level-master-bg);
+  color: var(--level-master-text);
+  border-color: var(--level-master-text);
+}
+
 .skill-level {
   font-size: var(--text-xs);
   padding: var(--space-1) var(--space-2);
@@ -186,6 +192,7 @@
   border-radius: var(--radius-full);
   border: 1px solid var(--background-hover);
 }
+
 
 @media (max-width: 768px) {
   .job-container {

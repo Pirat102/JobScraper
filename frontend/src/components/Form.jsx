@@ -1,9 +1,9 @@
 import { useState } from "react";
 import api from "../api";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
 import "../styles/Form.css";
-import { useLanguage } from '../contexts/LanguageContext';
+import { useLanguage } from "../contexts/LanguageContext";
 
 function Form({ route, method }) {
   const [username, setUsername] = useState("");
@@ -11,7 +11,6 @@ function Form({ route, method }) {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { t } = useLanguage();
-
 
   const name = method === "login" ? "Login" : "Register";
 
@@ -46,18 +45,28 @@ function Form({ route, method }) {
         type="text"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
-        placeholder={t('username')}
+        placeholder={t("username")}
       />
       <input
         className="form-input"
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        placeholder={t('password')}
+        placeholder={t("password")}
       />
       <button className="form-button" type="submit">
         {t(method)}
       </button>
+      {method === "login" && (
+        <div className="form-footer">
+          <p>
+            {t("no_account")}{" "}
+            <Link to="/register" className="form-link">
+              {t("register")}
+            </Link>
+          </p>
+        </div>
+      )}
     </form>
   );
 }

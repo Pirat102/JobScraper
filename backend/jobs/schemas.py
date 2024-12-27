@@ -20,11 +20,15 @@ class JobSchema(Schema):
     operating_mode: Optional[str]
     salary: Optional[str]
     experience: Optional[str]
-    skills: dict  
+    skills: dict 
     url: str
     scraped_date: datetime
     summary: Optional[str]
     source: Optional[str]
+    
+    @staticmethod
+    def resolve_skills(obj):
+        return obj.get_sorted_skills()
     
 
 class JobFilterSchema(FilterSchema):

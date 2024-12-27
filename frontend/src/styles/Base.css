@@ -23,10 +23,16 @@
     border: 1px solid var(--border-color);
   }
 
+  .skill-item.master {
+    background-color: #f9e5ff;
+    color: #9465c4;
+    border-color: rgb(241, 226, 255);
+  }
+
   .skill-item.advanced {
     background-color: #fdece5; 
     color: rgb(250, 98, 33);           
-    border-color: #fbbfb3;    
+    border-color: #ffdfd9;    
   }
 
   .skill-item.senior {
@@ -38,14 +44,21 @@
   .skill-item.regular {
     background-color: #fef3c7; 
     color: #92400e;           
-    border-color: #fcd34d;    
+    border-color: #ffeba7;    
   }
   
   .skill-item.junior {
     background-color: #e0f2fe; 
     color: #075985;           
-    border-color: #7dd3fc;    
+    border-color: #bfebff;    
   }
+
+  .skill-item.nice {
+    background-color: #dcdcdc; 
+    color: #5a5a5a;           
+    border-color: #f4f4f4;    
+  }
+
 
 }
 
@@ -72,7 +85,6 @@
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
   
-  --level-advanced-bg: rgba(233, 134, 14, 0.071);
   
 }
 :root {
@@ -80,12 +92,14 @@
   --warning-color: #f59e0b;
   --error-color: #ef4444;
   
-  --level-nice-text: #b0bdd1;
+  --level-nice-text: #acacac;
   --level-junior-text: #7dd3fc;
   
   --level-regular-text: #fcd34d;
   --level-senior-text: #86efac;
   --level-advanced-text: #f7945b;
+  --level-master-text: #ebc2fb;
+  
 
   /* Spacing */
   --space-0: 0;

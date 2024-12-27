@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import api from "../api";
 import Job from "../components/Job";
 import FilterPanel from "../components/FilterPanel";
@@ -13,43 +13,63 @@ function JobsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { t } = useLanguage();
+  const isAuthenticated = !!localStorage.getItem('access');
 
-  useEffect(() => {
-    fetchJobs();
-  }, []);
-
-  const fetchJobs = async (params = "") => {
+  const fetchJobs = useCallback(async (params = "") => {
     try {
       setLoading(true);
-      const response = await api.get(`api/jobs/filter${params}`);
-      setJobs(response.data);
-      setNextUrl(response.data.next ? `?${response.data.next.split("?")[1]}` : null);
-      setPreviousUrl(response.data.previous ? `?${response.data.previous.split("?")[1]}` : null);
+      
+      // Only fetch applications if user is authenticated
+      const requests = [api.get(`api/jobs/filter${params}`)];
+      if (isAuthenticated) {
+        requests.push(api.get('api/applications'));
+      }
+
+      const responses = await Promise.all(requests);
+      const jobs = responses[0].data;
+
+      // Add application info to jobs if user is authenticated
+      if (isAuthenticated) {
+        const applications = responses[1].data;
+        const applicationMap = applications.reduce((map, app) => {
+          map[app.job.id] = app;
+          return map;
+        }, {});
+
+        jobs.results = jobs.results.map(job => ({
+          ...job,
+          application: applicationMap[job.id] || null
+        }));
+      }
+
+      setJobs(jobs);
+      setNextUrl(jobs.next ? `?${jobs.next.split("?")[1]}` : null);
+      setPreviousUrl(jobs.previous ? `?${jobs.previous.split("?")[1]}` : null);
       setError(null);
     } catch (err) {
-      setError("Failed to fetch jobs. Please try again later.");
+      setError(t("error_message"));
     } finally {
       setLoading(false);
     }
-  };
+  }, [isAuthenticated, t]);
 
-  const handleFilterChange = (filters) => {
+  const handleFilterChange = useCallback((filters) => {
     const params = new URLSearchParams();
 
     Object.entries(filters).forEach(([key, value]) => {
-      if (key !== "skills" && value) {
+      if (key === "skills" && value?.length > 0) {
+        value.forEach(skill => params.append("skills", skill));
+      } else if (value) {
         params.append(key, value);
       }
     });
 
-    if (filters.skills?.length > 0) {
-      filters.skills.forEach((skill) => {
-        params.append("skills", skill);
-      });
-    }
-
     fetchJobs(`?${params}`);
-  };
+  }, [fetchJobs]);
+
+  useEffect(() => {
+    fetchJobs();
+  }, [fetchJobs]);
 
   if (loading) {
     return (
@@ -57,56 +77,53 @@ function JobsPage() {
         <div className="jobs-layout">
           <FilterPanel onFilterChange={handleFilterChange} />
           <main className="jobs-container">
-          <div className="loading-state">{t('loading')}</div>
+            <div className="loading-state">{t('loading')}</div>
           </main>
         </div>
       </div>
     );
   }
 
-  if (error) {
-    return (
-      <div className="jobs-page">
-        <div className="jobs-layout">
-          <FilterPanel onFilterChange={handleFilterChange} />
-          <main className="jobs-container">
-            <div className="error-state">
-              <p>{error}</p>
-              <button onClick={() => fetchJobs()}>{t('try_again')}</button>
-            </div>
-          </main>
+  const renderContent = () => {
+    if (error) {
+      return (
+        <div className="error-state">
+          <p>{error}</p>
+          <button onClick={() => fetchJobs()}>{t('try_again')}</button>
         </div>
-      </div>
+      );
+    }
+
+    if (jobs.count === 0) {
+      return <div className="no-jobs-state">{t('no_results')}</div>;
+    }
+
+    return (
+      <>
+        <div className="jobs-list">
+          {jobs.results?.map((job) => (
+            <Job key={job.id} job={job} />
+          ))}
+        </div>
+        <Pagination
+          next={nextUrl}
+          previous={previousUrl}
+          onPageChange={fetchJobs}
+        />
+      </>
     );
-  }
+  };
 
   return (
     <div className="jobs-page">
       <div className="jobs-layout">
-      <FilterPanel 
+        <FilterPanel 
           onFilterChange={handleFilterChange} 
-          jobCount={jobs.count} // Pass job count to FilterPanel
+          jobCount={jobs.count}
           loading={loading}
         />
         <main className="jobs-container">
-          {jobs.count === 0 ? (
-            <div className="no-jobs-state">
-              <p>Nie znaleziono wyników spełniających kryteria.</p>
-            </div>
-          ) : (
-            <>
-              <div className="jobs-list">
-                {jobs.results.map((job) => (
-                  <Job key={job.id || job.url} job={job} />
-                ))}
-              </div>
-              <Pagination
-                next={nextUrl}
-                previous={previousUrl}
-                onPageChange={fetchJobs}
-              />
-            </>
-          )}
+          {renderContent()}
         </main>
       </div>
     </div>
