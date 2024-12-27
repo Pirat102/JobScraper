@@ -23,6 +23,31 @@ class Job(models.Model):
     
     class Meta:
         ordering = ['-scraped_date']
+        
+    def get_sorted_skills(self):
+        """
+        Returns skills sorted by level priority and then alphabetically.
+        Format: {skill: level}
+        """
+        level_priority = {
+            'master': 6,
+            'advanced': 5,
+            'senior': 4,
+            'regular': 3,
+            'junior': 2,
+            'nice to have': 1
+        }
+        
+        # Convert skills dict to list of tuples for sorting
+        skills_list = list(self.skills.items())
+        
+        # Sort first by level priority (descending) then by skill name (ascending)
+        sorted_skills = sorted(
+            skills_list,
+            key=lambda x: (-level_priority.get(x[1].lower(), 0), x[0])
+        )
+        
+        return dict(sorted_skills)
     
     
 class Requested(models.Model):

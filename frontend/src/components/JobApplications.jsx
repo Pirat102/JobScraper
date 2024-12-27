@@ -99,6 +99,10 @@ function JobApplications() {
           <div key={application.id} className="application-card">
             <div className="application-header">
               <div className="job-title-section">
+                <span className="post-date">
+                  <Calendar size={16} className="date-icon" />
+                  {formatDate(application.applied_date, language)}
+                </span>
                 <a
                   href={application.job.url}
                   className="job-title"
