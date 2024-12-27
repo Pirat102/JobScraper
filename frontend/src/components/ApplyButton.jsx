@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Heart } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
 import api from '../api';
 import '../styles/applications/HeartButton.css';
 
 export function ApplyButton({ jobId, application: initialApplication}) {
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
     const [application, setApplication] = useState(initialApplication);
 
     // Update local state when prop changes
@@ -28,7 +30,7 @@ export function ApplyButton({ jobId, application: initialApplication}) {
             }
         } catch (error) {
             if (error.response?.status === 401) {
-                window.location.href = '/login';
+                navigate('/login');
             }
         } finally {
             setLoading(false);

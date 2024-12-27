@@ -11,7 +11,6 @@ import { formatDate } from "../config/DateFormater";
 function JobApplications() {
   const [applications, setApplications] = useState([]);
   const [newNote, setNewNote] = useState("");
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { t, language } = useLanguage();
 
@@ -25,8 +24,6 @@ function JobApplications() {
       setApplications(response.data);
     } catch (error) {
       setError(t("failed_load_applications"));
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -78,9 +75,7 @@ function JobApplications() {
     }
   };
 
-  if (loading)
-    return <div className="applications-loading">{t("loading")}</div>;
-  if (error) return <div className="applications-error">{error}</div>;
+
 
   const statuses = [
     { key: "APPLIED", icon: "📝" },
