@@ -10,10 +10,10 @@
   gap: var(--space-4);
 }
 
-.job-container:hover {
+/* .job-container:hover {
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
-}
+} */
 
 .job-header {
   display: flex;
@@ -177,6 +177,12 @@
   background-color: var(--level-advanced-bg);
   color: var(--level-advanced-text);
   border-color: var(--level-advanced-text);
+}
+
+.skill-item.master {
+  background-color: var(--level-master-bg);
+  color: var(--level-master-text);
+  border-color: var(--level-master-text);
 }
 
 .skill-level {

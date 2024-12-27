@@ -7,12 +7,21 @@ import "../styles/applications/Buttons.css";
 import "../styles/applications/Notes.css";
 import { useLanguage } from "../contexts/LanguageContext";
 import { formatDate } from "../config/DateFormater";
+import DOMPurify from "dompurify";
 
 function JobApplications() {
   const [applications, setApplications] = useState([]);
   const [newNote, setNewNote] = useState("");
   const [error, setError] = useState(null);
   const { t, language } = useLanguage();
+  const [expandedCards, setExpandedCards] = useState({});
+
+  const toggleCard = (id) => {
+    setExpandedCards((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
   useEffect(() => {
     fetchApplications();
@@ -75,8 +84,6 @@ function JobApplications() {
     }
   };
 
-
-
   const statuses = [
     { key: "APPLIED", icon: "📝" },
     { key: "INTERVIEWING", icon: "💼" },
@@ -90,7 +97,7 @@ function JobApplications() {
       <div className="applications-grid">
         {applications.map((application) => (
           <div key={application.id} className="application-card">
-            <div className="job-header">
+            <div className="application-header">
               <div className="job-title-section">
                 <a
                   href={application.job.url}
@@ -102,13 +109,36 @@ function JobApplications() {
                 </a>
                 <span className="company-name">{application.job.company}</span>
               </div>
-              <span className="post-date">
-                <Calendar size={16} className="date-icon" />
-                {formatDate(application.applied_date, language)}
-              </span>
+
+              <button
+                onClick={() => toggleCard(application.id)}
+                className="toggle-details-button"
+              >
+                {expandedCards[application.id]
+                  ? t("hide_details")
+                  : t("show_details")}
+              </button>
             </div>
 
-            <div className="job-details">
+            <div className="status-buttons">
+              {statuses.map(({ key, icon }) => (
+                <button
+                  key={key}
+                  onClick={() => updateApplicationStatus(application.id, key)}
+                  className={`status-button ${key.toLowerCase()} ${
+                    application.status === key ? "active" : ""
+                  }`}
+                >
+                  {icon} {t(key.toLowerCase())}
+                </button>
+              ))}
+            </div>
+
+            <div
+              className={`application-details ${
+                expandedCards[application.id] ? "expanded" : ""
+              }`}
+            >
               {application.job.location && (
                 <span className="detail-item location">
                   📍 {application.job.location}
@@ -124,20 +154,33 @@ function JobApplications() {
                   💰 {application.job.salary}
                 </span>
               )}
-            </div>
+              {application.job.summary && (
+                <div
+                  className="job-summary"
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(application.job.summary, {
+                      ALLOWED_TAGS: ["strong", "ul", "li", "br", "p"],
+                      ALLOWED_ATTR: [],
+                    }),
+                  }}
+                />
+              )}
 
-            <div className="status-buttons">
-              {statuses.map(({ key, icon }) => (
-                <button
-                  key={key}
-                  onClick={() => updateApplicationStatus(application.id, key)}
-                  className={`status-button ${key.toLowerCase()} ${
-                    application.status === key ? "active" : ""
-                  }`}
-                >
-                  {icon} {t(key.toLowerCase())}
-                </button>
-              ))}
+              <div className="skills-section">
+                <div className="skills">
+                  {Object.entries(application.job.skills).map(
+                    ([skill, level]) => (
+                      <div
+                        key={skill}
+                        className={`skill-item ${level.toLowerCase()}`}
+                      >
+                        {skill}
+                        <span className="skill-level">{level}</span>
+                      </div>
+                    )
+                  )}
+                </div>
+              </div>
             </div>
 
             <div className="notes-section">

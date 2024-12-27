@@ -57,6 +57,7 @@ export const translations = {
       "username": "Nazwa użytkownika",
       "password": "Hasło",
       "submit": "Zatwierdź",
+      "no_account": "Nie masz konta?",
 
       // Locations
       "warsaw": "Warszawa",
@@ -87,7 +88,9 @@ export const translations = {
       "applied": "Aplikowano",
       "interviewing": "W trakcie rozmów",
       "rejected": "Odrzucono",
-      "accepted": "Zaakceptowano"
+      "accepted": "Zaakceptowano",
+      "show_details": "Pokaż szczegóły",
+      "hide_details": "Ukryj szczegóły"
     },
     en: {
       // Navigation
@@ -147,6 +150,7 @@ export const translations = {
       "username": "Username",
       "password": "Password",
       "submit": "Submit",
+      "no_account": "Don't have an account?",
 
       "warsaw": "Warsaw",
       "krakow": "Cracow",
@@ -175,6 +179,8 @@ export const translations = {
       "applied": "Applied",
       "interviewing": "Interviewing",
       "rejected": "Rejected",
-      "accepted": "Accepted"
+      "accepted": "Accepted",
+      "show_details": "Pokaż szczegóły",
+      "hide_details": "Ukryj szczegóły"
     }
   };

@@ -25,10 +25,37 @@
   transition: var(--transition-all);
 }
 
-.application-card:hover {
+.application-details {
+  display: none;
+  margin: var(--space-4) 0;
+  gap: var(--space-2);
+  flex-direction: column;
+}
+
+.application-details.expanded {
+  display: flex;
+}
+
+.toggle-details-button {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  padding: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.toggle-details-button:hover {
+  color: var(--primary-dark);
+}
+
+/* .application-card:hover {
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
-}
+} */
 
 .application-header {
   display: flex;
@@ -74,6 +101,8 @@
 .applications-error {
   color: var(--error-color);
 }
+
+
 
 @media (max-width: 768px) {
   .applications-container {
