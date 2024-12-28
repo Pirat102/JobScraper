@@ -105,7 +105,7 @@ class WebScraper(ABC):
             
             if job := Job.objects.filter(url__startswith=base_link):
                 job = job.get()
-                self.logger.debug(f"Job already exists in database: {title}")
+                self.logger.debug(f"Job already exists in database: {title} : scraped on: {job.scraped_date}")
                 two_weeks_later = job.scraped_date + timedelta(days=14)
                 if two_weeks_later < today:
                     job.scraped_date = today
