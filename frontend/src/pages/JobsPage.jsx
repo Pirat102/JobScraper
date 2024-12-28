@@ -3,73 +3,76 @@ import api from "../api";
 import Job from "../components/Job";
 import FilterPanel from "../components/FilterPanel";
 import Pagination from "../components/Pagination";
-import "../styles/JobsPage.css";
 import { useLanguage } from '../contexts/LanguageContext';
+import { useAuth } from '../hooks/useAuth';
+import "../styles/JobsPage.css";
 
 function JobsPage() {
-  const [jobs, setJobs] = useState([]);
-  const [nextUrl, setNextUrl] = useState(null);
-  const [previousUrl, setPreviousUrl] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const { t } = useLanguage();
-  const isAuthenticated = !!localStorage.getItem('access');
+    const [jobs, setJobs] = useState([]);
+    const [nextUrl, setNextUrl] = useState(null);
+    const [previousUrl, setPreviousUrl] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const { t } = useLanguage();
+    const { checkAndRefreshToken } = useAuth();
 
-  const fetchJobs = useCallback(async (params = "") => {
-    try {
-      setLoading(true);
-      
-      // Only fetch applications if user is authenticated
-      const requests = [api.get(`api/jobs/filter${params}`)];
-      if (isAuthenticated) {
-        requests.push(api.get('api/applications'));
-      }
+    const fetchJobs = useCallback(async (params = "") => {
+        try {
+            setLoading(true);
+            const isAuthenticated = await checkAndRefreshToken();
+            
+            const requests = [api.get(`api/jobs/filter${params}`)];
+            if (isAuthenticated) {
+                requests.push(api.get('api/applications'));
+            }
 
-      const responses = await Promise.all(requests);
-      const jobs = responses[0].data;
+            const responses = await Promise.all(requests);
+            const jobs = responses[0].data;
 
-      // Add application info to jobs if user is authenticated
-      if (isAuthenticated) {
-        const applications = responses[1].data;
-        const applicationMap = applications.reduce((map, app) => {
-          map[app.job.id] = app;
-          return map;
-        }, {});
+            if (isAuthenticated && responses[1]) {
+                const applications = responses[1].data;
+                const applicationMap = applications.reduce((map, app) => {
+                    map[app.job.id] = app;
+                    return map;
+                }, {});
 
-        jobs.results = jobs.results.map(job => ({
-          ...job,
-          application: applicationMap[job.id] || null
-        }));
-      }
+                jobs.results = jobs.results.map(job => ({
+                    ...job,
+                    application: applicationMap[job.id] || null
+                }));
+            }
 
-      setJobs(jobs);
-      setNextUrl(jobs.next ? `?${jobs.next.split("?")[1]}` : null);
-      setPreviousUrl(jobs.previous ? `?${jobs.previous.split("?")[1]}` : null);
-      setError(null);
-    } catch (err) {
-      setError(t("error_message"));
-    } finally {
-      setLoading(false);
-    }
-  }, [isAuthenticated, t]);
+            setJobs(jobs);
+            setNextUrl(jobs.next ? `?${jobs.next.split("?")[1]}` : null);
+            setPreviousUrl(jobs.previous ? `?${jobs.previous.split("?")[1]}` : null);
+            setError(null);
+        } catch (err) {
+            setError(t("error_message"));
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
-  const handleFilterChange = useCallback((filters) => {
-    const params = new URLSearchParams();
+    const handleFilterChange = useCallback((filters) => {
+        const params = new URLSearchParams();
 
-    Object.entries(filters).forEach(([key, value]) => {
-      if (key === "skills" && value?.length > 0) {
-        value.forEach(skill => params.append("skills", skill));
-      } else if (value) {
-        params.append(key, value);
-      }
-    });
+        Object.entries(filters).forEach(([key, value]) => {
+          if (key === "skills") {
+            // Only add skills if array exists and is not empty
+            if (value && value.length > 0) {
+              value.forEach(skill => params.append("skills", skill));
+            }
+          } else if (value) {
+            params.append(key, value);
+          }
+        });
 
-    fetchJobs(`?${params}`);
-  }, [fetchJobs]);
+        fetchJobs(`?${params}`);
+    }, [fetchJobs]);
 
-  useEffect(() => {
-    fetchJobs();
-  }, [fetchJobs]);
+    useEffect(() => {
+        fetchJobs();
+    }, []);
 
   if (loading) {
     return (
