@@ -9,36 +9,55 @@ function Form({ route, method }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
   const { t } = useLanguage();
 
-  const name = method === "login" ? "Login" : "Register";
-
   const handleSubmit = async (e) => {
-    setLoading(true);
     e.preventDefault();
+    setError("");
+    setSuccess("");
+    setLoading(true);
 
     try {
       const response = await api.post(route, {
         username,
         password,
       });
-      if (method === "login") {
-        localStorage.setItem(ACCESS_TOKEN, response.data.access);
-        localStorage.setItem(REFRESH_TOKEN, response.data.refresh);
-        navigate("/");
-      } else {
-        navigate("login");
+
+      if (method === "register" && response.data.success) {
+        const loginResponse = await api.post("api/token/pair", {
+          username,
+          password,
+        });
+        
       }
+      localStorage.setItem(ACCESS_TOKEN, response.data.access);
+      localStorage.setItem(REFRESH_TOKEN, response.data.refresh);
+      navigate("/")
+
     } catch (error) {
-      alert(error);
+      if (error.response) {
+        if (method === "login") {
+          setError(t("invalid_credentials"));
+        } else if (method === "register") {
+          setError(t("username_exists"));
+        }
+      } else {
+        setError(t("server_error"));
+      }
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <form onSubmit={handleSubmit} className="form-container">
       <h1>{t(method)}</h1>
+
+      {error && <div className="form-error">{error}</div>}
+      {success && <div className="form-success">{success}</div>}
 
       <input
         className="form-input"
@@ -46,6 +65,7 @@ function Form({ route, method }) {
         value={username}
         onChange={(e) => setUsername(e.target.value)}
         placeholder={t("username")}
+        disabled={loading}
       />
       <input
         className="form-input"
@@ -53,10 +73,12 @@ function Form({ route, method }) {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder={t("password")}
+        disabled={loading}
       />
-      <button className="form-button" type="submit">
-        {t(method)}
+      <button className="form-button" type="submit" disabled={loading}>
+        {loading ? t("loading") : t(method)}
       </button>
+
       {method === "login" && (
         <div className="form-footer">
           <p>

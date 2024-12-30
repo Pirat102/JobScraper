@@ -58,6 +58,10 @@ export const translations = {
       "password": "Hasło",
       "submit": "Zatwierdź",
       "no_account": "Nie masz konta?",
+      "invalid_credentials": "Nieprawidłowa nazwa użytkownika lub hasło",
+      "username_exists": "Użytkownik o takiej nazwie już istnieje",
+      "server_error": "Wystąpił błąd serwera. Spróbuj ponownie później",
+      "registration_successful": "Rejestracja zakończona pomyślnie! Za chwilę zostaniesz przekierowany do strony logowania",
 
       // Locations
       "warsaw": "Warszawa",
@@ -90,7 +94,13 @@ export const translations = {
       "rejected": "Odrzucono",
       "accepted": "Zaakceptowano",
       "show_details": "Pokaż szczegóły",
-      "hide_details": "Ukryj szczegóły"
+      "hide_details": "Ukryj szczegóły",
+
+      "page_not_found": "Strona nie została znaleziona",
+      "return_home": "Wróć do strony głównej",
+      "no_applications_yet": "Brak aplikacji",
+      "no_applications_message": "Nie masz jeszcze żadnych zapisanych aplikacji. Przeglądaj oferty pracy i zapisuj te, które Cię interesują.",
+      "browse_jobs": "Przeglądaj oferty",
     },
     en: {
       // Navigation
@@ -151,6 +161,10 @@ export const translations = {
       "password": "Password",
       "submit": "Submit",
       "no_account": "Don't have an account?",
+      "invalid_credentials": "Invalid username or password",
+      "username_exists": "Username already exists",
+      "server_error": "Server error occurred. Please try again later",
+      "registration_successful": "Registration successful! You will be redirected to login page shortly",
 
       "warsaw": "Warsaw",
       "krakow": "Cracow",
@@ -180,7 +194,13 @@ export const translations = {
       "interviewing": "Interviewing",
       "rejected": "Rejected",
       "accepted": "Accepted",
-      "show_details": "Pokaż szczegóły",
-      "hide_details": "Ukryj szczegóły"
+      "show_details": "Show details",
+      "hide_details": "Hide details",
+
+      "page_not_found": "Page not found",
+      "return_home": "Return to home",
+      "no_applications_yet": "No applications yet",
+      "no_applications_message": "You haven't saved any job applications yet. Browse through job listings and save the ones you're interested in.",
+      "browse_jobs": "Browse jobs"
     }
   };

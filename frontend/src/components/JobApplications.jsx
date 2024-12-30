@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../api";
+import { Link } from "react-router-dom";
 import { Trash2, Calendar } from "lucide-react";
 import "../styles/applications/Applications.css";
 import "../styles/applications/StatusButtons.css";
@@ -90,6 +91,22 @@ function JobApplications() {
     { key: "ACCEPTED", icon: "🎉" },
     { key: "REJECTED", icon: "❌" },
   ];
+
+  if (applications.length === 0) {
+    return (
+      <div className="applications-container">
+        <h1 className="applications-title">{t("my_applications")}</h1>
+        <div className="empty-applications">
+          <div className="empty-applications-icon">📋</div>
+          <h2>{t("no_applications_yet")}</h2>
+          <p>{t("no_applications_message")}</p>
+          <Link to="/jobs" className="browse-jobs-button">
+            {t("browse_jobs")}
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="applications-container">

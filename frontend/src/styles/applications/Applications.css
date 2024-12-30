@@ -102,7 +102,46 @@
   color: var(--error-color);
 }
 
+.empty-applications {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8);
+  background: var(--card-background);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  text-align: center;
+}
 
+.empty-applications-icon {
+  font-size: 3rem;
+  margin-bottom: var(--space-4);
+}
+
+.empty-applications h2 {
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.empty-applications p {
+  color: var(--text-secondary);
+  margin-bottom: var(--space-6);
+  max-width: 400px;
+}
+
+.browse-jobs-button {
+  padding: var(--space-3) var(--space-6);
+  background-color: var(--primary-color);
+  color: var(--text-primary);
+  text-decoration: none;
+  border-radius: var(--radius);
+  transition: var(--transition-colors);
+}
+
+.browse-jobs-button:hover {
+  background-color: var(--primary-dark);
+}
 
 @media (max-width: 768px) {
   .applications-container {
