@@ -14,22 +14,21 @@ function JobsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { t } = useLanguage();
-    const { checkAndRefreshToken } = useAuth();
+    const { isAuthorized } = useAuth();
 
     const fetchJobs = useCallback(async (params = "") => {
         try {
             setLoading(true);
-            const isAuthenticated = await checkAndRefreshToken();
-            
             const requests = [api.get(`api/jobs/filter${params}`)];
-            if (isAuthenticated) {
+            
+            if (isAuthorized) {
                 requests.push(api.get('api/applications'));
             }
 
             const responses = await Promise.all(requests);
             const jobs = responses[0].data;
 
-            if (isAuthenticated && responses[1]) {
+            if (isAuthorized && responses[1]) {
                 const applications = responses[1].data;
                 const applicationMap = applications.reduce((map, app) => {
                     map[app.job.id] = app;
@@ -51,20 +50,17 @@ function JobsPage() {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [isAuthorized]);
 
     const handleFilterChange = useCallback((filters) => {
         const params = new URLSearchParams();
 
         Object.entries(filters).forEach(([key, value]) => {
-          if (key === "skills") {
-            // Only add skills if array exists and is not empty
-            if (value && value.length > 0) {
-              value.forEach(skill => params.append("skills", skill));
+            if (key === "skills" && value?.length > 0) {
+                value.forEach(skill => params.append("skills", skill));
+            } else if (value) {
+                params.append(key, value);
             }
-          } else if (value) {
-            params.append(key, value);
-          }
         });
 
         fetchJobs(`?${params}`);
@@ -72,7 +68,7 @@ function JobsPage() {
 
     useEffect(() => {
         fetchJobs();
-    }, []);
+    }, [fetchJobs]);
 
   if (loading) {
     return (

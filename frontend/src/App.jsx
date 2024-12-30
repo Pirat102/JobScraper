@@ -9,6 +9,7 @@ import Applications from "./pages/Applications";
 import ProtectedRoute from "./components/ProtectedRoute";
 import './styles/Base.css';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { useAuth } from "./hooks/useAuth";
 
 
 function Logout() {
@@ -22,6 +23,7 @@ function RegisterUser() {
 }
 
 function App() {
+  useAuth();
   return (
     <>
     <LanguageProvider>
