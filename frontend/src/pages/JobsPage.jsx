@@ -44,7 +44,6 @@ function JobsPage() {
             setJobs(jobs);
             setNextUrl(jobs.next ? `?${jobs.next.split("?")[1]}` : null);
             setPreviousUrl(jobs.previous ? `?${jobs.previous.split("?")[1]}` : null);
-            setError(null);
         } catch (err) {
             setError(t("error_message"));
         } finally {

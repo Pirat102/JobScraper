@@ -30,7 +30,11 @@ else:
     ALLOWED_HOSTS=["devradar.work","www.devradar.work","128.140.62.90"]
     CORS_ALLOWED_ORIGINS=["https://devradar.work", "https://www.devradar.work"]
 
+INTERNAL_IPS = ["127.0.0.1"]
 
+DEBUG_TOOLBAR_CONFIG = {
+    "SHOW_TOOLBAR_CALLBACK": lambda request: True,
+}
 
 # Application definition
 
@@ -46,13 +50,14 @@ INSTALLED_APPS = [
     "ninja_extra",
     "corsheaders",
     "django_celery_beat",
-    "django_celery_results"
+    "django_celery_results",
+    "debug_toolbar",
 ]
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
-    
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -60,6 +65,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'backend.urls'

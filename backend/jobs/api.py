@@ -48,7 +48,7 @@ class JobController:
         last_week = today - timedelta(days=7)
         last_two_weeks = today - timedelta(days=14)
         last_month = today - timedelta(days=30)
-        jobs = Job.objects.all()
+        jobs = Job.objects.defer('description', 'url', 'location', 'title', 'summary', 'company')
         
         
         jobs = filters.filter_queryset(jobs)

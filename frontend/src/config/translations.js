@@ -36,7 +36,7 @@ export const translations = {
       "filters": "Filtry",
       "clear_filters": "Wyczyść filtry",
       "apply_filters": "Zastosuj filtry",
-      "found_jobs": "Znaleziono {{count}} ofert",
+      "found_jobs": "Oferty pracy: {{count}}",
       "work_mode": "Tryb pracy",
       "experience_level": "Poziom doświadczenia",
       "technologies": "Technologie",
