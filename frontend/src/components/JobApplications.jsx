@@ -12,6 +12,7 @@ import DOMPurify from "dompurify";
 
 function JobApplications() {
   const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true); 
   const [newNote, setNewNote] = useState("");
   const [error, setError] = useState(null);
   const { t, language } = useLanguage();
@@ -34,8 +35,47 @@ function JobApplications() {
       setApplications(response.data);
     } catch (error) {
       setError(t("failed_load_applications"));
+    } finally {
+      setLoading(false);  
     }
   };
+
+  if (loading) {
+    return (
+      <div className="applications-container">
+        <div className="loading-state">{t("loading")}</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="applications-container">
+        <div className="error-state">
+          <p>{error}</p>
+          <button onClick={fetchApplications} className="retry-button">
+            {t("try_again")}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Only show empty state after loading is complete
+  if (!loading && applications.length === 0) {
+    return (
+      <div className="applications-container">
+        <div className="empty-applications">
+          <div className="empty-applications-icon">📋</div>
+          <h2>{t("no_applications_yet")}</h2>
+          <p>{t("no_applications_message")}</p>
+          <Link to="/jobs" className="browse-jobs-button">
+            {t("browse_jobs")}
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const updateApplicationStatus = async (applicationId, newStatus) => {
     try {
@@ -92,25 +132,10 @@ function JobApplications() {
     { key: "REJECTED", icon: "❌" },
   ];
 
-  if (applications.length === 0) {
-    return (
-      <div className="applications-container">
-        <h1 className="applications-title">{t("my_applications")}</h1>
-        <div className="empty-applications">
-          <div className="empty-applications-icon">📋</div>
-          <h2>{t("no_applications_yet")}</h2>
-          <p>{t("no_applications_message")}</p>
-          <Link to="/jobs" className="browse-jobs-button">
-            {t("browse_jobs")}
-          </Link>
-        </div>
-      </div>
-    );
-  }
+
 
   return (
     <div className="applications-container">
-      <h1 className="applications-title">{t("my_applications")}</h1>
       <div className="applications-grid">
         {applications.map((application) => (
           <div key={application.id} className="application-card">

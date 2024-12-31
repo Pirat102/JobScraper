@@ -56,7 +56,7 @@ function JobsPage() {
         const params = new URLSearchParams();
 
         Object.entries(filters).forEach(([key, value]) => {
-            if (key === "skills" && value?.length > 0) {
+            if (key === "skills") {
                 value.forEach(skill => params.append("skills", skill));
             } else if (value) {
                 params.append(key, value);

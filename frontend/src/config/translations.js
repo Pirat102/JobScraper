@@ -62,6 +62,7 @@ export const translations = {
       "username_exists": "Użytkownik o takiej nazwie już istnieje",
       "server_error": "Wystąpił błąd serwera. Spróbuj ponownie później",
       "registration_successful": "Rejestracja zakończona pomyślnie! Za chwilę zostaniesz przekierowany do strony logowania",
+      "field_required": "To pole jest wymagane",
 
       // Locations
       "warsaw": "Warszawa",
@@ -164,7 +165,7 @@ export const translations = {
       "invalid_credentials": "Invalid username or password",
       "username_exists": "Username already exists",
       "server_error": "Server error occurred. Please try again later",
-      "registration_successful": "Registration successful! You will be redirected to login page shortly",
+      "field_required": "This field is required",
 
       "warsaw": "Warsaw",
       "krakow": "Cracow",

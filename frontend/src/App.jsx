@@ -18,7 +18,6 @@ function Logout() {
 }
 
 function RegisterUser() {
-  localStorage.clear();
   return <Register />;
 }
 

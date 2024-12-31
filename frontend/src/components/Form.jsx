@@ -10,54 +10,50 @@ function Form({ route, method }) {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
   const { t } = useLanguage();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
+    if (loading) return;
+    
     setLoading(true);
-
+    
     try {
-      const response = await api.post(route, {
-        username,
-        password,
-      });
-
-      if (method === "register" && response.data.success) {
-        const loginResponse = await api.post("api/token/pair", {
-          username,
-          password,
+        let response = await api.post(route, {
+            username,
+            password,
         });
-        
-      }
-      localStorage.setItem(ACCESS_TOKEN, response.data.access);
-      localStorage.setItem(REFRESH_TOKEN, response.data.refresh);
-      navigate("/")
 
-    } catch (error) {
-      if (error.response) {
-        if (method === "login") {
-          setError(t("invalid_credentials"));
-        } else if (method === "register") {
-          setError(t("username_exists"));
+        if (method === "register" && response.data.success) {
+            response = await api.post("api/token/pair", {
+                username,
+                password,
+            });
         }
-      } else {
-        setError(t("server_error"));
-      }
+        localStorage.setItem(ACCESS_TOKEN, response.data.access);
+        localStorage.setItem(REFRESH_TOKEN, response.data.refresh);
+        navigate("/");
+    } catch (error) {
+        if (method === "register" && error.response?.data?.message) {
+            setError(t("username_exists"));
+        } else if (method === "login" && error.response?.data?.detail) {
+            setError(t("invalid_credentials"));
+        } else {
+            setError(t("server_error"));
+        }
     } finally {
-      setLoading(false);
+        setTimeout(() => {
+            setLoading(false);
+        }, 400);
     }
-  };
+};
 
   return (
     <form onSubmit={handleSubmit} className="form-container">
       <h1>{t(method)}</h1>
 
       {error && <div className="form-error">{error}</div>}
-      {success && <div className="form-success">{success}</div>}
 
       <input
         className="form-input"
@@ -66,6 +62,10 @@ function Form({ route, method }) {
         onChange={(e) => setUsername(e.target.value)}
         placeholder={t("username")}
         disabled={loading}
+        required
+        onInvalid={e => e.target.setCustomValidity(t("field_required"))}
+        onInput={e => e.target.setCustomValidity("")}
+
       />
       <input
         className="form-input"
@@ -74,6 +74,9 @@ function Form({ route, method }) {
         onChange={(e) => setPassword(e.target.value)}
         placeholder={t("password")}
         disabled={loading}
+        required
+        onInvalid={e => e.target.setCustomValidity(t("field_required"))}
+        onInput={e => e.target.setCustomValidity("")}
       />
       <button className="form-button" type="submit" disabled={loading}>
         {loading ? t("loading") : t(method)}

@@ -19,16 +19,22 @@ api = NinjaExtraAPI()
 @api_controller('/auth', tags=['Authentication'], permissions=[AllowAny])
 class AuthController:
 
-    @route.post('register', response={200: Dict, 400: Dict})
+    @route.post('register', response={200: Dict, 401: Dict})
     def register(self, user_data: UserRegistrationSchema) -> Dict:
-        if User.objects.filter(username=user_data.username).exists():
-            return 400, {"success": False, "message": "Username already exists"}
+        if not user_data.username or not user_data.password:
+            return 401, {"success": False, "message": "Username and password are required"}
         
-        User.objects.create_user(
-            username=user_data.username,
-            password=user_data.password
-        )
-        return 200, {"success": True, "message": "Registration successful"}
+        if User.objects.filter(username=user_data.username).exists():
+            return 401, {"success": False, "message": "Username already exists"}
+        
+        try:
+            User.objects.create_user(
+                username=user_data.username,
+                password=user_data.password
+            )
+            return 200, {"success": True, "message": "Registration successful"}
+        except Exception:
+            return 401, {"success": False, "message": "Invalid registration data"}
 
 @api_controller("/jobs")
 class JobController:
