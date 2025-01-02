@@ -12,6 +12,7 @@ from ninja_extra import NinjaExtraAPI, api_controller, route
 from ninja_jwt.authentication import JWTAuth
 from ninja_extra.pagination import paginate, PageNumberPaginationExtra, PaginatedResponseSchema
 from jobs.utils.salary_standardizer import average_salary
+from django.utils import timezone
 
 api = NinjaExtraAPI()
 
@@ -61,6 +62,10 @@ class JobController:
         salary_count = 0
         min_total = 0
         max_total = 0
+        today_jobs = 0
+        last_week_jobs = 0
+        last_two_weeks_jobs = 0
+        last_month_jobs = 0
         
         for job in jobs:
             # Process all stats in single loop
@@ -76,6 +81,15 @@ class JobController:
                 min_total += min_value
                 max_total += max_value
                 salary_count += 1
+            
+            if timezone.make_naive(job.created_at) > today:
+                today_jobs +=1
+            elif timezone.make_naive(job.created_at) > last_week:
+                last_week_jobs +=1
+            elif timezone.make_naive(job.created_at) > last_two_weeks:
+                last_two_weeks_jobs +=1
+            elif timezone.make_naive(job.created_at) > last_month:
+                last_month_jobs +=1
                 
         if salary_count > 0:
             avg_min = min_total / salary_count
@@ -96,10 +110,10 @@ class JobController:
             "operating_mode_stats": sort_dict(work_mode),
             "salary_stats": salary,
             "trends": {
-                "today": jobs.filter(created_at__gte=today).count(),
-                "last_7_days": jobs.filter(created_at__gte=last_week).count(),
-                "last_14_days": jobs.filter(created_at__gte=last_two_weeks).count(),
-                "last_30_days": jobs.filter(created_at__gte=last_month).count(),
+                "today": today_jobs,
+                "last_7_days": last_week_jobs,
+                "last_14_days": last_two_weeks_jobs,
+                "last_30_days": last_month_jobs,
         },
         }
     
