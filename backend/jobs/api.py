@@ -13,9 +13,9 @@ from ninja_jwt.authentication import JWTAuth
 from ninja_extra.pagination import paginate, PageNumberPaginationExtra, PaginatedResponseSchema
 from jobs.utils.salary_standardizer import average_salary
 from django.utils import timezone
+from django.db.models import Exists, OuterRef
 
 api = NinjaExtraAPI()
-
 
 @api_controller('/auth', tags=['Authentication'], permissions=[AllowAny])
 class AuthController:
@@ -45,7 +45,7 @@ class JobController:
     
     @route.get("stats", response=Dict[str, Any])
     def stats(self, filters: JobFilterSchema = Query(...)):
-        today = datetime.combine(datetime.now().date(), time.min)
+        today = timezone.make_aware(datetime.combine(datetime.now().date(), time.min))
         last_week = today - timedelta(days=7)
         last_two_weeks = today - timedelta(days=14)
         last_month = today - timedelta(days=30)
@@ -82,13 +82,13 @@ class JobController:
                 max_total += max_value
                 salary_count += 1
             
-            if timezone.make_naive(job.created_at) > today:
+            if job.created_at > today:
                 today_jobs +=1
-            elif timezone.make_naive(job.created_at) > last_week:
+            if job.created_at > last_week:
                 last_week_jobs +=1
-            elif timezone.make_naive(job.created_at) > last_two_weeks:
+            if job.created_at > last_two_weeks:
                 last_two_weeks_jobs +=1
-            elif timezone.make_naive(job.created_at) > last_month:
+            if job.created_at > last_month:
                 last_month_jobs +=1
                 
         if salary_count > 0:
@@ -125,10 +125,32 @@ class JobController:
 
     @route.get("/filter", response=PaginatedResponseSchema[JobSchema])
     @paginate(PageNumberPaginationExtra, page_size=50)
-    def list_jobs(self, filters: JobFilterSchema=Query(...)):
-        jobs = Job.objects.all()
+    def list_jobs(self, request, filters: JobFilterSchema=Query(...)):
+        jobs = Job.objects.defer('description', 'created_at')
         jobs = filters.filter_queryset(jobs)
         
+        auth_header = request.headers.get('Authorization')
+        if auth_header and auth_header.startswith('Bearer '):
+            token = auth_header.split(' ')[1]
+            try:
+                # Get user from token
+                jwt = JWTAuth()
+                user = jwt.authenticate(request, token)
+                
+                if user:
+                # User is authenticated, annotate jobs
+                    jobs = jobs.annotate(
+                        has_applied=Exists(
+                            JobApplication.objects.filter(
+                                job_id=OuterRef('id'),
+                                user=user
+                            )
+                        )
+                    )
+            except Exception as e:
+                print(f"Token verification failed: {e}")
+                pass
+
         return jobs
     
 
@@ -152,6 +174,7 @@ class JobApplicationController:
         
     @route.get("", response=List[JobApplicationSchema])
     def get_user_applications(self, request):
+        
         return JobApplication.objects.filter(user=request.user)
         
     @route.post("{application_id}/notes", response=ApplicationNoteSchema)
