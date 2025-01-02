@@ -62,7 +62,7 @@ class Requested(models.Model):
     
 class JobApplication(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='applications')
+    job = models.ForeignKey(Job, on_delete=models.CASCADE)
     applied_date = models.DateTimeField(default=timezone.now)
     status = models.CharField(
         max_length=20,
