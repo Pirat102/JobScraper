@@ -25,7 +25,8 @@ class JobSchema(Schema):
     scraped_date: datetime
     summary: Optional[str]
     source: Optional[str]
-    has_applied: Optional[bool] = None
+    has_applied: bool = False
+    application_id: Optional[int] = None
     
     @staticmethod
     def resolve_skills(obj):

@@ -6,11 +6,9 @@ import { useLanguage } from "../contexts/LanguageContext";
 import { formatDate } from "../config/DateFormater";
 import { ApplyButton } from "./ApplyButton";
 
-
 function Job({ job }) {
   const [showSummary, setShowSummary] = useState(false);
   const { t, language } = useLanguage();
-
 
   return (
     <div className="job-container">
@@ -79,8 +77,8 @@ function Job({ job }) {
       <div className="job-actions">
         <ApplyButton
           jobId={job.id}
-          application={job.application}
-          
+          hasApplied={job.has_applied}
+          applicationId={job.application_id}
         />
       </div>
     </div>

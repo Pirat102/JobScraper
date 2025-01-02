@@ -13,7 +13,7 @@ from ninja_jwt.authentication import JWTAuth
 from ninja_extra.pagination import paginate, PageNumberPaginationExtra, PaginatedResponseSchema
 from jobs.utils.salary_standardizer import average_salary
 from django.utils import timezone
-from django.db.models import Exists, OuterRef
+from django.db.models import Exists, OuterRef, Subquery
 
 api = NinjaExtraAPI()
 
@@ -124,33 +124,34 @@ class JobController:
                 
 
     @route.get("/filter", response=PaginatedResponseSchema[JobSchema])
-    @paginate(PageNumberPaginationExtra, page_size=50)
+    @paginate(PageNumberPaginationExtra, page_size=25)
     def list_jobs(self, request, filters: JobFilterSchema=Query(...)):
         jobs = Job.objects.defer('description', 'created_at')
-        jobs = filters.filter_queryset(jobs)
+        
         
         auth_header = request.headers.get('Authorization')
         if auth_header and auth_header.startswith('Bearer '):
             token = auth_header.split(' ')[1]
             try:
-                # Get user from token
-                jwt = JWTAuth()
-                user = jwt.authenticate(request, token)
+                jwt_auth = JWTAuth()
+                user = jwt_auth.authenticate(request, token)
                 
                 if user:
-                # User is authenticated, annotate jobs
+                    # Annotate both has_applied and application_id
+                    applications_subquery = JobApplication.objects.filter(
+                        job_id=OuterRef('id'),
+                        user=user
+                    )
                     jobs = jobs.annotate(
-                        has_applied=Exists(
-                            JobApplication.objects.filter(
-                                job_id=OuterRef('id'),
-                                user=user
-                            )
+                        has_applied=Exists(applications_subquery),
+                        application_id=Subquery(
+                            applications_subquery.values('id')[:1]
                         )
                     )
             except Exception as e:
-                print(f"Token verification failed: {e}")
+                print(f"Authentication failed: {e}")
                 pass
-
+        jobs = filters.filter_queryset(jobs)
         return jobs
     
 

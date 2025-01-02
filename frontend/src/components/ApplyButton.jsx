@@ -1,32 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Heart } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import api from '../api';
 import '../styles/applications/HeartButton.css';
 
-export function ApplyButton({ jobId, application: initialApplication}) {
+export function ApplyButton({ jobId, hasApplied, applicationId }) {
     const [loading, setLoading] = useState(false);
+    const [isApplied, setIsApplied] = useState(hasApplied);
+    const [currentApplicationId, setCurrentApplicationId] = useState(applicationId);
     const navigate = useNavigate();
-    const [application, setApplication] = useState(initialApplication);
-
-    // Update local state when prop changes
-    useEffect(() => {
-        setApplication(initialApplication);
-    }, [initialApplication]);
 
     const handleClick = async () => {
         if (loading) return;
         
         try {
             setLoading(true);
-            if (!application) {
+            if (!isApplied) {
                 const response = await api.post('api/applications', { job_id: jobId });
-                setApplication(response.data);
-                
+                setCurrentApplicationId(response.data.id);
+                setIsApplied(true);
             } else {
-                await api.delete(`api/applications/${application.id}`);
-                console.log(application);
-                setApplication(null);
+                await api.delete(`api/applications/${currentApplicationId}`);
+                setIsApplied(false);
+                setCurrentApplicationId(null);
             }
         } catch (error) {
             if (error.response?.status === 401) {
@@ -41,11 +37,11 @@ export function ApplyButton({ jobId, application: initialApplication}) {
         <button 
             onClick={handleClick}
             disabled={loading}
-            className={`heart-button ${application ? 'active' : ''}`}
+            className={`heart-button ${isApplied ? 'active' : ''}`}
         >
             <Heart 
                 size={24}
-                fill={application ? 'currentColor' : 'none'}
+                fill={isApplied ? 'currentColor' : 'none'}
             />
         </button>
     );
