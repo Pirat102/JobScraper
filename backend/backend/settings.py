@@ -35,6 +35,15 @@ else:
     CORS_ALLOWED_ORIGINS=["https://devradar.work", "https://www.devradar.work"]
 
 
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'origin',
+    'pragma',
+    'cache-control',
+]
 
 # Application definition
 

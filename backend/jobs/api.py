@@ -49,7 +49,7 @@ class JobController:
     
     @route.get("stats", response=Dict[str, Any])
     @decorate_view(cache_page(60 * 60))
-    def stats(self, request):
+    def stats(self):
         today = timezone.make_aware(datetime.combine(datetime.now().date(), time.min))
         last_week = today - timedelta(days=7)
         last_two_weeks = today - timedelta(days=14)
@@ -125,7 +125,7 @@ class JobController:
     @decorate_view(cache_page(60 * 60))
     def list_jobs(self, request, filters: JobFilterSchema=Query(...)):
         jobs = Job.objects.defer('description', 'created_at')
-        
+        print("Request received:", request.path)
         
         auth_header = request.headers.get('Authorization')
         if auth_header and auth_header.startswith('Bearer '):
