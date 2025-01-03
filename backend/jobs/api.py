@@ -49,13 +49,13 @@ class JobController:
     
     @route.get("stats", response=Dict[str, Any])
     @decorate_view(cache_page(60 * 60))
-    def stats(self):
+    def stats(self, filters: JobFilterSchema = Query(...)):
         today = timezone.make_aware(datetime.combine(datetime.now().date(), time.min))
         last_week = today - timedelta(days=7)
         last_two_weeks = today - timedelta(days=14)
         last_month = today - timedelta(days=30)
         jobs = Job.objects.defer('description', 'url', 'location', 'title', 'summary', 'company', 'scraped_date', )
-        
+        jobs = filters.filter_queryset(jobs)
     
         skill_freq = {}
         exp_stats = Counter()
