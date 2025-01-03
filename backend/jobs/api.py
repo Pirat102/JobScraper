@@ -14,6 +14,8 @@ from ninja_extra.pagination import paginate, PageNumberPaginationExtra, Paginate
 from jobs.utils.salary_standardizer import average_salary
 from django.utils import timezone
 from django.db.models import Exists, OuterRef, Subquery
+from django.views.decorators.cache import cache_page
+from ninja.decorators import decorate_view
 
 api = NinjaExtraAPI()
 
@@ -39,22 +41,22 @@ class AuthController:
 
 @api_controller("/jobs")
 class JobController:
-    @route.get("", response=List[JobSchema])
+    @route.get("", response=PaginatedResponseSchema[JobSchema])
+    @paginate(PageNumberPaginationExtra, page_size=25)
     def get_jobs(self):
         return Job.objects.all()
     
+    
     @route.get("stats", response=Dict[str, Any])
-    def stats(self, filters: JobFilterSchema = Query(...)):
+    @decorate_view(cache_page(60 * 60))
+    def stats(self, request):
         today = timezone.make_aware(datetime.combine(datetime.now().date(), time.min))
         last_week = today - timedelta(days=7)
         last_two_weeks = today - timedelta(days=14)
         last_month = today - timedelta(days=30)
-        jobs = Job.objects.defer('description', 'url', 'location', 'title', 'summary', 'company')
+        jobs = Job.objects.defer('description', 'url', 'location', 'title', 'summary', 'company', 'scraped_date', )
         
-        
-        jobs = filters.filter_queryset(jobs)
-        
-        
+    
         skill_freq = {}
         exp_stats = Counter()
         source_stats = Counter()
@@ -117,14 +119,10 @@ class JobController:
         },
         }
     
-    @route.get("dates", response=List[date])
-    def available_dates(self):
-        dates = Job.objects.dates("scraped_date", "day","DESC").distinct()
-        return dates
-                
 
     @route.get("/filter", response=PaginatedResponseSchema[JobSchema])
     @paginate(PageNumberPaginationExtra, page_size=25)
+    @decorate_view(cache_page(60 * 60))
     def list_jobs(self, request, filters: JobFilterSchema=Query(...)):
         jobs = Job.objects.defer('description', 'created_at')
         
@@ -153,6 +151,35 @@ class JobController:
                 pass
         jobs = filters.filter_queryset(jobs)
         return jobs
+    
+    
+    # Light endpoint for fetching dates and top skills on jobs page
+    @route.get("filter-options", response=Dict[str, Any])
+    @decorate_view(cache_page(60 * 60 * 24))
+    def get_filter_options(self):
+        
+        thirty_days_ago = timezone.now() - timedelta(days=30)
+        
+        # Get top skills 
+        jobs = Job.objects.filter(scraped_date__gte=thirty_days_ago).only('skills', 'scraped_date')
+        skills = {}
+        for job in jobs:
+            for skill in job.skills.keys():
+                skills[skill] = skills.get(skill, 0) + 1
+        top_skills = sorted(skills.items(), key=lambda x: x[1], reverse=True)[:10]
+        top_skills = [skill[0] for skill in top_skills]
+
+        # Get dates
+        dates = (jobs
+                .dates('scraped_date', 'day', 'DESC')
+                .distinct())
+        
+        data = {
+            "top_skills": top_skills,
+            "available_dates": list(dates),
+        }
+
+        return data
     
 
 @api_controller("/applications", auth=JWTAuth())

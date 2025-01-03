@@ -69,8 +69,8 @@ class JobFilterSchema(FilterSchema):
 class ApplicationNoteSchema(Schema):
     id: Optional[int] = None
     content: str
-    created_at: datetime
-    updated_at: datetime
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
 class JobApplicationSchema(Schema):
     id: int

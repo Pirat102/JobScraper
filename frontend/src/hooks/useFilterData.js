@@ -8,23 +8,21 @@ export const useFilterData = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [statsRes, datesRes] = await Promise.all([
-          api.get("api/jobs/stats"),
-          api.get("api/jobs/dates")
-        ]);
-
-        const topSkills = Object.keys(statsRes.data.top_skills);
-        const formattedDates = datesRes.data.map(date => ({
-          value: date,
-          label: new Date(date).toLocaleDateString()
-        }));
+        const filterOptionsRes = await api.get("api/jobs/filter-options");
+        const { top_skills, available_dates } = filterOptionsRes.data;
 
         setSections(prev => prev.map(section => {
           if (section.id === 'scraped_date') {
-            return { ...section, options: formattedDates };
+            return { 
+              ...section, 
+              options: available_dates.map(date => ({
+                value: date,
+                label: new Date(date).toLocaleDateString()
+              }))
+            };
           }
           if (section.id === 'skills') {
-            return { ...section, topSkills };
+            return { ...section, topSkills: top_skills };
           }
           return section;
         }));

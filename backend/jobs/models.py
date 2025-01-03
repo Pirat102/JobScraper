@@ -13,10 +13,10 @@ class Job(models.Model):
     skills = models.JSONField()
     description = models.TextField(null=True, blank=True)
     url = models.URLField()
-    scraped_date = models.DateTimeField(default=timezone.now)
+    scraped_date = models.DateTimeField(auto_now=timezone.now)
     summary = models.TextField(null=True, blank=True)
     source = models.CharField(max_length=20, null=True)
-    created_at = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(auto_now=timezone.now)
 
     def __str__(self):
         return f"ID: {self.id} - Title: {self.title}"
@@ -53,7 +53,7 @@ class Job(models.Model):
 class Requested(models.Model):
     url = models.URLField()
     title = models.CharField(max_length=255, null=True, blank=True)
-    created_at = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(auto_now=timezone.now)
     
     
     def __str__(self):
@@ -63,7 +63,7 @@ class Requested(models.Model):
 class JobApplication(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
-    applied_date = models.DateTimeField(default=timezone.now)
+    applied_date = models.DateTimeField(auto_now=timezone.now)
     status = models.CharField(
         max_length=20,
         choices=[
@@ -83,7 +83,7 @@ class JobApplication(models.Model):
 class ApplicationNote(models.Model):
     application = models.ForeignKey(JobApplication, on_delete=models.CASCADE, related_name='notes')
     content = models.TextField()
-    created_at = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(auto_now=timezone.now)
     updated_at = models.DateTimeField(auto_now=timezone.now)
 
     class Meta:

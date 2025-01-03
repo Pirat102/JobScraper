@@ -106,8 +106,6 @@ function JobApplications() {
     try {
       await api.post(`api/applications/${applicationId}/notes`, {
         content: newNote,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
       });
       setNewNote("");
       fetchApplications();
