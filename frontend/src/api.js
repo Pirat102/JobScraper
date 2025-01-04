@@ -4,9 +4,6 @@ import { ACCESS_TOKEN } from "./constants"
 // importing everything from env variable file
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
-    headers: {
-        'Cache-Control': 'no-cache',
-    }
 });
 
 // Adding authorization header

@@ -154,7 +154,7 @@ class JobController:
     
     # Light endpoint for fetching dates and top skills on jobs page
     @route.get("filter-options", response=Dict[str, Any])
-    @decorate_view(cache_page(60 * 60 * 24))
+    @decorate_view(cache_page(60 * 60))
     def get_filter_options(self):
         
         thirty_days_ago = timezone.now() - timedelta(days=30)
