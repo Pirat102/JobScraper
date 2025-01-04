@@ -122,7 +122,6 @@ class JobController:
 
     @route.get("/filter", response=PaginatedResponseSchema[JobSchema])
     @paginate(PageNumberPaginationExtra, page_size=25)
-    @decorate_view(cache_page(60 * 60))
     def list_jobs(self, request, filters: JobFilterSchema=Query(...)):
         jobs = Job.objects.defer('description', 'created_at')
         print("Request received:", request.path)
@@ -166,7 +165,7 @@ class JobController:
         for job in jobs:
             for skill in job.skills.keys():
                 skills[skill] = skills.get(skill, 0) + 1
-        top_skills = sorted(skills.items(), key=lambda x: x[1], reverse=True)[:10]
+        top_skills = sorted(skills.items(), key=lambda x: x[1], reverse=True)
         top_skills = [skill[0] for skill in top_skills]
 
         # Get dates
