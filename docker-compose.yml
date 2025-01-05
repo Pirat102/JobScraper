@@ -41,29 +41,29 @@ services:
       - redis_data:/data
     restart: unless-stopped
 
-  celery_worker:
-    image: app-image
-    volumes:
-      - ./backend:/app
-    depends_on:
-      - django
-      - postgres
-      - redis
+  # celery_worker:
+  #   image: app-image
+  #   volumes:
+  #     - ./backend:/app
+  #   depends_on:
+  #     - django
+  #     - postgres
+  #     - redis
     
-    command: celery -A backend worker --concurrency=1
-    restart: unless-stopped
+  #   command: celery -A backend worker --concurrency=1
+  #   restart: unless-stopped
 
-  celery_beat:
-    image: app-image
-    container_name: celery-beat-container
-    command: celery -A backend beat -l info
-    volumes:
-      - ./backend:/app
-    depends_on:
-      - django
-      - postgres
-      - redis
-    restart: unless-stopped
+  # celery_beat:
+  #   image: app-image
+  #   container_name: celery-beat-container
+  #   command: celery -A backend beat -l info
+  #   volumes:
+  #     - ./backend:/app
+  #   depends_on:
+  #     - django
+  #     - postgres
+  #     - redis
+  #   restart: unless-stopped
 
 
   frontend:

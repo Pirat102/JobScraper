@@ -124,7 +124,6 @@ class JobController:
     @paginate(PageNumberPaginationExtra, page_size=25)
     def list_jobs(self, request, filters: JobFilterSchema=Query(...)):
         jobs = Job.objects.defer('description', 'created_at')
-        print("Request received:", request.path)
         
         auth_header = request.headers.get('Authorization')
         if auth_header and auth_header.startswith('Bearer '):
