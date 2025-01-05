@@ -26,7 +26,9 @@ function FilterPanel({ onFilterChange, jobCount, loading }) {
   );
 
   const getFilteredSkills = (section) => {
-    if (!skillSearch) return section.topSkills.slice(0, 10);
+    if (!skillSearch) {
+      return section.topSkills.slice(0, 10);
+    }
     return section.topSkills.filter((skill) =>
       skill.toLowerCase().includes(skillSearch.toLowerCase())
     );

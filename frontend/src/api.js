@@ -1,12 +1,10 @@
-// This file creates an Axios instance to make HTTP requests to backend, with automatic handling of the JWT token.
-
 import axios from "axios"
 import { ACCESS_TOKEN } from "./constants"
 
 // importing everything from env variable file
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL
-})
+    baseURL: import.meta.env.VITE_API_URL,
+});
 
 // Adding authorization header
 api.interceptors.request.use(
