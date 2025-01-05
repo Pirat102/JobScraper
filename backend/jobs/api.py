@@ -179,7 +179,7 @@ class JobApplicationController:
         return JobApplication.objects.filter(user=request.user)
         
     @route.post("{application_id}/notes", response=ApplicationNoteSchema)
-    def add_note(self, request, application_id: int, note_data: ApplicationNoteSchema):
+    def add_note(self, request, application_id: int, note_data: CreateApplicationNoteSchema):
         application = get_object_or_404(JobApplication, id=application_id, user=request.user)
         note = ApplicationNote.objects.create(
             application=application,

@@ -12,11 +12,11 @@ import DOMPurify from "dompurify";
 
 function JobApplications() {
   const [applications, setApplications] = useState([]);
-  const [loading, setLoading] = useState(true); 
-  const [newNote, setNewNote] = useState("");
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { t, language } = useLanguage();
   const [expandedCards, setExpandedCards] = useState({});
+  const [noteInputs, setNoteInputs] = useState({});
 
   const toggleCard = (id) => {
     setExpandedCards((prev) => ({
@@ -36,7 +36,7 @@ function JobApplications() {
     } catch (error) {
       setError(t("failed_load_applications"));
     } finally {
-      setLoading(false);  
+      setLoading(false);
     }
   };
 
@@ -101,15 +101,17 @@ function JobApplications() {
 
   const addNote = async (applicationId, e) => {
     e.preventDefault();
-    if (!newNote.trim()) return;
+    const noteText = noteInputs[applicationId];
+    if (!noteText?.trim()) return;
 
     try {
       await api.post(`api/applications/${applicationId}/notes`, {
-        content: newNote,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        content: noteText,
       });
-      setNewNote("");
+      setNoteInputs({
+        ...noteInputs,
+        [applicationId]: "",
+      });
       fetchApplications();
     } catch (error) {
       alert(t("failed_add_note"));
@@ -131,8 +133,6 @@ function JobApplications() {
     { key: "ACCEPTED", icon: "🎉" },
     { key: "REJECTED", icon: "❌" },
   ];
-
-
 
   return (
     <div className="applications-container">
@@ -256,8 +256,13 @@ function JobApplications() {
                 className="add-note-form"
               >
                 <textarea
-                  value={newNote}
-                  onChange={(e) => setNewNote(e.target.value)}
+                  value={noteInputs[application.id] || ""}
+                  onChange={(e) =>
+                    setNoteInputs({
+                      ...noteInputs,
+                      [application.id]: e.target.value,
+                    })
+                  }
                   placeholder={t("add_note_placeholder")}
                   className="note-input"
                 />
