@@ -124,6 +124,7 @@ class JobController:
     @paginate(PageNumberPaginationExtra, page_size=25)
     def list_jobs(self, request, filters: JobFilterSchema=Query(...)):
         jobs = Job.objects.defer('description', 'created_at')
+        jobs = filters.filter_queryset(jobs)
         
         auth_header = request.headers.get('Authorization')
         if auth_header and auth_header.startswith('Bearer '):
@@ -135,19 +136,19 @@ class JobController:
                 if user:
                     # Annotate both has_applied and application_id
                     applications_subquery = JobApplication.objects.filter(
-                        job_id=OuterRef('id'),
+                        job=OuterRef('id'),
                         user=user
                     )
                     jobs = jobs.annotate(
                         has_applied=Exists(applications_subquery),
                         application_id=Subquery(
-                            applications_subquery.values('id')[:1]
+                            applications_subquery.values('id')
                         )
                     )
             except Exception as e:
                 print(f"Authentication failed: {e}")
                 pass
-        jobs = filters.filter_queryset(jobs)
+        
         return jobs
     
     

@@ -23,6 +23,14 @@ class Job(models.Model):
     
     class Meta:
         ordering = ['-scraped_date']
+        indexes = [
+            models.Index(fields=['-scraped_date']),
+            models.Index(fields=['operating_mode']),
+            models.Index(fields=['experience']),
+            models.Index(fields=['source']),
+            # Composite indexes for common filter combinations
+            models.Index(fields=['operating_mode', 'experience', '-scraped_date']),
+        ]
         
     def get_sorted_skills(self):
         """

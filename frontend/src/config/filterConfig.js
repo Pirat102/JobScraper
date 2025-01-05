@@ -23,11 +23,11 @@ export const filterSections = [
     titleKey: 'experience_level',
     defaultOpen: true,
     options: [
-      { value: 'trainee', labelKey: 'trainee' },
-      { value: 'junior', labelKey: 'junior' },
-      { value: 'mid', labelKey: 'mid' },
-      { value: 'senior', labelKey: 'senior' },
-      { value: 'expert', labelKey: 'expert' },
+      { value: 'Trainee', labelKey: 'trainee' },
+      { value: 'Junior', labelKey: 'junior' },
+      { value: 'Mid', labelKey: 'mid' },
+      { value: 'Senior', labelKey: 'senior' },
+      { value: 'Expert', labelKey: 'expert' },
     ]
   },
   {

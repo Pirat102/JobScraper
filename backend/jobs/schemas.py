@@ -45,25 +45,27 @@ class JobFilterSchema(FilterSchema):
     source: Optional[str] = None
 
     def filter_queryset(self, queryset):
-        filters = {
-            'title__icontains': self.title,
-            'location__icontains': self.location,
-            'scraped_date__gt': self.scraped_date,
-            'experience__icontains': self.experience,
-            'operating_mode__icontains': self.operating_mode,
-            'source__icontains': self.source
-        }
-        # Remove None values
-        filters = {k: v for k, v in filters.items() if v is not None}
-        queryset = queryset.filter(**filters)
+        if self.operating_mode:
+            queryset = queryset.filter(operating_mode=self.operating_mode)
+            
+        if self.experience:
+            queryset = queryset.filter(experience=self.experience)
+            
+        if self.source:
+            queryset = queryset.filter(source=self.source)
+            
+        if self.location:
+            queryset = queryset.filter(location__icontains=self.location)
+            
+        if self.scraped_date:
+            queryset = queryset.filter(scraped_date__gt=self.scraped_date)
 
-        # Custom filter logic for skills (AND logic)
         if self.skills:
             skills_query = Q()
             for skill in self.skills:
                 skills_query &= Q(skills__has_key=skill)
             queryset = queryset.filter(skills_query)
-        
+
         return queryset
     
 class ApplicationNoteSchema(Schema):
