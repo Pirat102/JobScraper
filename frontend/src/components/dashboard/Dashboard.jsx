@@ -13,7 +13,7 @@ const Dashboard = () => {
   const [selectedExperience, setSelectedExperience] = useState('');
   const { t } = useLanguage();
 
-  const experienceLevels = ['trainee', 'junior', 'mid', 'senior', 'expert'];
+  const experienceLevels = ['Trainee', 'Junior', 'Mid', 'Senior', 'Expert'];
 
   const fetchDashboardData = async (view, experience) => {
     try {
