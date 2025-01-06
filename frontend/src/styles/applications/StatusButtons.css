@@ -8,16 +8,16 @@
     border: none;
     border-radius: var(--radius);
     font-size: var(--text-sm);
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
-    opacity: 0.5;
+    opacity: 0.8;
     background: var(--card-background);
     box-shadow: var(--shadow-sm);
 }
 
 .status-button:hover {
-    opacity: 0.8;
+    opacity: 0.6;
     transform: translateY(-1px);
 }
 
@@ -28,7 +28,7 @@
 }
 
 .status-button.applied.active {
-    background: var(--primary-color);
+    background: var(--background-active);
     color: white;
     opacity: 1;
 }

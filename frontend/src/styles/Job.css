@@ -29,7 +29,7 @@
 }
 
 .job-title {
-  color: var(--primary-color);
+  color: var(--secondary-color);
   text-decoration: none;
   font-size: var(--text-xl);
   font-weight: 600;

@@ -1,10 +1,14 @@
 .stats-card {
-  background-color: var(--card-background);
   border-radius: var(--radius);
   border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
   padding: var(--space-6);
   transition: var(--transition-all);
+  background: linear-gradient(
+    to bottom right,
+    var(--card-background),
+    var(--background-color)
+  );
 }
 
   

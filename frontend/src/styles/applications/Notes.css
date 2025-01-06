@@ -1,5 +1,4 @@
 .notes-section {
-    border-top: 1px solid var(--border-color);
     padding-top: var(--space-4);
 }
   
@@ -18,9 +17,9 @@
 }
   
 .note-item {
-    background-color: var(--background-color);
     border-radius: var(--radius);
     padding: var(--space-3);
+    border: 1px solid var(--border-color)
 }
   
 .note-content {

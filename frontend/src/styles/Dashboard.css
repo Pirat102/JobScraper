@@ -125,6 +125,9 @@
     padding: var(--space-3);
   }
 
+  .experience-button:hover {
+    background-color: none;
+  }
 
   .dashboard-grid {
     display: flex;

@@ -40,6 +40,7 @@
   color: var(--primary-color);
 }
 
+
 @media (max-width: 768px) {
   .navbar {
     padding: var(--mobile-padding) 0;
@@ -60,5 +61,8 @@
 
   .nav-link {
     padding: var(--space-2);
+  }
+  .nav-link:hover {
+    color: var(--text-secondary);
   }
 }
