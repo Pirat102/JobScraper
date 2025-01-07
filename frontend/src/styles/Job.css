@@ -200,6 +200,10 @@
 
 
 @media (max-width: 768px) {
+  .toggle-button:hover {
+    background: none;
+  }
+
   .job-container {
     padding: var(--space-4);
   }

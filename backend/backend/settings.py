@@ -23,7 +23,7 @@ SECRET_KEY = env("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 if ENVIRONMENT == 'development':
     DEBUG = True
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.1.42', '192.168.1.63']
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
     CORS_ALLOW_ALL_ORIGINS = True
     INTERNAL_IPS = ["127.0.0.1"]
     DEBUG_TOOLBAR_CONFIG = {
@@ -33,19 +33,6 @@ else:
     DEBUG = False
     ALLOWED_HOSTS=["devradar.work","www.devradar.work","128.140.62.90"]
     CORS_ALLOWED_ORIGINS=["https://devradar.work", "https://www.devradar.work"]
-
-
-# CORS_ALLOW_HEADERS = [
-#     'accept',
-#     'accept-encoding',
-#     'authorization',
-#     'content-type',
-#     'origin',
-#     'pragma',
-#     'cache-control',
-# ]
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
