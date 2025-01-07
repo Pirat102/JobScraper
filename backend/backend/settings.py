@@ -23,7 +23,7 @@ SECRET_KEY = env("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 if ENVIRONMENT == 'development':
     DEBUG = True
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.1.42']
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.1.42', '192.168.1.63']
     CORS_ALLOW_ALL_ORIGINS = True
     INTERNAL_IPS = ["127.0.0.1"]
     DEBUG_TOOLBAR_CONFIG = {

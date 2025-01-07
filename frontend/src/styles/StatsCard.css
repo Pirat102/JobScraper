@@ -15,7 +15,7 @@
 .stats-card-title {
   font-size: var(--text-lg);
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--primary-color);
   margin-bottom: var(--space-4);
 }
 

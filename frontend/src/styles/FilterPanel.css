@@ -1,4 +1,3 @@
-/* Main container */
 .filter-panel {
   position: sticky;
   top: var(--space-4);
@@ -43,10 +42,10 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  padding: var(--space-1) var(--space-3);
+  color: var(--text-on-primary);
+  padding: var(--space-2) var(--space-3);
   margin: var(--space-1) ;
-  background-color: var(--primary-light);
-  color: var(--primary-color);
+  background-color: var(--primary-color);
   border: 1px solid var(--primary-color);
   border-radius: var(--radius-full);
   font-size: var(--text-sm);
@@ -58,10 +57,8 @@
 .selected-filter:hover {
   background-color: var(--primary-color);
   color: var(--text-primary);
-  
 }
 
-/* Filter sections */
 .filter-section {
   background: var(--card-background);
   border-radius: var(--radius);
@@ -187,8 +184,8 @@
 }
 
 .option-item.selected {
-  background-color: var(--primary-light);
-  color: var(--primary-color);
+  background-color: var(--primary-color);
+  color: var(--text-primary);
   border-color: var(--primary-color);
 }
 

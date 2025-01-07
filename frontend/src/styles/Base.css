@@ -1,77 +1,80 @@
 :root[data-theme="light"] {
-  --primary-color: #AD8B73;
-  --primary-dark: #ad8b7377;
-  --primary-light: #a67c1a60;
-  --secondary-color: #2889ffbe;
+  --primary-color: #e7690fac;
+  --primary-dark: #96745c6e;
+  --primary-light: #d4c0b3;
+  --secondary-color: #466d9ee1;
   
-  --background-color: #f8f8f860;
-  --card-background: #f0eadc36; 
-  --background-hover: rgba(146, 130, 56, 0.367);
-  --background-active: rgba(30, 153, 195, 0.449);
-  --second-background: white;
+  --background-color: #ffc6aa4a;
+  --card-background: #fff4e8;
+  --background-hover: rgba(173, 139, 115, 0.1);
+  --background-active: rgba(115, 173, 130, 0.2);
+  --second-background: #fffaf2;
   
-  --text-primary: #0f172a;
-  --text-secondary: #2d3845;
-  --text-muted: #64748b;
+  --text-primary: #2c1810;
+  --text-on-primary: #ffffff;
+  --text-secondary: #4b3830;
+  --text-muted: #6b584e;
   
-  --border-color: #bab395;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --border-color: #d4c0b3;
 
-
-
+  /* Skill colors for light theme */
   .skill-item.master {
+    background-color: #f3e8ff16;
     color: #7b19dc;
-    border-color: rgb(155, 49, 255);
+    border: 1px solid #9b31ff;
   }
 
   .skill-item.advanced {
-    color: rgb(244, 99, 27);           
-    border-color: #f55539;   
+    background-color: #fff1e725;
+    color: #c43d10;
+    border: 1px solid #f55539;
   }
 
   .skill-item.senior {
-    color: rgb(0, 82, 79);
-    border-color: rgb(0, 134, 152)
+    background-color: #bcffd324;
+    color: #036765;
+    border: 1px solid #009865;
   }
   
   .skill-item.regular {
-    color: #47a70f;           
-    border-color: #358e01;    
+    background-color: #ffc91625;
+    color: #8d8d08;
+    border: 1px solid #cdad45;
   }
   
   .skill-item.junior {
-    color: #075985;           
-    border-color: #29b3f2;    
+    background-color: #e5f6ff17;
+    color: #075985;
+    border: 1px solid #29b3f2;
   }
 
   .skill-item.nice {
-    border-color: #5b5a5a; 
-    color: #807623;           
+    background-color: #f8f8f21d;
+    color: #818181;
+    border: 1px solid #5b5a5a3b;
   }
-
-
 }
 
+
+
 :root[data-theme="dark"] {
-  /* Core colors */
-  --primary-color: #5B8FB9;       
-  --primary-dark: rgba(96, 165, 250, 0.1);       
+  --primary-color: #d4bff9;
+  --primary-dark: #326fa2;
   --primary-light: #142540c7;
-  --secondary-color: #6daadc;
+  --secondary-color: #03DAC5;
   
-  /* Background colors */
-  --background-color: #0f172a;   
-  --card-background: #1e293b;    
+  --background-color: #0f172a;
+  --card-background: #1e293b;
   --background-hover: rgba(255, 255, 255, 0.05);
-  --background-active: rgba(96, 165, 250, 0.562);
+  --background-active: rgba(91, 143, 185, 0.2);
   --second-background: #0f172a;
   
-  /* Text colors */
-  --text-primary: #f8fafc;        
-  --text-secondary: #94a3b8;      
-  --text-muted: #64748b;          
+  --text-primary: #f8fafc;
+  --text-on-primary: #0f172a;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  --border-color: #334155;        
   
   /* Border and shadow */
   --border-color: #334155;       
@@ -83,16 +86,16 @@
 }
 :root {
   --success-color: #22c55e;
-  --warning-color: #f59e0b;
+  --warning-color: #b5b200;
   --error-color: #ef4444;
   
-  --level-nice-text: #acacac;
-  --level-junior-text: #7dd3fc;
-  
-  --level-regular-text: #fcd34d;
+  --level-nice-text: #c6c6c6;
+  --level-junior-text: #6ad0ff;
+  --level-regular-text: #ffe58e;
   --level-senior-text: #86efac;
   --level-advanced-text: #f7945b;
   --level-master-text: #ebc2fb;
+  
   
 
   /* Spacing */

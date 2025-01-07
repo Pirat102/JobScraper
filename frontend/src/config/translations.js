@@ -44,6 +44,8 @@ export const translations = {
       "dates_from": "Data od",
       "source": "Źródło",
       "search_technology": "Wpisz nazwę technologii...",
+      "next": "Następna",
+      "previous":"Poprzednia",
   
       // Job Listings
       "show_summary": "Pokaż szczegóły",
@@ -148,6 +150,8 @@ export const translations = {
       "dates_from": "Dates from",
       "source": "Source",
       "search_technology": "Type technology name...",
+      "next": "Next",
+      "previous":"Previous",
   
       // Job Listings
       "show_summary": "Show summary",

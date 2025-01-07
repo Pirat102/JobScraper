@@ -6,7 +6,7 @@
     border: none;
     padding: 0;
     cursor: pointer;
-    color: var(--text-secondary);
+    color: var(--primary-color);
     width: 24px;
     height: 24px;
     transition: transform 0.15s ease-in-out;
@@ -17,7 +17,7 @@
 }
 
 .heart-button.active {
-    color: var(--error-color);
+    color: var(--primary-color);
     animation: pop 0.4s ease;
 }
 

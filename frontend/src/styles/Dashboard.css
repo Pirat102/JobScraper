@@ -61,7 +61,7 @@
 
 .experience-button.active {
   background-color: var(--primary-color);
-  color: var(--text-primary);
+  color: var(--text-on-primary);
   border-color: var(--primary-color);
 }
 
@@ -120,15 +120,21 @@
     grid-column: 1 / -1;
   }
 
+  .experience-button:hover {
+    background: none;
+  }
+
   .experience-button {
     width: 100%;
     padding: var(--space-3);
   }
 
-  .experience-button:hover {
-    background-color: none;
+  .experience-button.active {
+    background-color: var(--primary-color);
+    color: var(--text-on-primary);
+    border-color: var(--primary-color);
   }
-
+  
   .dashboard-grid {
     display: flex;
     flex-direction: column;

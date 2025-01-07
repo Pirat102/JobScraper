@@ -1,69 +1,69 @@
 .status-buttons {
     display: flex;
     gap: var(--space-2);
+    margin: var(--space-4) 0;
 }
 
 .status-button {
-    padding: var(--space-2) var(--space-4);
-    border: none;
+    padding: var(--space-2) var(--space-2);
     border-radius: var(--radius);
     font-size: var(--text-sm);
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
-    opacity: 0.8;
+    transition: var(--transition-all);
     background: var(--card-background);
-    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
 }
 
-.status-button:hover {
-    opacity: 0.6;
-    transform: translateY(-1px);
-}
-
-/* Each status has its own color */
 .status-button.applied {
     color: var(--primary-color);
     border: 1px solid var(--primary-color);
+    background: var(--background-hover);
 }
 
 .status-button.applied.active {
-    background: var(--background-active);
-    color: white;
-    opacity: 1;
+    background: var(--primary-color);
+    color: var(--text-on-primary);
 }
 
 .status-button.interviewing {
     color: var(--warning-color);
     border: 1px solid var(--warning-color);
+    background: var(--background-hover);
 }
 
 .status-button.interviewing.active {
     background: var(--warning-color);
-    color: white;
-    opacity: 1;
+    color: var(--text-on-primary);
 }
 
 .status-button.rejected {
     color: var(--error-color);
     border: 1px solid var(--error-color);
+    background: var(--background-hover);
 }
 
 .status-button.rejected.active {
     background: var(--error-color);
-    color: white;
-    opacity: 1;
+    color: var(--text-on-primary);
 }
 
 .status-button.accepted {
     color: var(--success-color);
     border: 1px solid var(--success-color);
+    background: var(--background-hover);
 }
 
 .status-button.accepted.active {
     background: var(--success-color);
-    color: white;
-    opacity: 1;
+    color: var(--text-on-primary);
+}
+
+.status-button:hover:not(.active) {
+    transform: translateY(-1px);
 }
 
 @media (max-width: 768px) {
@@ -74,6 +74,5 @@
     .status-button {
         flex: 1;
         min-width: calc(50% - var(--space-2));
-        text-align: center;
     }
 }

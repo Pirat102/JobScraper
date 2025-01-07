@@ -1,8 +1,8 @@
 .add-note-button,
 .apply-button {
     padding: var(--space-2) var(--space-4);
-    background-color: var(--primary-color);
-    color: var(--text-primary);
+    background-color: var(--secondary-color);
+    color: var(--text-on-primary);
     border: none;
     border-radius: var(--radius);
     font-weight: 500;
