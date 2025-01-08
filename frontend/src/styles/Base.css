@@ -17,6 +17,7 @@
 
   --warning-color: #dcb724;
   --border-color: #d4c0b3;
+  --level-regular-border: #fad257;
 
   /* Skill colors for light theme */
   .skill-item.master {
@@ -34,13 +35,13 @@
   .skill-item.senior {
     background-color: #bcffd324;
     color: #036765;
-    border: 1px solid #009865;
+    border: 1px solid #49e8a3;
   }
   
   .skill-item.regular {
-    background-color: #fdf1c825;
-    color: #8d8d08;
-    border: 1px solid #cdad45;
+    background-color: #fff7db22;
+    color: #848200;
+    border: 1px solid #fad257;
   }
   
   .skill-item.junior {
