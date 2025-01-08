@@ -13,8 +13,9 @@
   --text-primary: #2c1810;
   --text-on-primary: #ffffff;
   --text-secondary: #4b3830;
-  --text-muted: #6b584e;
-  
+  --text-muted: #3b3430;
+
+  --warning-color: #dcb724;
   --border-color: #d4c0b3;
 
   /* Skill colors for light theme */
@@ -37,7 +38,7 @@
   }
   
   .skill-item.regular {
-    background-color: #ffc91625;
+    background-color: #fdf1c825;
     color: #8d8d08;
     border: 1px solid #cdad45;
   }
@@ -58,10 +59,10 @@
 
 
 :root[data-theme="dark"] {
-  --primary-color: #d4bff9;
+  --primary-color: #eab9fed5;
   --primary-dark: #326fa2;
   --primary-light: #142540c7;
-  --secondary-color: #03DAC5;
+  --secondary-color: #03dac5a1;
   
   --background-color: #0f172a;
   --card-background: #1e293b;
@@ -71,13 +72,12 @@
   
   --text-primary: #f8fafc;
   --text-on-primary: #0f172a;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
+  --text-secondary: #afc1d2d9;
+  --text-muted: #8592a4;
   
-  --border-color: #334155;        
   
   /* Border and shadow */
-  --border-color: #334155;       
+  --border-color: #808891f4;       
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
@@ -85,17 +85,18 @@
   
 }
 :root {
-  --success-color: #22c55e;
-  --warning-color: #b5b200;
-  --error-color: #ef4444;
+  --success-color: #22c55ea0;
+  --warning-color: #fff7067d;
+  --error-color: #ef444494;
   
-  --level-nice-text: #c6c6c6;
-  --level-junior-text: #6ad0ff;
-  --level-regular-text: #ffe58e;
-  --level-senior-text: #86efac;
-  --level-advanced-text: #f7945b;
-  --level-master-text: #ebc2fb;
-  
+
+  --level-nice-border: #7f7f7f33;
+  --level-junior-border: #61cdffba;
+  --level-regular-border: #fbfb82ba;
+  --level-senior-border: #69fcd2a1;
+  --level-advanced-border: #fb7d7da3;
+  --level-master-border: #e39bffb0;
+
   
 
   /* Spacing */

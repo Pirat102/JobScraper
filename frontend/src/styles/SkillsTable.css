@@ -22,17 +22,13 @@
   transition: var(--transition-colors);
 }
 
-.skills-table-row:hover {
-  background-color: var(--background-hover);
-}
-
 .skills-table-row:last-child {
   border-bottom: none;
 }
 
 .skill-rank {
   min-width: var(--space-6);
-  color: var(--primary-color);
+  color: var(--text-secondary);
   font-weight: 600;
 }
 

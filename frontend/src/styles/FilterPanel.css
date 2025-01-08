@@ -145,8 +145,8 @@
 }
 
 .skill-option.selected {
-  background-color: var(--primary-light);
-  color: var(--primary-color);
+  background-color: var(--primary-color);
+  color: var(--text-on-primary);
   border-color: var(--primary-color);
 }
 
@@ -185,7 +185,7 @@
 
 .option-item.selected {
   background-color: var(--primary-color);
-  color: var(--text-primary);
+  color: var(--text-on-primary);
   border-color: var(--primary-color);
 }
 
@@ -201,6 +201,7 @@
     justify-content: center;
     gap: var(--space-2);
     background-color: var(--primary-color);
+    filter: brightness(85%);
     color: var(--text-primary);
     height: var(--header-height);
     border: none;

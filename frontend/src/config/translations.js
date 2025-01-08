@@ -2,7 +2,7 @@ export const translations = {
     pl: {
       // Navigation
       "home": "Strona Główna",
-      "jobs": "Oferty Pracy",
+      "jobs": "Ofert Pracy",
       "login": "Zaloguj się",
       "register": "Zarejestruj się",
       "logout": "Wyloguj się",

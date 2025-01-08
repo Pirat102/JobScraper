@@ -21,7 +21,6 @@
 .status-button.applied {
     color: var(--primary-color);
     border: 1px solid var(--primary-color);
-    background: var(--background-hover);
 }
 
 .status-button.applied.active {
@@ -32,7 +31,6 @@
 .status-button.interviewing {
     color: var(--warning-color);
     border: 1px solid var(--warning-color);
-    background: var(--background-hover);
 }
 
 .status-button.interviewing.active {
@@ -43,7 +41,6 @@
 .status-button.rejected {
     color: var(--error-color);
     border: 1px solid var(--error-color);
-    background: var(--background-hover);
 }
 
 .status-button.rejected.active {
@@ -54,7 +51,6 @@
 .status-button.accepted {
     color: var(--success-color);
     border: 1px solid var(--success-color);
-    background: var(--background-hover);
 }
 
 .status-button.accepted.active {

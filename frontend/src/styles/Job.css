@@ -10,11 +10,6 @@
   gap: var(--space-4);
 }
 
-/* .job-container:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
-} */
-
 .job-header {
   display: flex;
   justify-content: space-between;
@@ -35,10 +30,7 @@
   font-weight: 600;
 }
 
-.job-title:hover {
-  color: var(--primary-dark);
-  text-decoration: underline;
-}
+
 
 .company-name {
   color: var(--text-secondary);
@@ -88,12 +80,6 @@
   gap: var(--space-2);
   transition: var(--transition-all);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.toggle-button:hover {
-  background: var(--primary-dark);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .job-summary {
@@ -148,62 +134,60 @@
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-full);
   font-size: var(--text-sm);
-  background-color: var(--background-color);
-  color: var(--text-secondary);
   border: 1px solid var(--border-color);
-  transition: var(--transition-colors);
+  color: var(--text-primary);
+  font-weight: 350;
 }
 
-.skill-item.nice {
-  background-color: var(--level-nice-bg);
-  color: var(--level-nice-text);
-  border-color: var(--level-nice-text);
+.skill-item.nice .skill-level {
+  border-color: var(--level-nice-border);
 }
 
-.skill-item.junior {
-  background-color: var(--level-junior-bg);
-  color: var(--level-junior-text);
-  border-color: var(--level-junior-text);
+.skill-item.junior .skill-level {
+  border-color: var(--level-junior-border);
 }
 
-.skill-item.regular {
-  background-color: var(--level-regular-bg);
-  color: var(--level-regular-text);
-  border-color: var(--level-regular-text);
+.skill-item.regular .skill-level {
+  border-color: var(--level-regular-border);
 }
 
-.skill-item.senior {
-  background-color: var(--level-senior-bg);
-  color: var(--level-senior-text);
-  border-color: var(--level-senior-text);
+.skill-item.senior .skill-level {
+  border-color: var(--level-senior-border);
 }
 
-.skill-item.advanced {
-  background-color: var(--level-advanced-bg);
-  color: var(--level-advanced-text);
-  border-color: var(--level-advanced-text);
+
+.skill-item.advanced .skill-level {
+  border-color: var(--level-advanced-border);
+  
 }
 
-.skill-item.master {
-  background-color: var(--level-master-bg);
-  color: var(--level-master-text);
-  border-color: var(--level-master-text);
+.skill-item.master .skill-level {
+  border-color: var(--level-master-border);
+
 }
 
 .skill-level {
   font-size: var(--text-xs);
   padding: var(--space-1) var(--space-2);
-  background-color: var(--background-hover);
   border-radius: var(--radius-full);
-  border: 1px solid var(--background-hover);
+  border: 1px solid rgb(176, 255, 212);
+  color: var(--text-muted);
 }
 
+/* Desktop hover effects */
+@media (hover: hover) {
+  .toggle-button:hover {
+    background: var(--secondary-color);
+    filter: brightness(50%);
+  }
+  .job-title:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+  }
+}
 
 @media (max-width: 768px) {
-  .toggle-button:hover {
-    background: none;
-  }
-
+  
   .job-container {
     padding: var(--space-4);
   }

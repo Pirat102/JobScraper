@@ -29,26 +29,6 @@
   display: flex;
 }
 
-.toggle-details-button {
-  background: var(--secondary-color);
-  color: var(--text-on-primary);
-  border: none;
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius);
-  cursor: pointer;
-  font-size: var(--text-sm);
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  transition: var(--transition-all);
-  width: fit-content;
-}
-
-.toggle-details-button:hover {
-  background: var(--primary-dark);
-}
-
 .application-header {
   display: flex;
   justify-content: space-between;

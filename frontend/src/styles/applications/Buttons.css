@@ -11,17 +11,6 @@
     width: fit-content;
 }
   
-.add-note-button:hover,
-.apply-button:hover {
-    background-color: var(--primary-dark);
-}
-  
-.add-note-button:disabled,
-.apply-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
 .delete-application-button {
     display: flex;
     align-items: center;
@@ -34,11 +23,6 @@
     font-size: var(--text-sm);
     cursor: pointer;
     transition: var(--transition-all);
-}
-
-.delete-application-button:hover {
-    color: var(--error-color);
-    background: rgba(239, 68, 68, 0.1);
 }
 
 .delete-application-button:focus {
@@ -55,6 +39,35 @@
     transition: var(--transition-colors);
 }
 
-.delete-note-button:hover {
+.toggle-details-button {
+    background: var(--secondary-color);
+    color: var(--text-on-primary);
+    border: none;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    transition: var(--transition-all);
+    width: fit-content;
+  }
+
+
+@media (hover: hover) {
+    .toggle-details-button:hover,
+    .add-note-button:hover,
+    .toggle-button:hover {
+      background: var(--secondary-color);
+      filter: brightness(50%);
+    }
+    .delete-application-button:hover {
+        color: var(--error-color);
+        background: rgba(239, 68, 68, 0.1);
+    }
+    .delete-note-button:hover {
     color: var(--error-color);
 }
+}   
