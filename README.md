@@ -35,7 +35,7 @@ DevRadar helps IT job seekers save time by:
 
 Track your job applications with status updates, notes, and automatic date management.
 
-![Applications Dashboard](screenshots/image-1.png)
+![Applications Dashboard](screenshots/image1.png)
 
 ## Distinctiveness and Complexity
 
