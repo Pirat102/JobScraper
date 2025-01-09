@@ -37,6 +37,27 @@ Track your job applications with status updates, notes, and automatic date manag
 
 ![Applications Dashboard](screenshots/image1.png)
 
+
+## Techstack
+
+### Backend
+- 🐍 Django + 🛡️ Django Ninja (REST API)
+- 📄 BeautifulSoup4 (Web scraping)
+- ⏰ Celery (Periodic task execution for web scraping)
+- 🤖 ChatGPT API (Summarizing descriptions)
+
+#### Database
+- 🐘 PostgreSQL
+- 🗄️ Redis (Caching and Celery broker)
+
+#### DevOps
+- 🐳 Docker (Containerization)
+- 🌐 Hetzner (VPS)
+- 📡 Nginx (Reverse proxy)
+
+### Frontend
+- ⚡ Vite + ⚛️ React
+
 ## Distinctiveness and Complexity
 
 This project stands out for several key reasons:
