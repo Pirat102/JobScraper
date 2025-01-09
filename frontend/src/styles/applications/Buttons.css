@@ -56,6 +56,7 @@
   }
 
 
+
 @media (hover: hover) {
     .toggle-details-button:hover,
     .add-note-button:hover,
@@ -71,3 +72,22 @@
     color: var(--error-color);
 }
 }   
+
+/* Disable hover effect on mobile */
+@media (pointer: coarse) {
+    .toggle-details-button:hover,
+    .add-note-button:hover,
+    .toggle-button:hover {
+        background: var(--secondary-color);
+        filter: none;
+    }
+    .delete-application-button:hover {
+        color: inherit;
+        background: transparent;
+    }
+    .delete-note-button:hover {
+        color: inherit;
+    }
+}
+
+    

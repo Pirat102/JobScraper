@@ -32,7 +32,6 @@
   display: grid;
   grid-template-columns: var(--sidebar-width) 1fr;
   gap: var(--space-8);
-  min-height: calc(100vh - var(--header-height) - var(--space-16));
   position: relative;
 }
 
