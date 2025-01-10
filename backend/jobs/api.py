@@ -68,6 +68,7 @@ class JobController:
         last_week_jobs = 0
         last_two_weeks_jobs = 0
         last_month_jobs = 0
+        total = 0
         
         for job in jobs:
             # Process all stats in single loop
@@ -92,6 +93,9 @@ class JobController:
                 last_two_weeks_jobs +=1
             if job.created_at > last_month:
                 last_month_jobs +=1
+            if job.created_at:
+                total += 1
+                
                 
         if salary_count > 0:
             avg_min = min_total / salary_count
@@ -116,6 +120,7 @@ class JobController:
                 "last_7_days": last_week_jobs,
                 "last_14_days": last_two_weeks_jobs,
                 "last_30_days": last_month_jobs,
+                "total": total,
         },
         }
     

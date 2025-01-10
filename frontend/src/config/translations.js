@@ -2,14 +2,14 @@ export const translations = {
     pl: {
       // Navigation
       "home": "Strona Główna",
-      "jobs": "Ofert Pracy",
+      "jobs": "Oferty Pracy",
       "login": "Zaloguj się",
       "register": "Zarejestruj się",
       "logout": "Wyloguj się",
   
       // Dashboard
       "overview": "Przegląd",
-      "market_overview": "Przegląd Rynku",
+      "market_overview": "Nowe oferty pracy",
       "experience_distribution": "Rozkład Doświadczenia",
       "average_salary": "Średnie Wynagrodzenie",
       "most_demanded_skills": "Najbardziej Poszukiwane Umiejętności",
@@ -19,6 +19,7 @@ export const translations = {
       "last_14_days": "Ostatnie 14 dni",
       "last_30_days": "Ostatnie 30 dni",
       "not_available": "Niedostępne",
+      "total": "Łącznie",
   
       // Experience Levels
       "trainee": "Praktykant",
@@ -115,7 +116,7 @@ export const translations = {
   
       // Dashboard
       "overview": "Overview",
-      "market_overview": "Market Overview",
+      "market_overview": "New Job Listings",
       "experience_distribution": "Experience Distribution",
       "average_salary": "Average Salary",
       "most_demanded_skills": "Most In-Demand Skills",
@@ -125,6 +126,7 @@ export const translations = {
       "last_14_days": "Last 14 days",
       "last_30_days": "Last 30 days",
       "not_available": "Not available",
+      "total": "Total",
   
       // Experience Levels
       "trainee": "Trainee",

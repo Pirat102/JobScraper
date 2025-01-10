@@ -97,19 +97,23 @@ const Dashboard = () => {
           <div className="market-stats">
             <StatsRow 
               label={t('today')}
-              value={`${stats.trends.today} ${t('jobs')}`}
+              value={`${stats.trends.today}`}
             />
             <StatsRow 
               label={t('last_7_days')}
-              value={`${stats.trends.last_7_days} ${t('jobs')}`}
+              value={`${stats.trends.last_7_days}`}
             />
             <StatsRow 
               label={t('last_14_days')}
-              value={`${stats.trends.last_14_days} ${t('jobs')}`}
+              value={`${stats.trends.last_14_days}`}
             />
             <StatsRow 
               label={t('last_30_days')}
-              value={`${stats.trends.last_30_days} ${t('jobs')}`}
+              value={`${stats.trends.last_30_days}`}
+            />
+             <StatsRow 
+              label={t('total')}
+              value={`${stats.trends.total}`}
             />
           </div>
         </StatsCard>
