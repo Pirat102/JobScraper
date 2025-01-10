@@ -62,7 +62,7 @@ export const filterSections = [
     options: [
       { value: 'Pracuj.pl', labelKey: 'pracuj_pl' },
       { value: 'NoFluffJobs', labelKey: 'nofluffjobs' },
-      { value: 'JustJoinIT', labelKey: 'justjoinit' },
+      { value: 'JustJoinIt', labelKey: 'justjoinit' },
       { value: 'TheProtocol', labelKey: 'theprotocol' },
     ]
   }

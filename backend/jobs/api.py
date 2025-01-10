@@ -75,6 +75,7 @@ class JobController:
             exp_stats[job.experience] += 1
             source_stats[job.source] += 1
             work_mode[job.operating_mode] += 1
+            total += 1
             
             for skill in job.skills.keys():
                 skill_freq[skill] = skill_freq.get(skill, 0) + 1
@@ -93,8 +94,6 @@ class JobController:
                 last_two_weeks_jobs +=1
             if job.created_at > last_month:
                 last_month_jobs +=1
-            if job.created_at:
-                total += 1
                 
                 
         if salary_count > 0:
