@@ -18,13 +18,13 @@ class JustJoinScraper(WebScraper):
     def get_jobs_container_selector(self) -> Dict[str, Any]:
         return {
             'name': 'div',
-            'attrs': {'id': 'up-offers-list'}
+            'attrs': {'data-test-id': 'virtuoso-item-list'}
         }
         
 
     def get_listings_selector(self) -> Dict[str, Any]:
         return {
-            'name': 'li',
+            'name': 'div',
             'attrs': {'data-index': True}
         }
 
