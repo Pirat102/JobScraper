@@ -22,32 +22,36 @@ def standardize_salary(salary: str) -> str:
         return f"{min_formatted} - {max_formatted} PLN"
     
     except (IndexError, ValueError):
-        return salary
+        return ""
 
 
     
 def average_salary(salary):
-    if not salary:
+    try:
+        if not salary:
+            return ""
+        
+        cleaned = ' '.join(salary.split())
+        cleaned = re.sub(r',\d+', '', cleaned)
+        
+        # Remove "PLN" and split on hyphen
+        salary_part = cleaned.replace("PLN", "").strip()
+        
+        if "-" in salary_part:
+            # Handle range format
+            parts = salary_part.split("-")
+            min_val = parts[0].strip().replace(" ", "")
+            max_val = parts[1].strip().replace(" ", "")
+            
+            min_num = int(min_val)
+            max_num = int(max_val)
+            
+        else:
+            min_num = int(salary_part.strip().replace(" ", ""))
+            max_num = min_num
+    except (IndexError, ValueError):
         return ""
-    
-    cleaned = ' '.join(salary.split())
-    cleaned = re.sub(r',\d+', '', cleaned)
-    
-    # Remove "PLN" and split on hyphen
-    salary_part = cleaned.replace("PLN", "").strip()
-    
-    if "-" in salary_part:
-        # Handle range format
-        parts = salary_part.split("-")
-        min_val = parts[0].strip().replace(" ", "")
-        max_val = parts[1].strip().replace(" ", "")
         
-        min_num = int(min_val)
-        max_num = int(max_val)
-        
-    else:
-        min_num = int(salary_part.strip().replace(" ", ""))
-        max_num = min_num
     
     return min_num, max_num
     
