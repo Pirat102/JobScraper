@@ -8,13 +8,13 @@
 
 .stats-label {
   color: var(--text-secondary);
-  font-size: var(--text-sm);
+  font-size: var(--text-m);
 }
 
 .stats-value {
   color: var(--text-primary);
   font-weight: 450;
-  font-size: var(--text-sm);
+  font-size: var(--text-m);
 }
 
 @media (max-width: 768px) {

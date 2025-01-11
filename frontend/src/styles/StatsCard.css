@@ -22,6 +22,7 @@
 
 .salary-display {
   font-weight: 350;
+  font-size: var(--text-lg);
 }
 
 .market-overview {
