@@ -12,7 +12,7 @@ class Job(models.Model):
     experience = models.CharField(max_length=25)
     skills = models.JSONField()
     description = models.TextField(null=True, blank=True)
-    url = models.URLField()
+    url = models.URLField(max_length=350)
     scraped_date = models.DateTimeField(auto_now=timezone.now)
     summary = models.TextField(null=True, blank=True)
     source = models.CharField(max_length=20, null=True)
@@ -59,7 +59,7 @@ class Job(models.Model):
     
     
 class Requested(models.Model):
-    url = models.URLField()
+    url = models.URLField(max_length=350)
     title = models.CharField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(auto_now=timezone.now)
     
