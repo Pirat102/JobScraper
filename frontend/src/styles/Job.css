@@ -136,7 +136,7 @@
   font-size: var(--text-sm);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
-  font-weight: 350;
+  font-weight: 450;
 }
 
 .skill-item.nice .skill-level {
