@@ -4,6 +4,10 @@ A centralized platform for IT job seekers in Poland, aggregating listings from m
 
 Live: [https://devradar.work](https://devradar.work)
 
+### Youtube Preview
+
+[![Video Thumbnail](https://img.youtube.com/vi/M9KfKdb88RM/maxresdefault.jpg)](https://www.youtube.com/watch?v=M9KfKdb88RM)
+
 ## 🚀 Features
 
 - 🔍 Real-time job aggregation from major Polish job boards:
@@ -29,24 +33,19 @@ DevRadar helps IT job seekers save time by:
 - Enabling easy application tracking with notes and status updates
 - Maintaining historical job market data for trends analysis
 
-![Job Listing View](screenshots/JobsLight.png)
-
-![Job Listing View](screenshots/JobsDark.png)
+![Job Listing View](assets/JobsDarkMobile.jpg)
 
 ### Application Tracking
 
 Track your job applications with status updates, notes, and automatic date management.
 
-![Applications Dashboard](screenshots/ApplicationsLight.png)
-
-![Applications Dashboard](screenshots/ApplicationsDark.png)
-
+![Applications Dashboard](assets/ApplicationsDarkMobile.jpg)
 
 ### Interactive Dashboard
 
-![Applications Dashboard](screenshots/DashboardLight.png)
+Track current market trends.
 
-![Applications Dashboard](screenshots/DashboardDark.png)
+![Applications Dashboard](assets/DashboardDarkMobile.jpg)
 
 ## Techstack
 
