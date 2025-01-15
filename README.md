@@ -33,19 +33,19 @@ DevRadar helps IT job seekers save time by:
 - Enabling easy application tracking with notes and status updates
 - Maintaining historical job market data for trends analysis
 
-![Job Listing View](assets/JobsDarkMobile.jpg)
+![Job Listing View](assets/JobsDark.png)
 
 ### Application Tracking
 
 Track your job applications with status updates, notes, and automatic date management.
 
-![Applications Dashboard](assets/ApplicationsDarkMobile.jpg)
+![Applications Dashboard](assets/MyApplicationsDark.png)
 
 ### Interactive Dashboard
 
 Track current market trends.
 
-![Applications Dashboard](assets/DashboardDarkMobile.jpg)
+![Applications Dashboard](assets/DashboardDark.png)
 
 ## Techstack
 
