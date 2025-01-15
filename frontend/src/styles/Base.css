@@ -4,11 +4,11 @@
   --primary-light: #d4c0b3;
   --secondary-color: #466d9ee1;
   
-  --background-color: #fcd6c24a;
-  --card-background: #fff4e8;
+  --background-color: #ffdec13d;
+  --card-background: linear-gradient(520deg, #fff5ed, var(--second-background));
   --background-hover: rgba(173, 139, 115, 0.1);
   --background-active: rgba(115, 173, 130, 0.2);
-  --second-background: #fffaf2;
+  --second-background: #ffdebb;
   
   --text-primary: #2c1810;
   --text-on-primary: #ffffff;
@@ -16,43 +16,37 @@
   --text-muted: #3b3430;
 
   --warning-color: #dcb724;
-  --border-color: #d4c0b3;
+  --border-color: #8b7b714c;
   --level-regular-border: #fad257;
 
   /* Skill colors for light theme */
   .skill-item.master {
     background-color: #f3e8ff16;
-    color: #7b19dc;
     border: 1px solid #9b31ff;
   }
 
   .skill-item.advanced {
     background-color: #fff1e725;
-    color: #c43d10;
     border: 1px solid #f55539;
   }
 
   .skill-item.senior {
     background-color: #bcffd324;
-    color: #036765;
     border: 1px solid #49e8a3;
   }
   
   .skill-item.regular {
     background-color: #fff7db22;
-    color: #848200;
     border: 1px solid #fad257;
   }
   
   .skill-item.junior {
     background-color: #e5f6ff17;
-    color: #075985;
     border: 1px solid #29b3f2;
   }
 
   .skill-item.nice {
     background-color: #f8f8f21d;
-    color: #818181;
     border: 1px solid #5b5a5a3b;
   }
 }
@@ -66,22 +60,20 @@
   --secondary-color: #03dac5a1;
   
   --background-color: #0f172a;
-  --card-background: #1e293b;
+  --card-background: linear-gradient(350deg, var(--background-color), #222e40);
   --background-hover: rgba(255, 255, 255, 0.05);
   --background-active: rgba(91, 143, 185, 0.2);
-  --second-background: #0f172a;
+  --second-background: #1e293b;
   
   --text-primary: #f8fafc;
   --text-on-primary: #0f172a;
-  --text-secondary: #afc1d2d9;
+  --text-secondary: #afc1d2ca;
   --text-muted: #8592a4;
   
   
   /* Border and shadow */
   --border-color: #80889164;       
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+
   
   
 }
@@ -91,13 +83,16 @@
   --error-color: #ef444494;
   
 
-  --level-nice-border: #7f7f7f33;
+  --level-nice-border: #7f7f7f69;
   --level-junior-border: #61cdffba;
   --level-regular-border: #fbfb82ba;
   --level-senior-border: #69fcd2a1;
   --level-advanced-border: #fb7d7da3;
   --level-master-border: #e39bffb0;
 
+  --shadow-sm: 0px 3px 6px rgba(0, 0, 0, 0.1), 0px 8px 16px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
   
 
   /* Spacing */

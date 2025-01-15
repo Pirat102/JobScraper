@@ -19,7 +19,6 @@
   padding: var(--space-4);
   border-radius: var(--radius);
   border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
 }
 
 .jobs-count {

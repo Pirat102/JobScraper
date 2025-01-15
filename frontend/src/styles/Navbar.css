@@ -1,8 +1,7 @@
 .navbar {
-  background-color: var(--card-background);
+  background: var(--card-background);
   border-bottom: 1px solid var(--border-color);
   padding: var(--space-4) 0;
-  box-shadow: var(--shadow-sm);
 }
   
 .navbar-container {

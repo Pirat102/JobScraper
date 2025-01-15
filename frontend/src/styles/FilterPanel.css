@@ -11,13 +11,11 @@
   padding-right: var(--space-2);
 }
 
-
 .jobs-count-wrapper {
   background: var(--card-background);
   padding: var(--space-4);
   border-radius: var(--radius);
   border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -60,11 +58,14 @@
 }
 
 .filter-section {
-  background: var(--card-background);
   border-radius: var(--radius);
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
+  background: var(--card-background);
+  box-shadow: var(--shadow-sm);
+
+
 }
 
 .section-header {
@@ -73,8 +74,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--card-background);
   border: none;
+  background: inherit;
   cursor: pointer;
   font-weight: 500;
   color: var(--text-primary);
@@ -88,11 +89,12 @@
   display: none;
   padding: var(--space-4);
   padding-top: 0;
-  background: var(--card-background);
 }
+
 
 .section-content.open {
   display: block;
+  background: inherit;
 }
 
 /* Skills section */

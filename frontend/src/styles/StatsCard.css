@@ -1,14 +1,10 @@
 .stats-card {
   border-radius: var(--radius);
   border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   padding: var(--space-6);
   transition: var(--transition-all);
-  background: linear-gradient(
-    to bottom right,
-    var(--card-background),
-    var(--background-color)
-  );
+  background: var(--card-background);
 }
 
 .stats-card-title {
@@ -25,13 +21,6 @@
   font-size: var(--text-lg);
 }
 
-.market-overview {
-  background: linear-gradient(
-    to bottom right,
-    var(--card-background),
-    var(--background-color)
-  );
-}
 
 @media (max-width: 768px) {
   .stats-card {

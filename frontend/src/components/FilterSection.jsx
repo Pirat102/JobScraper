@@ -6,6 +6,7 @@ export const FilterSection = ({ section, openSections, setOpenSections, children
   
   return (
     <div className="filter-section">
+      <div className="section-wrapper">
       <button
         className={`section-header ${openSections[section.id] ? 'open' : ''}`}
         onClick={() => setOpenSections(prev => ({
@@ -21,6 +22,7 @@ export const FilterSection = ({ section, openSections, setOpenSections, children
       </button>
       <div className={`section-content ${openSections[section.id] ? 'open' : ''}`}>
         {children}
+        </div>
       </div>
     </div>
   );

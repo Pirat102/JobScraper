@@ -134,8 +134,8 @@
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-full);
   font-size: var(--text-sm);
-  border: 1px solid var(--border-color);
-  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+  color: var(--text-secondary);
   font-weight: 450;
 }
 
@@ -171,7 +171,7 @@
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-full);
   border: 1px solid rgb(176, 255, 212);
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 /* Desktop hover effects */
