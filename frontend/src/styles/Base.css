@@ -8,7 +8,7 @@
   --card-background: linear-gradient(520deg, #fff5ed, var(--second-background));
   --background-hover: rgba(173, 139, 115, 0.1);
   --background-active: rgba(115, 173, 130, 0.2);
-  --second-background: #ffdebb;
+  --second-background: #ffdebbb1;
   
   --text-primary: #2c1810;
   --text-on-primary: #ffffff;
@@ -60,7 +60,7 @@
   --secondary-color: #03dac5a1;
   
   --background-color: #0f172a;
-  --card-background: linear-gradient(350deg, var(--background-color), #222e40);
+  --card-background: linear-gradient(360deg, var(--background-color), #222e40);
   --background-hover: rgba(255, 255, 255, 0.05);
   --background-active: rgba(91, 143, 185, 0.2);
   --second-background: #1e293b;
