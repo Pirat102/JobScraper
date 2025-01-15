@@ -63,12 +63,12 @@ class PracujScraper(WebScraper):
                 text = div.get_text(strip=True)
                 if 'praca stacjonarna' in text or 'full office' in text:
                     return 'Office'
-                elif 'praca zdalna' in text or 'home office' in text:
+                elif ('praca zdalna' in text) or ('home office' in text) or ('mobile work' in text):
                     return 'Remote'
                 elif 'praca hybrydowa' in text or 'hybrid' in text:
                     return 'Hybrid'
                 else:
-                    return ""
+                    return 'Office'
             except Exception as e:
                 self.logger.error(f"Error extracting operating mode: {e}")
 
