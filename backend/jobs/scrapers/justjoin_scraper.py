@@ -21,6 +21,37 @@ class JustJoinScraper(WebScraper):
             'attrs': {'id': 'up-offers-list'}
         }
         
+    def get_job_listings(self, html_pages: list[str]) -> Dict[str, Dict[str, str]]:
+        """Extracts basic job information (title, link) from the main listings page."""
+        page_listings = []
+        for html in html_pages:
+            soup = BeautifulSoup(html, 'html.parser')
+            containers = soup.find_all(**self.get_jobs_container_selector())
+            
+            if not containers:
+                containers = soup.find_all('div', attrs={'data-test-id' : 'virtuoso-item-list'})
+            page_listing = self._extract_listings_from_containers(containers)
+            page_listings.append(page_listing)
+            
+        return page_listings
+    
+    def _extract_listings_from_containers(self, containers) -> Dict[str, Dict[str, str]]:
+        """Processes each container to extract job listings."""
+        all_listings = {}
+        for container in containers:
+            try:
+                listings = container.find_all(**self.get_listings_selector())
+                if not listings:
+                    listings = container.find_all('div', attrs={'data-index': True})
+                for listing in listings:
+                    title_element = listing.find(**self.get_listing_title_selector())
+                    if title_element and (title := title_element.find(text=True, recursive=False)):
+                        link = self.extract_job_link(listing)
+                        all_listings[title.strip()] = {"link": link}
+            except Exception as e:
+                self.logger.error(f"Error processing container: {e}")
+        return all_listings
+        
 
     def get_listings_selector(self) -> Dict[str, Any]:
         return {
